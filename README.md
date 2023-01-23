@@ -1,8 +1,17 @@
 # NAC
 
-cmake -DBuildTarget:String=OpenGL_45 -G Unix\ Makefiles -DCMAKE_BUILD_TYPE:String=Release -B./build -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_INSTALL_PREFIX=${MINGW} -DCMAKE_FIND_ROOT_PATH=${MINGW} -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres
+## Requirements
+- Docker
+- Docker-Compose
+- WSL2 Linux Containers or Linux Ubuntu (or similar)
 
-# To build GLFW
-```cmake -S . -B build -D CMAKE_TOOLCHAIN_FILE=/usr/x86_64-w64-mingw32/mingw-w64-x86_64.cmake
-cd build
-make -j 8```
+## Run 
+```./install.sh```
+
+## Contents of the Container
+CMAKE_VERSION = 3.24.1
+GLFW_VERSION = 3.3.8
+SDL_VERSION = 2.26.2
+mingw-w64-i686-dev
+mingw-w64-x86-64-dev
+emsdk
