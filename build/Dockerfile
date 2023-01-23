@@ -1,17 +1,13 @@
 FROM ubuntu:23.04
 
-WORKDIR /mnt
+WORKDIR /build
 
-ENV MINGW=/mingw
-
-ARG PKG_CONFIG_VERSION=0.29.2
 ARG CMAKE_VERSION=3.24.1
-ARG BINUTILS_VERSION=2.39
-ARG MINGW_VERSION=10.0.0
-ARG GCC_VERSION=12.2.0
-ARG NASM_VERSION=2.15.05
-ARG NVCC_VERSION=11.7.1
 ARG GLFW_VERSION=3.3.8
+ARG SDL_VERSION=2.26.2
+
+ARG CROSS_PATH=/usr
+ARG PKG_CONFIG_PATH=/usr/local/x86_64-w64-mingw32/lib/pkgconfig
 
 SHELL [ "/bin/bash", "-c" ]
 
@@ -21,60 +17,33 @@ RUN set -ex \
     && DEBIAN_FRONTEND=noninteractive apt-get upgrade --no-install-recommends -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
         ca-certificates \
-        gcc \
-        g++ \
-        zlib1g-dev \
         libssl-dev \
-        libgmp-dev \
         libglu1-mesa-dev \
-        libmpfr-dev \
-        libmpc-dev \
-        libisl-dev \
-        libssl3 \
-        libgmp10 \
-        libmpfr6 \
-        libmpc3 \
-        libisl23 \
-        xz-utils \
         xorg-dev \
-        ninja-build \
-        texinfo \
-        meson \
-        gnupg \
-        bzip2 \
-        patch \
-        gperf \
-        bison \
-        file \
-        flex \
-        make \
-        yasm \
         wget \
-        zip \
-        unzip \
         git \
+        vim \
+        curl \
+        mingw-w64-i686-dev \
+        mingw-w64-x86-64-dev \
+        gcc-mingw-w64-i686 \
+        gcc-mingw-w64-x86-64 \
+        g++-mingw-w64-i686 \
+        g++-mingw-w64-x86-64 \
+        binutils-mingw-w64-i686 \
+        binutils-mingw-w64-x86-64 \
+        autotools-dev \
+        build-essential \
+        libtool \
+        automake \
+        pkg-config \
+        python3 \
     \
-    && wget -q https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz -O - | tar -xz \
-    && wget -q https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz -O - | tar -xJ \
-    && wget -q https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v${MINGW_VERSION}.tar.bz2 -O - | tar -xj \
-    && wget -q https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.xz -O - | tar -xJ \
-    && wget -q https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.xz -O - | tar -xJ \
     && wget -q https://github.com/glfw/glfw/archive/refs/tags/${GLFW_VERSION}.tar.gz -O - | tar -xz \
-    \
-    && mkdir -p ${MINGW}/include ${MINGW}/lib/pkgconfig \
-    && chmod 0777 -R /mnt ${MINGW} \
-    \
-    && cd pkg-config-${PKG_CONFIG_VERSION} \
-    && ./configure \
-        --prefix=/usr/local \
-        --with-pc-path=${MINGW}/lib/pkgconfig \
-        --with-internal-glib \
-        --disable-shared \
-        --disable-nls \
-    && make -j`nproc` \
-    && make install \
-    && cd .. \
+    && wget -q https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.tar.gz -O - | tar -xz \
+    && wget -q https://gist.githubusercontent.com/peterspackman/8cf73f7f12ba270aa8192d6911972fe8/raw/mingw-w64-x86_64.cmake -O /opt/mingw-w64-x86_64.cmake \
+    && wget -q https://gist.githubusercontent.com/jrynkiew/96b41216bd6078590aedd1ab8f0ae66b/raw/mingw-i686-w64.cmake -O /opt/mingw-i686-w64.cmake \
     \
     && cd cmake-${CMAKE_VERSION} \
     && ./configure \
@@ -84,118 +53,26 @@ RUN set -ex \
     && make install \
     && cd .. \
     \
-    && cd binutils-${BINUTILS_VERSION} \
-    && ./configure \
-        --prefix=/usr/local \
-        --target=x86_64-w64-mingw32 \
-        --disable-shared \
-        --enable-static \
-        --disable-lto \
-        --disable-plugins \
-        --disable-multilib \
-        --disable-nls \
-        --disable-werror \
-        --with-system-zlib \
-    && make -j`nproc` \
-    && make install \
-    && cd .. \
-    \
-    && mkdir mingw-w64 \
-    && cd mingw-w64 \
-    && ../mingw-w64-v${MINGW_VERSION}/mingw-w64-headers/configure \
-        --prefix=/usr/local/x86_64-w64-mingw32 \
-        --host=x86_64-w64-mingw32 \
-        --enable-sdk=all \
-    && make install \
-    && cd .. \
-    \
-    && mkdir gcc \
-    && cd gcc \
-    && ../gcc-${GCC_VERSION}/configure \
-        --prefix=/usr/local \
-        --target=x86_64-w64-mingw32 \
-        --enable-languages=c,c++ \
-        --disable-shared \
-        --enable-static \
-        --enable-threads=posix \
-        --with-system-zlib \
-        --enable-libgomp \
-        --enable-libatomic \
-        --enable-graphite \
-        --disable-libstdcxx-pch \
-        --disable-libstdcxx-debug \
-        --disable-multilib \
-        --disable-lto \
-        --disable-nls \
-        --disable-werror \
-    && make -j`nproc` all-gcc \
-    && make install-gcc \
-    && cd .. \
-    \
-    && cd mingw-w64 \
-    && ../mingw-w64-v${MINGW_VERSION}/mingw-w64-crt/configure \
-        --prefix=/usr/local/x86_64-w64-mingw32 \
-        --host=x86_64-w64-mingw32 \
-        --enable-wildcard \
-        --disable-lib32 \
-        --enable-lib64 \
-    && (make || make || make || make) \
-    && make install \
-    && cd .. \
-    \
-    && cd mingw-w64 \
-    && ../mingw-w64-v${MINGW_VERSION}/mingw-w64-libraries/winpthreads/configure \
-        --prefix=/usr/local/x86_64-w64-mingw32 \
-        --host=x86_64-w64-mingw32 \
-        --enable-static \
-        --disable-shared \
-    && make -j`nproc` \
-    && make install \
-    && cd .. \
-    \
-    && cd gcc \
-    && make -j`nproc` \
-    && make install \
-    && cd .. \
-    \
-    && cd nasm-${NASM_VERSION} \
-    && ./configure --prefix=/usr/local \
-    && make -j`nproc` \
-    && make install \
+    && git clone https://github.com/emscripten-core/emsdk.git emsdk \
+    && cd emsdk \
+    && ./emsdk install latest \
+    && ./emsdk activate latest \
     && cd .. \
     \
     && cd glfw-${GLFW_VERSION} \
-    && cmake -G "Unix Makefiles" \
+    && cmake -S . -B build -D CMAKE_INSTALL_PREFIX=/usr/x86_64-w64-mingw32/ -D CMAKE_TOOLCHAIN_FILE=/opt/mingw-w64-x86_64.cmake \
+    && cd build \
     && make -j`nproc` \
     && make install \
-    && cd .. \
+    && cd ../ \
+    && rm -r build \
+    && cmake -S . -B build -D CMAKE_INSTALL_PREFIX=/usr/i686-w64-mingw32/ -D CMAKE_TOOLCHAIN_FILE=/opt/mingw-i686-w64.cmake \
+    && cd build \
+    && make -j`nproc` \
+    && make install \
+    && cd ../.. \
     \
-    && git clone https://github.com/emscripten-core/emsdk.git /opt/emsdk \
-    && cd /opt/emsdk \
-    && ./emsdk install latest \
-    && ./emsdk activate latest \
-    && cd ../../mnt \
-    \
-    && rm -r pkg-config-${PKG_CONFIG_VERSION} \
-    && rm -r cmake-${CMAKE_VERSION} \
-    && rm -r binutils-${BINUTILS_VERSION} \
-    && rm -r mingw-w64 mingw-w64-v${MINGW_VERSION} \
-    && rm -r gcc gcc-${GCC_VERSION} \
-    && rm -r nasm-${NASM_VERSION} \
-    && rm -r glfw-${GLFW_VERSION} \
-    \
-    && apt-get remove --purge -y file gcc g++ zlib1g-dev libssl-dev libgmp-dev libmpfr-dev libmpc-dev libisl-dev \
-    \
-    && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub \
-    && echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /" > /etc/apt/sources.list.d/cuda.list \
-    && apt-get update \
-    \
-    && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-        cuda-nvcc-${NVCC_VERSION:0:2}-${NVCC_VERSION:3:1} \
-    \
-    && ln -s /usr/bin/gcc /usr/local/cuda/bin/gcc \
-    && ln -s /usr/bin/g++ /usr/local/cuda/bin/g++ \
-    \
-    && apt-get remove --purge -y gnupg \
-    && apt-get autoremove --purge -y \
-    && apt-get clean
+    && ln -s /usr/x86_64-w64-mingw32/ /usr/local/x86_64-w64-mingw32 \
+    && ln -s /usr/i686-w64-mingw32 /usr/local/i686-w64-mingw32 \
+    && cd SDL2-${SDL_VERSION} \
+    && make cross

@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+# Test Output
+./build/build-tests/test-sdl2

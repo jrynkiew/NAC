@@ -1,2 +1,8 @@
+# Build Docker
+docker-compose -p jrpc -f docker-compose.yaml build
+
 # Launch Docker
-docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml up --no-deps --build
+docker-compose -p jrpc -f docker-compose.yaml up
+
+# Exit Docker
+docker-compose -f docker-compose.yaml down

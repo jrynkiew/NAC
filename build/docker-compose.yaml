@@ -11,4 +11,5 @@ services:
     restart: "no"
     volumes:
       - "..:/mnt"
-    command: $COMMAND
+      - "./build-tests/:/build/tests/"
+    command: /build/tests/test-sdl2.sh
