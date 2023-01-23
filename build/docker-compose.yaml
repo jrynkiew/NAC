@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  jrpc:
+    container_name: jrpc-beta-v2
+    #Uncomment this line to use a pre-built container If you do so, comment out the "build" section
+    #image: jrpc1/jrpc-linux-buildsystem:latest
+    build: 
+        context: ./
+        dockerfile: Dockerfile
+    restart: "no"
+    volumes:
+      - "..:/mnt"
+    command: $COMMAND
