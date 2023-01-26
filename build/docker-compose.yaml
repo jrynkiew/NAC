@@ -8,8 +8,33 @@ services:
     build: 
         context: ./
         dockerfile: Dockerfile
-    restart: "no"
+    restart: "always"
+    links:
+      - "jenkins:server"
     volumes:
       - "..:/mnt"
       - "./build-tests/:/build/tests/"
-    command: /build/tests/test-sdl2.sh
+      - "./jenkins/:/build/jenkins-scripts/"
+    environment:
+      - CMAKE_VERSION=3.24.1
+      - GLFW_VERSION=3.3.8
+      - SDL_VERSION=2.26.2
+    networks:
+      - jenkins_network
+    command: "/build/jenkins-scripts/start-agent.sh"
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    networks:
+      - jenkins_network
+
+volumes:
+  jenkins_home:
+
+networks:
+  jenkins_network:

@@ -38,11 +38,12 @@ RUN set -ex \
         automake \
         pkg-config \
         python3 \
+        default-jre \
     \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz -O - | tar -xz \
     && wget -q https://github.com/glfw/glfw/archive/refs/tags/${GLFW_VERSION}.tar.gz -O - | tar -xz \
     && wget -q https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.tar.gz -O - | tar -xz \
-    && wget -q https://gist.githubusercontent.com/peterspackman/8cf73f7f12ba270aa8192d6911972fe8/raw/mingw-w64-x86_64.cmake -O /opt/mingw-w64-x86_64.cmake \
+    && wget -q https://gist.githubusercontent.com/jrynkiew/96b41216bd6078590aedd1ab8f0ae66b/raw/mingw-w64-x86_64.cmake -O /opt/mingw-w64-x86_64.cmake \
     && wget -q https://gist.githubusercontent.com/jrynkiew/96b41216bd6078590aedd1ab8f0ae66b/raw/mingw-i686-w64.cmake -O /opt/mingw-i686-w64.cmake \
     \
     && cd cmake-${CMAKE_VERSION} \
