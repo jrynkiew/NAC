@@ -1,14 +1,13 @@
+
+
+![NAC](https://user-images.githubusercontent.com/63042547/215357605-72fe88a0-68ee-468e-90f0-fee1ff3b96ed.png)
+
 # NAC
 &nbsp;
 New Age Computing LLC
 <pre>
 NFT platform cross-compiler
 </pre>
-
-<img src="https://user-images.githubusercontent.com/63042547/215335764-169d9f82-e8dd-421d-a9b1-fb22aa091b5a.png">
-
-&nbsp;
-
 This project is designed to streamline testing multi-architecture builds of imgui based projects.
 
 You will get Linux x64, Windows x32, and Emscripten Web executables as a result of a successful build.
