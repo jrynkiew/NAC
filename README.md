@@ -52,6 +52,6 @@ Execute each of those strings on each of the containers.
 [^4]: Lastly, create a new pipeline, and copy the contents of build/jenkins/pipeline.groovy into the pipeline section. Note, that you will have to modify the line ```agent { label 'Windows-builder' }``` to correspond to each of your nodes you created, each according to their own label you set.  
 Quit (Ctrl+C) the program end edit build/jenkins/start-agent.sh initialization secret string with the proper one. This is a temporary step, will be fixed in the future.
 
-<p align="center">
-<img src="https://user-images.githubusercontent.com/63042547/215356555-a29e78c9-8197-462a-8e73-fbaf86af9b1b.gif" width=50% height=50%>
+<p align="left">
+<img src="https://user-images.githubusercontent.com/63042547/215356555-a29e78c9-8197-462a-8e73-fbaf86af9b1b.gif" width=20% height=20%>
 </p>
