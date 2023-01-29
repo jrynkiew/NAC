@@ -1,10 +1,11 @@
 # NAC
-New Age Computing LLC
 &nbsp;
 <pre>
 NFT platform cross-compiler
 </pre>
-![NAC](https://user-images.githubusercontent.com/63042547/215335764-169d9f82-e8dd-421d-a9b1-fb22aa091b5a.png)
+
+<img src="https://user-images.githubusercontent.com/63042547/215335764-169d9f82-e8dd-421d-a9b1-fb22aa091b5a.png">
+
 &nbsp;
 
 This project is designed to streamline testing multi-architecture builds of imgui based projects.
@@ -50,3 +51,7 @@ Execute each of those strings on each of the containers.
 
 [^4]: Lastly, create a new pipeline, and copy the contents of build/jenkins/pipeline.groovy into the pipeline section. Note, that you will have to modify the line ```agent { label 'Windows-builder' }``` to correspond to each of your nodes you created, each according to their own label you set.  
 Quit (Ctrl+C) the program end edit build/jenkins/start-agent.sh initialization secret string with the proper one. This is a temporary step, will be fixed in the future.
+
+<p align="center">
+<img src="https://user-images.githubusercontent.com/63042547/215356555-a29e78c9-8197-462a-8e73-fbaf86af9b1b.gif" width=50% height=50%>
+</p>
