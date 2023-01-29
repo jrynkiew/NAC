@@ -1,6 +1,11 @@
 # NAC
 New Age Computing LLC
-![NAC](https://user-images.githubusercontent.com/63042547/215334795-b302b1ad-217e-49cc-b339-1eafd7171ff9.png)
+&nbsp;
+<pre>
+NFT platform cross-compiler
+</pre>
+![NAC](https://user-images.githubusercontent.com/63042547/215335764-169d9f82-e8dd-421d-a9b1-fb22aa091b5a.png)
+&nbsp;
 
 This project is designed to streamline testing multi-architecture builds of imgui based projects.
 
