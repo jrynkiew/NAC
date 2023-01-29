@@ -33,3 +33,6 @@
 
 # Test Output
 ./build/build-tests/test-sdl2
+
+# Imgui Debug output
+imgui.ini
