@@ -1,8 +1,9 @@
-# Build Docker
-docker-compose -p jrpc -f docker-compose.yaml build
+#!/bin/bash
+if [ "$WEB_BUILDER" = 1 ]
+then
+    cd /build/emsdk/
+    . ./emsdk_env.sh
+fi
 
-# Launch Docker
-docker-compose -p jrpc -f docker-compose.yaml up --remove-orphans
-
-# Exit Docker
-docker-compose -f docker-compose.yaml down
+cd /src
+make
