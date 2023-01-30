@@ -31,9 +31,11 @@ RUN set -ex \
         python3 \
         default-jre \
         libglfw3-dev \
+        jq \
     \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz -O - | tar -xz \
     && wget -q https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.tar.gz -O - | tar -xz \
+    && git clone https://github.com/emscripten-core/emsdk.git emsdk \
     \
     && cd cmake-${CMAKE_VERSION} \
     && ./configure \
@@ -43,7 +45,6 @@ RUN set -ex \
     && make install \
     && cd .. \
     \
-    && git clone https://github.com/emscripten-core/emsdk.git emsdk \
     && cd emsdk \
     && chmod +x emsdk_env.sh \
     && ./emsdk install latest \
@@ -51,6 +52,20 @@ RUN set -ex \
     && cd .. \
     \
     && cd SDL2-${SDL_VERSION} \
-    && make native
-
+    && make native \
+    && cd .. \
+    \
+    && apt-get remove --purge -y \
+        libssl-dev \
+        wget \
+        git \
+        vim \
+        libtool \
+        python3 \
+    && apt-get autoremove --purge -y \
+    && apt-get clean \
+    \
+    && rm -r SDL2-${SDL_VERSION} \
+    && rm -r cmake-${CMAKE_VERSION}
+    
 WORKDIR /build/jenkins-scripts/

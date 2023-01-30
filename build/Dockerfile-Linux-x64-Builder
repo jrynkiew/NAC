@@ -31,6 +31,7 @@ RUN set -ex \
         python3 \
         default-jre \
         libglfw3-dev \
+        jq \
     \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz -O - | tar -xz \
     && wget -q https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.tar.gz -O - | tar -xz \
@@ -50,19 +51,23 @@ RUN set -ex \
     \
     && cd gl3w \
     && python3 gl3w_gen.py \
-    && cmake -B build \
-    && cd build \
+    && cmake -B . \
     && make -j`nproc` \
-    && make install
-RUN apt-get remove --purge -y \
+    && make install \
+    && cd ..\
+    \
+    && apt-get remove --purge -y \
         libssl-dev \
         wget \
         git \
         vim \
-        curl \
         libtool \
         python3 \
     && apt-get autoremove --purge -y \
-    && apt-get clean
+    && apt-get clean \
+    \
+    && rm -r SDL2-${SDL_VERSION} \
+    && rm -r cmake-${CMAKE_VERSION} \
+    && rm -r gl3w 
 
 WORKDIR /build/jenkins-scripts/
