@@ -36,3 +36,6 @@
 
 # Imgui Debug output
 imgui.ini
+
+# Jenkins data
+build/jenkins/data
