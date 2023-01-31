@@ -9,6 +9,7 @@ export gold=`tput setaf 214`
 export reset=`tput sgr0`
 
 export jrpc_beta_v2=$PWD
+export http_code=0
 
 if [ -x "$(command -v git)" ]; then
     echo "${gold}git version${reset}"
