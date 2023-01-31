@@ -61,7 +61,6 @@ RUN set -ex \
         git \
         vim \
         libtool \
-        python3 \
     && apt-get autoremove --purge -y \
     && apt-get clean \
     \

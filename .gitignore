@@ -39,3 +39,5 @@ imgui.ini
 
 # Jenkins data
 build/jenkins/data
+
+generated/

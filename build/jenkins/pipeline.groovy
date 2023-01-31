@@ -11,7 +11,7 @@ pipeline{
     }
     stages{
         stage("Windows"){
-            agent { label 'Windows-builder' } 
+            agent { label 'windows' } 
             steps{
                 script{
                     sh '${BUILD_PATH}/${BUILD}'
@@ -20,7 +20,7 @@ pipeline{
             }
         }
         stage("Linux"){
-            agent { label 'Linux-builder' } 
+            agent { label 'linux' } 
             steps{
                 script{
                     sh '${BUILD_PATH}/${BUILD}'
@@ -28,7 +28,7 @@ pipeline{
             }
         }
         stage("Web"){
-            agent { label 'Web-builder' }
+            agent { label 'web' }
             steps{
                 script{
                     sh '${BUILD_PATH}/${BUILD}'

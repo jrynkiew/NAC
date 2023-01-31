@@ -5,8 +5,5 @@ then
     . ./emsdk_env.sh
 fi
 
-sh ./generate-token.sh
-sh ./start-agent.sh
-
 cd /src
 make

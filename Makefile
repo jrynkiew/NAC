@@ -49,20 +49,20 @@ $(OUT)/%.o:$(IMGUI_DIR)/backends/%.cpp
 %.o:../libs/gl3w/GL/%.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
-all: $(EXE)
+all: $(OUT)/$(EXE)
 	@echo Build complete for $(EXE)
 
-$(WEB_DIR):
+$(OUT):
 	mkdir $@
 
 serve: all
-	python3 -m http.server -d $(WEB_DIR)
+	python3 -m http.server -d $(OUT)
 
-$(EXE): $(OBJS) $(WEB_DIR)
+$(OUT)/$(EXE): $(OBJS)
 	$(CXX) -o $@ $(OBJS) $(LIBS) $(LDFLAGS)
 
 clean:
-	rm -rf $(OBJS) $(WEB_DIR)
+	rm -rf $(OBJS)
 	rm -r $(OUT)
 
 ##---------------------------------------------------------------------
@@ -111,10 +111,10 @@ $(OUT)/%.o:$(IMGUI_DIR)/backends/%.cpp
 $(OUT)/%.o:${MINGW}/share/glad/%.c
 	$(CXX) $(CFLAGS) -c -o $@ $<
 
-all: $(EXE)
+all: $(OUT)/$(EXE)
 	@echo Build complete for $(ECHO_MESSAGE)
 
-$(EXE): $(OBJS)
+$(OUT)/$(EXE): $(OBJS)
 	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
 
 clean:
@@ -144,32 +144,10 @@ CXXFLAGS += -g -Wall -Wformat
 SOURCES += /usr/local/share/gl3w/gl3w.c
 CXXFLAGS += -I/usr/local/include/gl3w -DIMGUI_IMPL_OPENGL_LOADER_GL3W
 
-ifeq ($(UNAME_S), Linux) #LINUX
-	ECHO_MESSAGE = "Linux"
-	LIBS += $(LINUX_GL_LIBS) `pkg-config --static --libs glfw3`
+LIBS += $(LINUX_GL_LIBS) `pkg-config --static --libs glfw3`
 
-	CXXFLAGS += `pkg-config --cflags glfw3`
-	CFLAGS = $(CXXFLAGS)
-endif
-
-ifeq ($(UNAME_S), Darwin) #APPLE
-	ECHO_MESSAGE = "Mac OS X"
-	LIBS += -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
-	LIBS += -L/usr/local/lib -L/opt/local/lib
-	#LIBS += -lglfw3
-	LIBS += -lglfw
-
-	CXXFLAGS += -I/usr/local/include -I/opt/local/include
-	CFLAGS = $(CXXFLAGS)
-endif
-
-ifeq ($(OS), Windows_NT)
-	ECHO_MESSAGE = "MinGW"
-	LIBS += -lglfw3 -lgdi32 -lopengl32 -limm32
-
-	CXXFLAGS += `pkg-config --cflags glfw3`
-	CFLAGS = $(CXXFLAGS)
-endif
+CXXFLAGS += `pkg-config --cflags glfw3`
+CFLAGS = $(CXXFLAGS)
 
 $(shell mkdir -p $(OUT)) 
 
@@ -185,10 +163,10 @@ $(OUT)/%.o:$(IMGUI_DIR)/backends/%.cpp
 $(OUT)/%.o:/usr/local/share/gl3w/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-all: $(EXE)
+all: $(OUT)/$(EXE)
 	@echo Build complete for $(ECHO_MESSAGE)
 
-$(EXE): $(OBJS)
+$(OUT)/$(EXE): $(OBJS)
 	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
 
 clean:
