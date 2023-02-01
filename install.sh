@@ -1,5 +1,5 @@
 # Initialize Environment
-. ./build/env.sh
+. ./build/.env/env.sh
 
 # Display Banner
 banner

@@ -19,8 +19,7 @@ services:
       - CMAKE_VERSION=3.24.1
       - GLFW_VERSION=3.3.8
       - SDL_VERSION=2.26.2
-      - NODE_NAME=linux
-      - LINUX_BUILDER=1
+      - BUILD_TARGET=linux
     networks:
       - jenkins_network
     command: "/build/jenkins-scripts/start-agent.sh"
@@ -44,8 +43,7 @@ services:
       - CMAKE_VERSION=3.24.1
       - GLFW_VERSION=3.3.8
       - SDL_VERSION=2.26.2
-      - NODE_NAME=windows
-      - WINDOWS_BUILDER=1
+      - BUILD_TARGET=windows
     networks:
       - jenkins_network
     command: "/build/jenkins-scripts/start-agent.sh"
@@ -67,8 +65,7 @@ services:
       - CMAKE_VERSION=3.24.1
       - GLFW_VERSION=3.3.8
       - SDL_VERSION=2.26.2
-      - NODE_NAME=web
-      - WEB_BUILDER=1
+      - BUILD_TARGET=web
     networks:
       - jenkins_network
     command: "/build/jenkins-scripts/start-agent.sh"

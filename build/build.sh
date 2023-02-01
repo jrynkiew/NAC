@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ "$WEB_BUILDER" = 1 ]
+if [ "$BUILD_TARGET" = "web" ]
 then
     cd /build/emsdk/
     . ./emsdk_env.sh
