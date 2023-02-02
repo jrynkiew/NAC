@@ -6,4 +6,5 @@ then
 fi
 
 cd /src
+make clean
 make

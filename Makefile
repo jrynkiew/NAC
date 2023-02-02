@@ -16,7 +16,7 @@ endif
 # Sources - same for all architectures
 IMGUI_DIR = src
 SOURCES = main.cpp $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
-
+SOURCES += $(IMGUI_DIR)/backends/renderer.cpp
 
 # Use a different backend for Emscripten builds
 ifeq (${BUILD_TARGET},web)

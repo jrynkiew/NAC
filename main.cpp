@@ -3,43 +3,20 @@
 // If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
 
-#include "imgui.h"
-#if defined(__EMSCRIPTEN__)
-#include "imgui_impl_sdl.h"
-#include <emscripten.h>
-#include <SDL.h>
-#include <SDL_opengles2.h>
-#else
-#include "imgui_impl_glfw.h"
-#endif
-#include "imgui_impl_opengl3.h"
-#include <stdio.h>
-
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <GLES2/gl2.h>
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-#include <GL/gl3w.h>            // Initialize with gl3wInit()
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-#include <glad/glad.h>          // Initialize with gladLoadGL()
-#endif
-
+#include "renderer.h"
 #if defined(__EMSCRIPTEN__)
 SDL_Window*     g_Window = NULL;
 SDL_GLContext   g_GLContext = NULL;
-#else
-#include <GLFW/glfw3.h>
-#endif
-
-#if defined(__EMSCRIPTEN__)
 // For clarity, our main loop code is declared at the end.
 static void main_loop(void*);
 #else
+#include <GLFW/glfw3.h>
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "Glfw Error %d: %s\n", error, description);
 }
 #endif
-
+NAC::Renderer* render = NAC::Renderer::GetInstance();
 int main(int, char**)
 {
 #if defined(__EMSCRIPTEN__)
@@ -221,6 +198,7 @@ static void main_loop(void* arg)
         ImGui::End();
     }
 
+    render->BeginScene();
     // Rendering
     ImGui::Render();
     SDL_GL_MakeCurrent(g_Window, g_GLContext);
@@ -289,6 +267,23 @@ static void main_loop(void* arg)
         }
 
         // Rendering
+        // NAC::Renderer* render = NAC::Renderer::GetInstance();
+        
+        render->BeginScene();
+        // ImVec2 window_pos = ImGui::GetWindowPos(); 
+        // ImVec2 window_size = ImGui::GetWindowSize(); 
+        // ImVec2 window_center = ImVec2(window_pos.x + window_size.x * 0.5f, window_pos.y + window_size.y * 0.5f); 
+        // ImGui::GetBackgroundDrawList()->AddCircle(window_center, window_size.x * 0.6f, IM_COL32(255, 0, 0, 200), 0, 10 + 4); 
+        // ImGui::GetForegroundDrawList()->AddCircle(window_center, window_size.y * 0.6f, IM_COL32(0, 255, 0, 200), 0, 10);
+        // ImDrawList* draw_list = ImGui::GetWindowDrawList();
+        // static float sz = 36.0f; 
+        // static float thickness = 4.0f; 
+        // static ImVec4 col = ImVec4(1.0f, 1.0f, 0.4f, 1.0f); 
+        // const ImVec2 p = ImGui::GetCursorScreenPos(); 
+        // const ImU32 col32 = ImColor(col); 
+        // float x = p.x + 4.0f, y = p.y + 4.0f;
+        // draw_list->AddCircle(ImVec2(x+sz*0.5f, y+sz*0.5f), sz*0.5f, col32, 6, thickness);
+
         ImGui::Render();
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
