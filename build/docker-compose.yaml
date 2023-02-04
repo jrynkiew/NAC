@@ -7,7 +7,7 @@ services:
     #image: jrpc1/jrpc-linux-buildsystem:latest
     build: 
         context: ./
-        dockerfile: Dockerfile-Linux-x64-Builder
+        dockerfile: docker-test
     restart: "always"
     links:
       - "jenkins:server"

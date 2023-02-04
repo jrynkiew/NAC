@@ -243,6 +243,7 @@ RUN set -ex \
     && rm -r SDL2-${SDL_VERSION} \
     && rm -r gl3w \
     && rm -r glfw-${GLFW_VERSION} \
+    && rm -r glad \
     && rm -r glew \
     && rm -r pkg-config-${PKG_CONFIG_VERSION} \
     && rm -r cmake-${CMAKE_VERSION} \

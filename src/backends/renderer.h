@@ -2,10 +2,10 @@
 
 #include "imgui.h"
 #if defined(__EMSCRIPTEN__)
-#include "imgui_impl_sdl.h"
+// #include "imgui_impl_sdl.h"
 #include <emscripten.h>
-#include <SDL.h>
-#include <SDL_opengles2.h>
+// #include <SDL.h>
+// #include <SDL_opengles2.h>
 #else
 #include "imgui_impl_glfw.h"
 #endif
