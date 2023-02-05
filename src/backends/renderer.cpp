@@ -4,6 +4,8 @@ namespace NAC
 {
 	Renderer* Renderer::m_pInstance;
 
+	
+
 	Renderer::Renderer()
 	{
 	}
@@ -20,13 +22,14 @@ namespace NAC
 		return m_pInstance;
 	}
 
-	// void Renderer::Initialize()
-	// {
-	// 	// ImGuiIO& io = ImGui::GetIO();
-
-	// 	// io.Fonts->AddFontFromMemoryTTF(g_fFont, sizeof(g_fFont), 14.0f, nullptr, io.Fonts->GetGlyphRangesCyrillic());
-	// 	// m_pFont = io.Fonts->AddFontFromMemoryTTF(g_fFont, sizeof(g_fFont), 32.0f, nullptr, io.Fonts->GetGlyphRangesCyrillic());
-	// }
+	void Renderer::Initialize(GLFWwindow* window)
+	{
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplOpenGL3_Init("#version 300 es");
+		ImGui::StyleColorsClassic();
+	}
 
 	void Renderer::drawCircle()
 	{
@@ -35,10 +38,13 @@ namespace NAC
 
 	void Renderer::BeginScene()
 	{
-       
+       	ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
 		static bool show_demo_window = true;
 		static bool show_another_window = false;
+		static bool showDemo = false;
         static float f = 0.0f;
         static int counter = 0;
 		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -94,7 +100,12 @@ namespace NAC
         float x = p.x + 4.0f, y = p.y + 4.0f;
         draw_list->AddCircle(ImVec2(x+sz*0.5f, y+sz*0.5f), sz*0.5f, col32, 6, thickness);
 
-		
+		ImGui::Begin("Example");
+        if (ImGui::Button("Show/Hide ImGui demo"))
+        showDemo = !showDemo;
+        ImGui::End();
+        if (showDemo)
+        ImGui::ShowDemoWindow(&showDemo);
 		// Rendering
        
 		// ImGuiIO& io = ImGui::GetIO();

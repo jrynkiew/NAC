@@ -5,8 +5,7 @@
 // base:  https://www.glfw.org/docs/latest/quick.html#quick_example
 // ref: https://gist.github.com/SuperV1234/5c5ad838fe5fe1bf54f9
 
-#include <functional>
-#include <vector>
+
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #define GL_GLEXT_PROTOTYPES
@@ -14,14 +13,7 @@
 #else
 #include "glad/glad.h"
 #endif
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
 #include <renderer.h>
-#include <GLFW/glfw3.h>
-#include "linmath.h"
-#include <stdlib.h>
-#include <stdio.h>
 
 static const struct
 {
@@ -115,11 +107,7 @@ int main(void)
     glfwSwapInterval(1);
     printf("%s\n", glGetString(GL_VERSION));
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 300 es");
-    ImGui::StyleColorsClassic();
+    g_sRenderer->Initialize(window);
 
     glEnable(GL_CULL_FACE);
 
@@ -154,8 +142,6 @@ int main(void)
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(vertices[0]), (void *)(sizeof(float) * 2));
 
-static bool showDemo = false;
-
     loop = [&] {
         float ratio;
         int width, height;
@@ -171,19 +157,8 @@ static bool showDemo = false;
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
         
         g_sRenderer->BeginScene();
-
-        ImGui::Begin("Example");
-        if (ImGui::Button("Show/Hide ImGui demo"))
-        showDemo = !showDemo;
-        ImGui::End();
-        if (showDemo)
-        ImGui::ShowDemoWindow(&showDemo);
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -1,6 +1,14 @@
 #pragma once
 
-#include "imgui.h"
+#include <functional>
+#include <vector>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#include <GLFW/glfw3.h>
+#include "linmath.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 namespace NAC
 {
@@ -11,7 +19,7 @@ namespace NAC
 			~Renderer();
 
 		public:
-			// void Initialize();
+			void Initialize(GLFWwindow* window);
 
 			void BeginScene();
 			// void EndScene();
@@ -27,8 +35,7 @@ namespace NAC
 			static Renderer* GetInstance();
 		private:
 			// ImFont* m_pFont;
-			static Renderer* m_pInstance;
-			
+			static Renderer* m_pInstance;			
 	};
 }
 
