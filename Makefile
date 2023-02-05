@@ -34,7 +34,7 @@ OBJS = $(addprefix $(OUT)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
 # Set libraries and flags for each architecture
 ifeq (${BUILD_TARGET},web)
 # EMS += -s USE_SDL=2 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1
-EMS +=  -s USE_WEBGL2=1 -s USE_GLFW=3 -s WASM=1 -std=c++1z -s ALLOW_MEMORY_GROWTH=1 -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1
+EMS +=  -s USE_WEBGL2=1 -s USE_GLFW=3 -s WASM=1
 USE_FILE_SYSTEM ?= 0
 ifeq ($(USE_FILE_SYSTEM), 0)
 EMS += -s NO_FILESYSTEM=1 -DIMGUI_DISABLE_FILE_FUNCTIONS
