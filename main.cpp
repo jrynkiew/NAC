@@ -14,10 +14,14 @@
 #else
 #include "glad/glad.h"
 #endif
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
 #include "linmath.h"
 #include <stdlib.h>
 #include <stdio.h>
+
 static const struct
 {
     float x, y;
@@ -60,6 +64,7 @@ static void error_callback(int error, const char *description)
 {
     fprintf(stderr, "Error: %s\n", description);
 }
+
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -94,7 +99,7 @@ int main(void)
         exit(EXIT_FAILURE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    auto window = glfwCreateWindow(640, 480, "Simple example", NULL, NULL);
+    auto window = glfwCreateWindow(1280, 720, "Simple example", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -108,9 +113,15 @@ int main(void)
 #endif
     glfwSwapInterval(1);
     printf("%s\n", glGetString(GL_VERSION));
-#ifdef USE_LEGACY_OPENGL
-    printf("Use Legacy OpenGL (fixed function pipeline)\n");
-#else
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 300 es");
+    ImGui::StyleColorsClassic();
+
+    glEnable(GL_CULL_FACE);
+
     printf("Use Modern OpenGL (with shaders)\n");
     // NOTE: OpenGL error checks have been omitted for brevity
     GLuint vertex_buffer;
@@ -143,6 +154,8 @@ int main(void)
                           sizeof(vertices[0]), (void *)(sizeof(float) * 2));
 #endif
 
+static bool showDemo = false;
+
     loop = [&] {
         float ratio;
         int width, height;
@@ -158,8 +171,24 @@ int main(void)
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        
+        ImGui::Begin("Example");
+        if (ImGui::Button("Show/Hide ImGui demo"))
+        showDemo = !showDemo;
+        ImGui::End();
+        if (showDemo)
+        ImGui::ShowDemoWindow(&showDemo);
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         glfwSwapBuffers(window);
         glfwPollEvents();
+
     };
 
 #ifdef __EMSCRIPTEN__
@@ -168,6 +197,10 @@ int main(void)
     while (!glfwWindowShouldClose(window))
         main_loop();
 #endif
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     glfwDestroyWindow(window);
     glfwTerminate();
