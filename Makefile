@@ -41,7 +41,7 @@ CFLAGS = $(CXXFLAGS)
 else ifeq (${BUILD_TARGET},linux)
 SOURCES += /usr/share/glad/glad.c
 CXXFLAGS = -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -g -Wall -Wformat -I/usr/include/glad -DIMGUI_IMPL_OPENGL_LOADER_GLAD `pkg-config --cflags glfw3`
-LIBS = -lglfw3 `pkg-config --static --libs glfw3`
+LIBS = -lGL `pkg-config --static --libs glfw3`
 CFLAGS = $(CXXFLAGS)
 endif
 

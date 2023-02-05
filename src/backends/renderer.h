@@ -23,7 +23,7 @@ namespace NAC
 
 			void BeginScene();
 			// void EndScene();
-			void drawCircle();
+			void Render(GLFWwindow* window);
 			// // float RenderText(const std::string& text, const ImVec2& position, float size, uint32_t color, bool center = false);
 			// void RenderLine(const ImVec2& from, const ImVec2& to, uint32_t color, float thickness = 1.0f);
 			// void RenderCircle(const ImVec2& position, float radius, uint32_t color, float thickness = 1.0f, uint32_t segments = 16);

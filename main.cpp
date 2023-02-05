@@ -160,11 +160,9 @@ int main(void)
         
         g_sRenderer->BeginScene();
 
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        glfwSwapBuffers(window);
         glfwPollEvents();
+
+        g_sRenderer->Render(window);
 
     };
 
