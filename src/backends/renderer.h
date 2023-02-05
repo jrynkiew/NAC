@@ -1,26 +1,6 @@
 #pragma once
 
 #include "imgui.h"
-#if defined(__EMSCRIPTEN__)
-// #include "imgui_impl_sdl.h"
-#include <emscripten.h>
-// #include <SDL.h>
-// #include <SDL_opengles2.h>
-#else
-#include "imgui_impl_glfw.h"
-#endif
-#include "imgui_impl_opengl3.h"
-#include <stdio.h>
-
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <GLES2/gl2.h>
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
-#include <GL/gl3w.h>            // Initialize with gl3wInit()
-#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
-#include <glad/glad.h>          // Initialize with gladLoadGL()
-#endif
-#include <math.h>
-
 
 namespace NAC
 {

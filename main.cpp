@@ -17,6 +17,7 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <renderer.h>
 #include <GLFW/glfw3.h>
 #include "linmath.h"
 #include <stdlib.h>
@@ -152,7 +153,6 @@ int main(void)
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(vertices[0]), (void *)(sizeof(float) * 2));
-#endif
 
 static bool showDemo = false;
 
@@ -176,6 +176,8 @@ static bool showDemo = false;
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         
+        g_sRenderer->BeginScene();
+
         ImGui::Begin("Example");
         if (ImGui::Button("Show/Hide ImGui demo"))
         showDemo = !showDemo;
