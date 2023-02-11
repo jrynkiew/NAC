@@ -24,7 +24,9 @@ Linux host:
 ```./install.sh``` [^1] [^2] [^3] [^4]
 
 ## Build
-Once you have set up Jenkins, connected all nodes to your Jenkins server, and configured your pipeline, all you need to do is run the Jeknins pipeline to build the solution. 
+Once you have set up Jenkins, connect all nodes to your Jenkins server. Configure your pipelines accordingly, then all you need to do is run the Jeknins pipeline to build the solution.
+
+After initial installations, execute command `docker exec -it jrpc-[container]-builder /bin/bash`, so that's `docker exec -it jrpc-windows-builder /bin/bash` for example.
 
 The output exe will be in the root solution directory, and the generated build files will be in the generated folder
 
@@ -39,7 +41,11 @@ Please follow the appendixes for instructions and the below attached pictures fo
 
 ![Jenkins-1](https://user-images.githubusercontent.com/63042547/215334781-b5242cce-cbbc-413f-a691-04715b5605a0.png)
 
+![Untitled1](https://user-images.githubusercontent.com/63042547/218255931-f40119cf-e031-4813-a7e3-75a952cd96fa.png)
+
 ![Jenkins-2](https://user-images.githubusercontent.com/63042547/215334790-718e5c88-7bfa-4496-99e3-1604fbd4085c.png)
+
+![Untitled1](https://user-images.githubusercontent.com/63042547/218256137-a0d6e337-0f74-47db-8690-c505ab747f87.png)
 
 ![Jenkins-3](https://user-images.githubusercontent.com/63042547/215335257-569400c7-4105-413b-bcff-3fad2398df62.png)
 
