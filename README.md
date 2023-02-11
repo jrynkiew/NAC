@@ -28,7 +28,7 @@ Once you have set up Jenkins, connect all nodes to your Jenkins server. Configur
 
 After initial installations, execute command `docker exec -it jrpc-[container]-builder /bin/bash`, so that's `docker exec -it jrpc-windows-builder /bin/bash` for example.
 
-The output exe will be in the root solution directory, and the generated build files will be in the generated folder
+The output exe will be in the generated folder, for each build node name. So a Jenkins node called windows will build it's output here - C:\Users\jrynk\Code\NAC\generated\windows solution directory, where `jrynk` is my username, you should pass your Windows User Name.  and the generated build files will be in the generated folder
 
 ## Extra Info
 Please follow the appendixes for instructions and the below attached pictures for additional assistance.
