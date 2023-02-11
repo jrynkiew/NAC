@@ -45,10 +45,9 @@ Please follow the appendixes for instructions and the below attached pictures fo
 
 ![Jenkins-2](https://user-images.githubusercontent.com/63042547/215334790-718e5c88-7bfa-4496-99e3-1604fbd4085c.png)
 
-![Untitled1](https://user-images.githubusercontent.com/63042547/218256137-a0d6e337-0f74-47db-8690-c505ab747f87.png)
+![Untitled3](https://user-images.githubusercontent.com/63042547/218258526-bbb3aa19-44e7-498d-b377-d1ffc0a8eb3e.png)
 
-![Jenkins-3](https://user-images.githubusercontent.com/63042547/215335257-569400c7-4105-413b-bcff-3fad2398df62.png)
-
+![Untitled1](https://user-images.githubusercontent.com/63042547/218257995-c7c4c574-d116-4c96-a74e-1fc92f539a15.png)
 
 [^2]: After first initial run of install.sh, you will need to log in to Jenkins, and set up the admin password. During the initial installation, choose "Install Recommended Plugins", and make sure to set the address of the Jenkins server to either "server" or "jenkins", like `http://jenkins:8080/` 
 
