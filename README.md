@@ -18,6 +18,9 @@ You will get Linux x64, Windows x32, and Emscripten Web executables as a result 
 - WSL2 Linux Containers or Linux Ubuntu (or similar)
 
 ## Run 
+Windows host:
+```sh .\install.sh``` 
+Linux host:
 ```./install.sh``` [^1] [^2] [^3] [^4]
 
 ## Build
