@@ -5,7 +5,7 @@
 banner
 
 # Launch Build
-docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml build --parallel
+docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml build
 
 mkdir -p $jrpc_beta_v2/build/jenkins/data
 
@@ -25,7 +25,7 @@ printf " ${green}done${reset}
 # If it's empty, it means that it's not the first time Jenkins has been started, 
 # in which case we don't show the startup sequence
 if [ ! -s "$jrpc_beta_v2/build/jenkins/data/secrets/initialAdminPassword" ]; then
-    docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml up jrpc-windows-builder jrpc-web-builder jrpc-linux-builder
+    docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml up jrpc-windows-builder jrpc-web-builder jrpc-linux-builder jrpc-windows64-builder
 else
 
 echo "
@@ -57,7 +57,7 @@ read -p "When you have completed the Jenkins server setup, press Enter" CONTINUE
 
 case $CONTINUE in
     *) # Build IoTeX Full Node
-    docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml up jrpc-windows-builder jrpc-web-builder jrpc-linux-builder 
+    docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml up jrpc-windows-builder jrpc-web-builder jrpc-linux-builder jrpc-windows64-builder
     exit ;;
 esac
 done

@@ -10,7 +10,7 @@ pipeline{
         BUILD='build.sh'
     }
     stages{
-        stage("Windows"){
+        stage("Windows x32"){
             agent { label 'windows' } 
             steps{
                 script{
@@ -19,7 +19,7 @@ pipeline{
                 }
             }
         }
-        stage("Linux"){
+        stage("Linux x64"){
             agent { label 'linux' } 
             steps{
                 script{
@@ -32,6 +32,15 @@ pipeline{
             steps{
                 script{
                     sh '${BUILD_PATH}/${BUILD}'
+                }
+            }
+        }
+        stage("Windows x64"){
+            agent { label 'windows' } 
+            steps{
+                script{
+                    sh '${BUILD_PATH}/${BUILD}'
+                    // sh '${TESTS_PATH}/${GLFW_TEST}'
                 }
             }
         }
