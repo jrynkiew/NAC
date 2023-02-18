@@ -36,7 +36,7 @@ pipeline{
             }
         }
         stage("Windows x64"){
-            agent { label 'windows' } 
+            agent { label 'windows64' } 
             steps{
                 script{
                     sh '${BUILD_PATH}/${BUILD}'

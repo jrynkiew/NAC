@@ -46,7 +46,7 @@ else ifeq (${BUILD_TARGET},windows64)
 SOURCES += ${MINGW}/share/glad/glad.c
 CXXFLAGS = -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -g -Wall -Wformat -I${MINGW}/include/ -DIMGUI_IMPL_OPENGL_LOADER_GLAD `pkg-config --cflags glfw3`
 CXXFLAGS += -I/usr/local/x86_64-w64-mingw32/include
-LIBS = -lglfw3 -lopengl64 -limm32 `pkg-config --static --libs glfw3`
+LIBS = -lglfw3 -lopengl32 -limm32 `pkg-config --static --libs glfw3`
 CFLAGS = $(CXXFLAGS)
 
 else ifeq (${BUILD_TARGET},linux)
