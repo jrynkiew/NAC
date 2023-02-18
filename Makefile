@@ -7,6 +7,10 @@ else ifeq (${BUILD_TARGET},windows)
 OUT = generated/windows
 CXX = i686-w64-mingw32-g++
 EXE = example_glfw_opengl3
+else ifeq (${BUILD_TARGET},windows64)
+OUT = generated/windows64
+CXX = x86_64-w64-mingw32-g++
+EXE = example_glfw_opengl3
 else ifeq (${BUILD_TARGET},linux)
 OUT = generated/linux
 CXX = g++
@@ -32,6 +36,13 @@ LIBS += $(EMS)
 LDFLAGS += --shell-file shell_minimal.html
 
 else ifeq (${BUILD_TARGET},windows)
+SOURCES += ${MINGW}/share/glad/glad.c
+CXXFLAGS = -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -g -Wall -Wformat -I${MINGW}/include/ -DIMGUI_IMPL_OPENGL_LOADER_GLAD `pkg-config --cflags glfw3`
+CXXFLAGS += -I/usr/local/x86_64-w64-mingw32/include
+LIBS = -lglfw3 -lopengl32 -limm32 `pkg-config --static --libs glfw3`
+CFLAGS = $(CXXFLAGS)
+
+else ifeq (${BUILD_TARGET},windows64)
 SOURCES += ${MINGW}/share/glad/glad.c
 CXXFLAGS = -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -g -Wall -Wformat -I${MINGW}/include/ -DIMGUI_IMPL_OPENGL_LOADER_GLAD `pkg-config --cflags glfw3`
 CXXFLAGS += -I/usr/local/x86_64-w64-mingw32/include
@@ -67,6 +78,9 @@ clean:
 
 # GL Loader compilation for Windows and Linux (Emscripten has it's own loader)
 ifeq (${BUILD_TARGET},windows)
+$(OUT)/%.o:${MINGW}/share/glad/%.c
+	$(CXX) $(CFLAGS) -c -o $@ $<
+else ifeq (${BUILD_TARGET},windows64)
 $(OUT)/%.o:${MINGW}/share/glad/%.c
 	$(CXX) $(CFLAGS) -c -o $@ $<
 else ifeq (${BUILD_TARGET},linux)
