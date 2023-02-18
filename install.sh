@@ -5,7 +5,7 @@
 banner
 
 # Launch Build
-docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml build --parallel
+docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml build
 
 mkdir -p $jrpc_beta_v2/build/jenkins/data
 

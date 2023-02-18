@@ -2,9 +2,67 @@
 
 namespace NAC
 {
+	void Renderer::error_callback(int error, const char *description)
+	{
+		fprintf(stderr, "Error: %s\n", description);
+	}
+
+	void Renderer::check_error(GLuint shader)
+	{
+		GLint result;
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+		if (result == GL_FALSE)
+		{
+			GLint log_length;
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
+			std::vector<GLchar> log(log_length);
+
+			GLsizei length;
+			glGetShaderInfoLog(shader, log.size(), &length, log.data());
+
+			this->error_callback(0, log.data());
+		}
+	}
+
 	Renderer* Renderer::m_pInstance;
 
-	
+	const char* Renderer::vertex_shader_text =
+		"uniform mat4 MVP;\n"
+		"attribute vec3 vCol;\n"
+		"attribute vec2 vPos;\n"
+		"varying vec3 color;\n"
+		"void main()\n"
+		"{\n"
+		"    gl_Position = MVP * vec4(vPos, 0.0, 0.7);\n"
+		"    color = vCol;\n"
+		"}\n";
+
+	#ifdef __EMSCRIPTEN__
+	const char* Renderer::fragment_shader_text =
+		"precision mediump float;\n"
+		"varying vec3 color;\n"
+		"void main()\n"
+		"{\n"
+		"    gl_FragColor = vec4(color, 1.0);\n"
+		"}\n";
+	#else
+	const char* Renderer::fragment_shader_text =
+		"varying vec3 color;\n"
+		"void main()\n"
+		"{\n"
+		"    gl_FragColor = vec4(color, 1.0);\n"
+		"}\n";
+	#endif
+
+	const char* Renderer::GetFragmentShaderText()
+	{
+		return fragment_shader_text;
+	}
+
+	const char* Renderer::GetVertexShaderText()
+	{
+		return vertex_shader_text;
+	}
 
 	Renderer::Renderer()
 	{
@@ -42,9 +100,18 @@ namespace NAC
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 		#endif
+
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
-		ImGui_ImplOpenGL3_Init("#version 300 es");
+
+		#if defined(__EMSCRIPTEN__)
+			ImGui_ImplOpenGL3_Init("#version 300 es");
+		#else
+			ImGui_ImplOpenGL3_Init("#version 420 core");
+		#endif
+
 		ImGui::StyleColorsDark();
+
+    	glEnable(GL_CULL_FACE);
 	}
 
 	void Renderer::Render(GLFWwindow* window)
@@ -89,9 +156,6 @@ namespace NAC
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
         {
-            static float f = 0.0f;
-            static int counter = 0;
-
             ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
             ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
