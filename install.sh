@@ -67,3 +67,8 @@ fi
 
 # Exit Docker
 docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml down
+
+
+# investigate http://localhost:8080/configuration-as-code/reference#ComputerLauncher-command to add nodes and ssh into them after Jenkins initialization
+# script needs to be added to configuration as a service on casc.yaml in Jenkins build folder, then after Jenkins initialization, wait for nodes to startup
+# then ssh into them and connect

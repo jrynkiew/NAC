@@ -300,3 +300,5 @@ RUN set -ex \
     && apt-get clean
 
 WORKDIR /build/jenkins-scripts/
+
+EXPOSE 22

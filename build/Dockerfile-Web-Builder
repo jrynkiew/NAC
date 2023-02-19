@@ -68,3 +68,5 @@ RUN set -ex \
     && rm -r cmake-${CMAKE_VERSION}
     
 WORKDIR /build/jenkins-scripts/
+
+EXPOSE 22

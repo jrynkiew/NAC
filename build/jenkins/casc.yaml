@@ -1,0 +1,150 @@
+x-jenkins-node: &jenkins_node_anchor
+  remoteFS: "/build/jenkins"
+  launcher:
+    jnlp:
+      workDirSettings:
+        disabled: true
+        failIfWorkDirIsMissing: false
+        internalDir: "remoting"
+        workDirPath: "/build"
+
+x-jenkins-node-ssh-launcher-config: &jenkins-node-ssh-launcher-config-anchor
+  port: 22
+  credentialsId: test
+  launchTimeoutSeconds: 60
+  maxNumRetries: 3
+  retryWaitTime: 30
+  sshHostKeyVerificationStrategy:
+    manuallyTrustedKeyVerificationStrategy:
+      requireInitialManualTrust: false
+
+jenkins:
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+       - id: ${JENKINS_ADMIN_ID}
+         password: ${JENKINS_ADMIN_PASSWORD}
+
+  authorizationStrategy:
+    globalMatrix:
+      permissions:
+        - "Overall/Administer:admin"
+        - "Overall/Read:authenticated"
+  remotingSecurity:
+      enabled: true
+
+  nodes:
+    - permanent:
+        name: "windows"
+        launcher:
+          SSHLauncher:
+            host: "windows"
+            <<: *jenkins-node-ssh-launcher-config-anchor
+        <<: *jenkins_node_anchor
+    - permanent:
+        name: "windows64"
+        launcher:
+          SSHLauncher:
+            host: "windows64"
+            <<: *jenkins-node-ssh-launcher-config-anchor
+        <<: *jenkins_node_anchor
+    - permanent:
+        name: "web"
+        launcher:
+          SSHLauncher:
+            host: "web"
+            <<: *jenkins-node-ssh-launcher-config-anchor
+        <<: *jenkins_node_anchor
+    - permanent:
+        name: "linux"
+        launcher:
+          SSHLauncher:
+            host: "linux"
+            <<: *jenkins-node-ssh-launcher-config-anchor
+        <<: *jenkins_node_anchor
+
+
+security:
+  queueItemAuthenticator:
+    authenticators:
+    - global:
+        strategy: triggeringUsersAuthorizationStrategy
+unclassified:
+  location:
+    url: http://jenkins:8080/
+
+jobs:
+  - script: >
+      folder('NAC')
+  - script: >
+      pipelineJob('NAC/buildAll') {
+        definition {
+          cps {
+            script("""\
+              pipeline{
+                agent none
+                environment{
+                  
+                  SDL2_TEST='test-sdl2/test-sdl2.sh'
+                  GLFW_TEST='test-glfw/test-glfw.sh'
+                  
+                  BUILD='build.sh'
+                }
+                stages{
+                  stage("Windows x32"){
+                    agent { label 'windows' } 
+                    steps{
+                      script{
+                        sh '${BUILD_PATH}/${BUILD}'
+                        // sh '${TESTS_PATH}/${GLFW_TEST}'
+                      }
+                    }
+                  }
+                  stage("Linux x64"){
+                    agent { label 'linux' } 
+                    steps{
+                      script{
+                        sh '${BUILD_PATH}/${BUILD}'
+                      }
+                    }
+                  }
+                  stage("Web"){
+                    agent { label 'web' }
+                    steps{
+                      script{
+                        sh '${BUILD_PATH}/${BUILD}'
+                      }
+                    }
+                  }
+                  stage("Windows x64"){
+                    agent { label 'windows64' } 
+                    steps{
+                      script{
+                        sh '${BUILD_PATH}/${BUILD}'
+                        // sh '${TESTS_PATH}/${GLFW_TEST}'
+                      }
+                    }
+                  }
+                }
+              }""".stripIndent())
+          }
+        }
+      }
+
+# jobs:
+#   - script: >
+#       job('Job_DSL_Seed') {
+#         scm {
+#           git {
+#             remote {
+#               url 'ssh://git.example.com/project/jenkins-jobs.git'
+#             }
+#           }
+#         }
+#         steps {
+#           jobDsl {
+#             targets 'jobs/**/*.groovy'
+#           }
+#         }
+#       }

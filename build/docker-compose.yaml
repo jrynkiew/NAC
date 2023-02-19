@@ -6,8 +6,8 @@ services:
     #Uncomment this line to use a pre-built container If you do so, comment out the "build" section
     # image: jrpc1/nac-linux-builder:latest
     build: 
-        context: ./
-        dockerfile: Dockerfile-Linux-x64-Builder
+      context: ./
+      dockerfile: Dockerfile-Linux-x64-Builder
     restart: "always"
     links:
       - "jenkins:server"
@@ -30,8 +30,8 @@ services:
     #Uncomment this line to use a pre-built container If you do so, comment out the "build" section
     # image: jrpc1/nac-windows-builder:latest
     build: 
-        context: ./
-        dockerfile: Dockerfile-Windows-x32-Builder
+      context: ./
+      dockerfile: Dockerfile-Windows-x32-Builder
     restart: "always"
     links:
       - "jenkins:server"
@@ -51,10 +51,10 @@ services:
   jrpc-windows64-builder:
     container_name: jrpc-windows64-builder
     #Uncomment this line to use a pre-built container If you do so, comment out the "build" section
-    # image: jrpc1/nac-windows-builder:latest
+    # image: jrpc1/nac-windows64-builder:latest
     build: 
-        context: ./
-        dockerfile: Dockerfile-Windows-x64-Builder
+      context: ./
+      dockerfile: Dockerfile-Windows-x64-Builder
     restart: "always"
     links:
       - "jenkins:server"
@@ -76,8 +76,8 @@ services:
     #Uncomment this line to use a pre-built container If you do so, comment out the "build" section
     # image: jrpc1/nac-web-builder:latest
     build: 
-        context: ./
-        dockerfile: Dockerfile-Web-Builder
+      context: ./
+      dockerfile: Dockerfile-Web-Builder
     links:
       - "jenkins:server"
     volumes:
@@ -94,12 +94,25 @@ services:
     command: "/build/jenkins-scripts/start-agent.sh"
 
   jenkins:
-    image: jenkins/jenkins:lts
+    #Uncomment this line to use a pre-built container If you do so, comment out the "build" section
+    # image: jrpc1/nac-jenkins:latest
+    build: 
+      context: ./
+      dockerfile: Dockerfile-Jenkins
+    dns:
+      - 8.8.8.8
     ports:
       - "8080:8080"
       - "50000:50000"
     volumes:
       - "$jrpc_beta_v2/build/jenkins/data:/var/jenkins_home"
+      - "$jrpc_beta_v2/build/jenkins/casc.yaml:/var/jenkins_home/casc.yaml"
+    environment:
+      - JENKINS_ADMIN_ID=admin
+      - JENKINS_ADMIN_PASSWORD=admin
+      - TESTS_PATH=/build/tests
+      - BUILD_PATH=/src/build
+      - BUILD=build.sh
     networks:
       - jenkins_network
 
