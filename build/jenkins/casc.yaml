@@ -7,6 +7,13 @@ x-jenkins-node: &jenkins_node_anchor
         failIfWorkDirIsMissing: false
         internalDir: "remoting"
         workDirPath: "/build"
+  nodeProperties:
+      - authorizationMatrix:
+          inheritanceStrategy: "inheritingGlobal"
+          permissions:
+          - "GROUP:Agent/Disconnect:authenticated"
+          - "GROUP:Agent/Build:authenticated"
+          - "USER:Agent/Build:anonymous"
 
 x-jenkins-node-ssh-launcher-config: &jenkins-node-ssh-launcher-config-anchor
   port: 22
@@ -76,7 +83,21 @@ unclassified:
 
 jobs:
   - script: >
-      folder('NAC')
+      folder('NAC') {
+        properties {
+          authorizationMatrix {
+            inheritanceStrategy {
+              nonInheriting()
+            }
+            permissions([
+              'GROUP:Job/Build:authenticated',
+              'GROUP:Job/Configure:authenticated',
+              'GROUP:Job/Delete:authenticated',
+              'GROUP:Job/Read:authenticated',
+            ])
+          }
+        }
+      }
   - script: >
       pipelineJob('NAC/buildAll') {
         definition {
@@ -85,11 +106,7 @@ jobs:
               pipeline{
                 agent none
                 environment{
-                  
-                  SDL2_TEST='test-sdl2/test-sdl2.sh'
-                  GLFW_TEST='test-glfw/test-glfw.sh'
-                  
-                  BUILD='build.sh'
+                  TEST='test'
                 }
                 stages{
                   stage("Windows x32"){

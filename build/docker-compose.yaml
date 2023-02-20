@@ -111,6 +111,8 @@ services:
       - JENKINS_ADMIN_ID=admin
       - JENKINS_ADMIN_PASSWORD=admin
       - TESTS_PATH=/build/tests
+      - SDL2_TEST=test-sdl2/test.sh
+      - GLFW_TEST=test-glfw/test.sh
       - BUILD_PATH=/src/build
       - BUILD=build.sh
     networks:
