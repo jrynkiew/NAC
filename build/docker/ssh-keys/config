@@ -1,0 +1,4 @@
+Host *
+    User nac
+    StrictHostKeyChecking no
+    IdentityFile /keys/id_ed25519.pub

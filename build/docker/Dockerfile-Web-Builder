@@ -32,6 +32,7 @@ RUN set -ex \
         default-jre \
         libglfw3-dev \
         jq \
+        openssh-server \
     \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz -O - | tar -xz \
     && wget -q https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.tar.gz -O - | tar -xz \
@@ -66,7 +67,27 @@ RUN set -ex \
     \
     && rm -r SDL2-${SDL_VERSION} \
     && rm -r cmake-${CMAKE_VERSION}
-    
-WORKDIR /build/jenkins-scripts/
+
+#  SSH Server Configuration
+
+RUN useradd -rm -d /home/nac/ -s /bin/bash -g root -G sudo -u 1001 nac
+RUN mkdir -p /run/sshd
+USER nac
+WORKDIR /home/nac
+
+RUN mkdir -p /home/nac/.ssh/ && \
+    chmod 0700 /home/nac/.ssh  && \
+    touch /home/nac/.ssh/authorized_keys && \
+    chmod 600 /home/nac/.ssh/authorized_keys
+
+COPY ./ssh-keys/ /keys/
+RUN cat /keys/id_ed25519.pub >> /home/nac/.ssh/authorized_keys
+RUN cat /keys/config >> /home/nac/.ssh/config
 
 EXPOSE 22
+
+USER root
+RUN chmod 600 /keys/* 
+# Enter Build Directory
+
+WORKDIR /scripts/

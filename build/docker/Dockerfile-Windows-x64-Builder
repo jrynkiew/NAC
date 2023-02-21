@@ -1,8 +1,8 @@
 FROM ubuntu:22.04
 
-WORKDIR /mnt
+WORKDIR /build
 
-ENV MINGW=/mingw
+ENV MINGW=/mingw64
 
 ARG PKG_CONFIG_VERSION=0.29.2
 ARG CMAKE_VERSION=3.24.1
@@ -64,6 +64,7 @@ RUN set -ex \
         default-jre \
         jq \
         curl \
+        openssh-server \
     \ 
     && wget -q https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz -O - | tar -xz \
@@ -111,7 +112,7 @@ RUN set -ex \
     && cd binutils-${BINUTILS_VERSION} \
     && ./configure \
         --prefix=/usr/local/ \
-        --target=i686-w64-mingw32 \
+        --target=x86_64-w64-mingw32 \
         --disable-shared \
         --enable-static \
         --disable-lto \
@@ -127,8 +128,8 @@ RUN set -ex \
     && mkdir mingw-w64 \
     && cd mingw-w64 \
     && ../mingw-w64-v${MINGW_VERSION}/mingw-w64-headers/configure \
-        --prefix=/usr/local/i686-w64-mingw32 \
-        --host=i686-w64-mingw32 \
+        --prefix=/usr/local/x86_64-w64-mingw32 \
+        --host=x86_64-w64-mingw32 \
         --enable-sdk=all \
     && make install \
     && cd .. \
@@ -137,7 +138,7 @@ RUN set -ex \
     && cd gcc \
     && ../gcc-${GCC_VERSION}/configure \
         --prefix=/usr/local \
-        --target=i686-w64-mingw32 \
+        --target=x86_64-w64-mingw32 \
         --enable-languages=c,c++ \
         --disable-shared \
         --enable-static \
@@ -158,19 +159,19 @@ RUN set -ex \
     \
     && cd mingw-w64 \
     && ../mingw-w64-v${MINGW_VERSION}/mingw-w64-crt/configure \
-        --prefix=/usr/local/i686-w64-mingw32 \
-        --host=i686-w64-mingw32 \
+        --prefix=/usr/local/x86_64-w64-mingw32 \
+        --host=x86_64-w64-mingw32 \
         --enable-wildcard \
-        --enable-lib32 \
-        --disable-lib64 \
+        --disable-lib32 \
+        --enable-lib64 \
     && (make || make || make || make) \
     && make install \
     && cd .. \
     \
     && cd mingw-w64 \
     && ../mingw-w64-v${MINGW_VERSION}/mingw-w64-libraries/winpthreads/configure \
-        --prefix=/usr/local/i686-w64-mingw32 \
-        --host=i686-w64-mingw32 \
+        --prefix=/usr/local/x86_64-w64-mingw32 \
+        --host=x86_64-w64-mingw32 \
         --enable-static \
         --disable-shared \
     && make -j`nproc` \
@@ -196,9 +197,9 @@ RUN set -ex \
         -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
         -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
         -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
-        -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc \
-        -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ \
-        -DCMAKE_RC_COMPILER=i686-w64-mingw32-windres \
+        -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
+        -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
+        -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres \
     && make -j`nproc` \
     && make install \
     && cd .. \
@@ -216,15 +217,15 @@ RUN set -ex \
         -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
         -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
         -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
-        -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc \
-        -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ \
-        -DCMAKE_RC_COMPILER=i686-w64-mingw32-windres \
+        -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
+        -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
+        -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres \
     && make -j`nproc` \
     && make install \
     && cd .. \
     \
     && cd glew/auto \
-    && make SYSTEM=linux-mingw32 \
+    && make SYSTEM=linux-mingw64 \
     && cd ../build/cmake \
     && cmake \
         -DCMAKE_SYSTEM_NAME=Windows \
@@ -233,9 +234,9 @@ RUN set -ex \
         -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
         -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
         -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
-        -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc \
-        -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ \
-        -DCMAKE_RC_COMPILER=i686-w64-mingw32-windres \
+        -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
+        -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ \
+        -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres \
     && make -j`nproc` \
     && make install \
     && cd ../../../ \
@@ -299,6 +300,26 @@ RUN set -ex \
     && apt-get autoremove --purge -y \
     && apt-get clean
 
-WORKDIR /build/jenkins-scripts/
+#  SSH Server Configuration
+
+RUN useradd -rm -d /home/nac/ -s /bin/bash -g root -G sudo -u 1001 nac
+RUN mkdir -p /run/sshd
+USER nac
+WORKDIR /home/nac
+
+RUN mkdir -p /home/nac/.ssh/ && \
+    chmod 0700 /home/nac/.ssh  && \
+    touch /home/nac/.ssh/authorized_keys && \
+    chmod 600 /home/nac/.ssh/authorized_keys
+
+COPY ./ssh-keys/ /keys/
+RUN cat /keys/id_ed25519.pub >> /home/nac/.ssh/authorized_keys
+RUN cat /keys/config >> /home/nac/.ssh/config
 
 EXPOSE 22
+
+USER root
+RUN chmod 600 /keys/* 
+# Enter Build Directory
+
+WORKDIR /scripts/

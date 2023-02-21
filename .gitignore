@@ -40,4 +40,7 @@ imgui.ini
 # Jenkins data
 build/jenkins/data
 
+# # Docker data
+# build/docker/ssh-keys
+
 generated/

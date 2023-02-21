@@ -31,6 +31,22 @@ After initial installations, execute command `docker exec -it jrpc-[container]-b
 The output exe will be in the generated folder, for each build node name. So a Jenkins node called windows will build it's output here - C:\Users\jrynk\Code\NAC\generated\windows solution directory, where `jrynk` is my username, you should pass your Windows User Name.  and the generated build files will be in the generated folder
 
 ## Extra Info
+Docker data directory needs to have the ssh-keys directory, with a shared key for all containers, like so
+build/docker/ssh-keys.
+`config` file needs to contain this:
+```Host *
+    User nac
+    StrictHostKeyChecking no
+    IdentityFile /keys/id_ed25519.pub```
+
+`id_ed25519` and `id_ed25519.pub` is needed as keys, and then after `docker exec -it jrpc-windows64-builder /bin/bash` you can do `ssh -i /keys/id_ed25519 nac@jrpc-web-builder` to login using ssh without using any passwords.
+
+So summarizing, the contents should be 
+```build/docker/ssh-keys/
+config
+id_ed25519
+id_ed25519.pub```
+
 Please follow the appendixes for instructions and the below attached pictures for additional assistance.
 
 [^1]: Upon launching the installation script, you will see command line output from Jenkins - you need to find the secret password from Jenkins in it, and go to `http://localhost:8080/` in your browser window to continue the installation. See pictures below:

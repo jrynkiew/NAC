@@ -105,16 +105,12 @@ jobs:
             script("""\
               pipeline{
                 agent none
-                environment{
-                  TEST='test'
-                }
                 stages{
                   stage("Windows x32"){
                     agent { label 'windows' } 
                     steps{
                       script{
-                        sh '${BUILD_PATH}/${BUILD}'
-                        // sh '${TESTS_PATH}/${GLFW_TEST}'
+                        sh '${SCRIPT_PATH}/${BUILD}'
                       }
                     }
                   }
@@ -122,7 +118,7 @@ jobs:
                     agent { label 'linux' } 
                     steps{
                       script{
-                        sh '${BUILD_PATH}/${BUILD}'
+                        sh '${SCRIPT_PATH}/${BUILD}'
                       }
                     }
                   }
@@ -130,7 +126,7 @@ jobs:
                     agent { label 'web' }
                     steps{
                       script{
-                        sh '${BUILD_PATH}/${BUILD}'
+                        sh '${SCRIPT_PATH}/${BUILD}'
                       }
                     }
                   }
@@ -138,8 +134,7 @@ jobs:
                     agent { label 'windows64' } 
                     steps{
                       script{
-                        sh '${BUILD_PATH}/${BUILD}'
-                        // sh '${TESTS_PATH}/${GLFW_TEST}'
+                        sh '${SCRIPT_PATH}/${BUILD}'
                       }
                     }
                   }
