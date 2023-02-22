@@ -14,6 +14,7 @@ ARG NVCC_VERSION=11.7.1
 ARG GLFW_VERSION=3.3.8
 ARG SDL_VERSION=2.26.2
 ARG MESA_VERSION=20.1.2
+ARG GOSU_VERSION=1.7
 
 SHELL [ "/bin/bash", "-c" ]
 
@@ -65,6 +66,12 @@ RUN set -ex \
         jq \
         curl \
         openssh-server \
+    \
+    && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub \
+    && echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /" > /etc/apt/sources.list.d/cuda.list \
+    \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y cuda-nvcc-${NVCC_VERSION:0:2}-${NVCC_VERSION:3:1} \
     \ 
     && wget -q https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz -O - | tar -xz \
@@ -76,6 +83,7 @@ RUN set -ex \
     && wget -q https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.tar.gz -O - | tar -xz \
     && git clone https://github.com/skaslev/gl3w.git gl3w \
     && git clone https://github.com/nigels-com/glew.git \
+    && wget -O /usr/local/bin/gosu https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-$(dpkg --print-architecture) \
     \
     && pip3 install mako \
     \
@@ -241,6 +249,9 @@ RUN set -ex \
     && make install \
     && cd ../../../ \
     \
+    && ln -s /usr/bin/gcc /usr/local/cuda/bin/gcc \
+    && ln -s /usr/bin/g++ /usr/local/cuda/bin/g++ \
+    \
     && rm -r SDL2-${SDL_VERSION} \
     && rm -r gl3w \
     && rm -r glfw-${GLFW_VERSION} \
@@ -286,40 +297,26 @@ RUN set -ex \
         libmpc-dev \
         libisl-dev \
     \
-    && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub \
-    && echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /" > /etc/apt/sources.list.d/cuda.list \
-    && apt-get update \
+    && apt-get clean \
     \
-    && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-        cuda-nvcc-${NVCC_VERSION:0:2}-${NVCC_VERSION:3:1} \
+    && useradd -rm -d /home/nac/ -s /bin/bash -g root -G sudo -u 1001 nac \
     \
-    && ln -s /usr/bin/gcc /usr/local/cuda/bin/gcc \
-    && ln -s /usr/bin/g++ /usr/local/cuda/bin/g++ \
+    && mkdir -p /home/nac/.ssh/ \
+    && mkdir -p /run/sshd \
     \
-    && apt-get remove --purge -y gnupg \
-    && apt-get autoremove --purge -y \
-    && apt-get clean
-
-#  SSH Server Configuration
-
-RUN useradd -rm -d /home/nac/ -s /bin/bash -g root -G sudo -u 1001 nac
-RUN mkdir -p /run/sshd
-USER nac
-WORKDIR /home/nac
-
-RUN mkdir -p /home/nac/.ssh/ && \
-    chmod 0700 /home/nac/.ssh  && \
-    touch /home/nac/.ssh/authorized_keys && \
-    chmod 600 /home/nac/.ssh/authorized_keys
-
-COPY ./ssh-keys/ /keys/
-RUN cat /keys/id_ed25519.pub >> /home/nac/.ssh/authorized_keys
-RUN cat /keys/config >> /home/nac/.ssh/config
-
-EXPOSE 22
-
-USER root
-RUN chmod 600 /keys/* 
-# Enter Build Directory
+    && touch /home/nac/.ssh/authorized_keys \
+    && touch /home/nac/.ssh/id_ed25519.pub \
+    && touch /home/nac/.ssh/id_ed25519 \
+    && touch /home/nac/.ssh/config \
+    \
+    && chmod +x /usr/local/bin/gosu \
+    && chmod -R 600 /home/nac/.ssh/* \
+    && chown -R nac /home/nac/.ssh/     
 
 WORKDIR /scripts/
+
+COPY ./entrypoint.sh /startup/entrypoint.sh
+ENTRYPOINT ["/startup/entrypoint.sh"]
+
+EXPOSE 22
+CMD ["/bin/bash"]

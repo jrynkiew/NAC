@@ -1,12 +1,11 @@
-FROM ubuntu:23.04
+FROM ubuntu:22.04
 
 WORKDIR /build
 
 ARG CMAKE_VERSION=3.24.1
 ARG GLFW_VERSION=3.3.8
 ARG SDL_VERSION=2.26.2
-
-ARG CROSS_PATH=/usr
+ARG GOSU_VERSION=1.7
 
 SHELL [ "/bin/bash", "-c" ]
 
@@ -37,6 +36,7 @@ RUN set -ex \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz -O - | tar -xz \
     && wget -q https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.tar.gz -O - | tar -xz \
     && git clone https://github.com/emscripten-core/emsdk.git emsdk \
+    && wget -O /usr/local/bin/gosu https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-$(dpkg --print-architecture) \
     \
     && cd cmake-${CMAKE_VERSION} \
     && ./configure \
@@ -62,32 +62,30 @@ RUN set -ex \
         git \
         vim \
         libtool \
-    && apt-get autoremove --purge -y \
+    \
     && apt-get clean \
     \
     && rm -r SDL2-${SDL_VERSION} \
-    && rm -r cmake-${CMAKE_VERSION}
-
-#  SSH Server Configuration
-
-RUN useradd -rm -d /home/nac/ -s /bin/bash -g root -G sudo -u 1001 nac
-RUN mkdir -p /run/sshd
-USER nac
-WORKDIR /home/nac
-
-RUN mkdir -p /home/nac/.ssh/ && \
-    chmod 0700 /home/nac/.ssh  && \
-    touch /home/nac/.ssh/authorized_keys && \
-    chmod 600 /home/nac/.ssh/authorized_keys
-
-COPY ./ssh-keys/ /keys/
-RUN cat /keys/id_ed25519.pub >> /home/nac/.ssh/authorized_keys
-RUN cat /keys/config >> /home/nac/.ssh/config
-
-EXPOSE 22
-
-USER root
-RUN chmod 600 /keys/* 
-# Enter Build Directory
+    && rm -r cmake-${CMAKE_VERSION} \
+    \
+    && useradd -rm -d /home/nac/ -s /bin/bash -g root -G sudo -u 1001 nac \
+    \
+    && mkdir -p /home/nac/.ssh/ \
+    && mkdir -p /run/sshd \
+    \
+    && touch /home/nac/.ssh/authorized_keys \
+    && touch /home/nac/.ssh/id_ed25519.pub \
+    && touch /home/nac/.ssh/id_ed25519 \
+    && touch /home/nac/.ssh/config \
+    \
+    && chmod +x /usr/local/bin/gosu \
+    && chmod -R 600 /home/nac/.ssh/* \
+    && chown -R nac /home/nac/.ssh/     
 
 WORKDIR /scripts/
+
+COPY ./entrypoint.sh /startup/entrypoint.sh
+ENTRYPOINT ["/startup/entrypoint.sh"]
+
+EXPOSE 22
+CMD ["/bin/bash"]

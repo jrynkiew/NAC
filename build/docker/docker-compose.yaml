@@ -12,7 +12,7 @@ services:
     volumes:
       - "$jrpc_beta_v2/:/src/"
       - "$jrpc_beta_v2/scripts/:/scripts/"
-      # - "$jrpc_beta_v2/build/ssh-keys/:/keys/"
+      - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
     environment:
       - BUILD_TARGET=linux
       - JENKINS_URL=http://jenkins:8080
@@ -21,7 +21,6 @@ services:
     networks:
       - jenkins_network
     command: "/scripts/start-agent.sh"
-
 
   jrpc-windows-builder:
     container_name: jrpc-windows-builder
@@ -34,7 +33,7 @@ services:
     volumes:
       - "$jrpc_beta_v2/:/src/"
       - "$jrpc_beta_v2/scripts/:/scripts/"
-      # - "$jrpc_beta_v2/build/ssh-keys/:/keys/"
+      - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
     environment:
       - BUILD_TARGET=windows
       - JENKINS_URL=http://jenkins:8080
@@ -55,7 +54,7 @@ services:
     volumes:
       - "$jrpc_beta_v2/:/src/"
       - "$jrpc_beta_v2/scripts/:/scripts/"
-      # - "$jrpc_beta_v2/build/ssh-keys/:/keys/"
+      - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
     environment:
       - BUILD_TARGET=windows64
       - JENKINS_URL=http://jenkins:8080
@@ -75,7 +74,7 @@ services:
     volumes:
       - "$jrpc_beta_v2/:/src/"
       - "$jrpc_beta_v2/scripts/:/scripts/"
-      # - "$jrpc_beta_v2/build/ssh-keys/:/keys/"
+      - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
     environment:
       - BUILD_TARGET=web
       - JENKINS_URL=http://jenkins:8080
@@ -99,7 +98,7 @@ services:
     volumes:
       - "$jrpc_beta_v2/build/jenkins/data:/var/jenkins_home"
       - "$jrpc_beta_v2/build/jenkins/casc.yaml:/var/jenkins_home/casc.yaml"
-      - "$jrpc_beta_v2/build/ssh-keys/:/keys/"
+      - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
     environment:
       - JENKINS_ADMIN_ID=admin
       - JENKINS_ADMIN_PASSWORD=admin
