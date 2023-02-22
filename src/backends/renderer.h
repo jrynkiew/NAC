@@ -1,5 +1,12 @@
 #pragma once
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#else
+#include "glad/glad.h"
+#endif
 #include <functional>
 #include <vector>
 #include <imgui.h>
@@ -33,9 +40,15 @@ namespace NAC
 			// void RenderImage(GLuint * pTexture, const ImVec2& from, const ImVec2& to, uint32_t color);
 			// void RenderImageRounded(GLuint * pTexture, const ImVec2& from, const ImVec2& to, uint32_t color, float rounding = 0.0f, uint32_t roundingCornersFlags = ImDrawCornerFlags_All);
 			static Renderer* GetInstance();
+			static const char* GetFragmentShaderText();
+			static const char* GetVertexShaderText();
+			void check_error(GLuint shader);
+			static void error_callback(int error, const char *description);
 		private:
 			// ImFont* m_pFont;
-			static Renderer* m_pInstance;			
+			static Renderer* m_pInstance;
+			static const char* fragment_shader_text;
+			static const char* vertex_shader_text;		
 	};
 }
 
