@@ -1,0 +1,8 @@
+authorize-project:latest
+configuration-as-code:latest
+matrix-auth:latest
+ssh-slaves:latest
+ssh-credentials
+job-dsl:latest
+cloudbees-folder:latest
+workflow-aggregator:latest

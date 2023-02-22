@@ -5,12 +5,12 @@
 banner
 
 # Launch Build
-docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml build
+docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml build
 
 mkdir -p $jrpc_beta_v2/build/jenkins/data
 
 # Launch Docker
-docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml up -d jenkins
+docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml up -d jenkins
 
 printf "Waiting for Jenkins to be ready ..."
 until [ ${http_code} -eq 403 ]; do
@@ -25,7 +25,7 @@ printf " ${green}done${reset}
 # If it's empty, it means that it's not the first time Jenkins has been started, 
 # in which case we don't show the startup sequence
 if [ ! -s "$jrpc_beta_v2/build/jenkins/data/secrets/initialAdminPassword" ]; then
-    docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml up jrpc-windows-builder jrpc-web-builder jrpc-linux-builder
+    docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml up jrpc-windows-builder jrpc-web-builder jrpc-linux-builder jrpc-windows64-builder
 else
 
 echo "
@@ -57,7 +57,7 @@ read -p "When you have completed the Jenkins server setup, press Enter" CONTINUE
 
 case $CONTINUE in
     *) # Build IoTeX Full Node
-    docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml up jrpc-windows-builder jrpc-web-builder jrpc-linux-builder 
+    docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml up jrpc-windows-builder jrpc-web-builder jrpc-linux-builder jrpc-windows64-builder
     exit ;;
 esac
 done
@@ -66,4 +66,9 @@ fi
 
 
 # Exit Docker
-docker-compose -p jrpc -f $jrpc_beta_v2/build/docker-compose.yaml down
+docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml down
+
+
+# investigate http://localhost:8080/configuration-as-code/reference#ComputerLauncher-command to add nodes and ssh into them after Jenkins initialization
+# script needs to be added to configuration as a service on casc.yaml in Jenkins build folder, then after Jenkins initialization, wait for nodes to startup
+# then ssh into them and connect

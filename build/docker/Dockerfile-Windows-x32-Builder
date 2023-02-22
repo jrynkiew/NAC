@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-WORKDIR /mnt
+WORKDIR /build
 
 ENV MINGW=/mingw
 
@@ -14,6 +14,7 @@ ARG NVCC_VERSION=11.7.1
 ARG GLFW_VERSION=3.3.8
 ARG SDL_VERSION=2.26.2
 ARG MESA_VERSION=20.1.2
+ARG GOSU_VERSION=1.7
 
 SHELL [ "/bin/bash", "-c" ]
 
@@ -64,6 +65,7 @@ RUN set -ex \
         default-jre \
         jq \
         curl \
+        openssh-server \
     \ 
     && wget -q https://pkg-config.freedesktop.org/releases/pkg-config-${PKG_CONFIG_VERSION}.tar.gz -O - | tar -xz \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz -O - | tar -xz \
@@ -75,6 +77,7 @@ RUN set -ex \
     && wget -q https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.tar.gz -O - | tar -xz \
     && git clone https://github.com/skaslev/gl3w.git gl3w \
     && git clone https://github.com/nigels-com/glew.git \
+    && wget -O /usr/local/bin/gosu https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-$(dpkg --print-architecture) \
     \
     && pip3 install mako \
     \
@@ -297,6 +300,26 @@ RUN set -ex \
     \
     && apt-get remove --purge -y gnupg \
     && apt-get autoremove --purge -y \
-    && apt-get clean
+    && apt-get clean \
+    \
+    && useradd -rm -d /home/nac/ -s /bin/bash -g root -G sudo -u 1001 nac \
+    \
+    && mkdir -p /home/nac/.ssh/ \
+    && mkdir -p /run/sshd \
+    \
+    && touch /home/nac/.ssh/authorized_keys \
+    && touch /home/nac/.ssh/id_ed25519.pub \
+    && touch /home/nac/.ssh/id_ed25519 \
+    && touch /home/nac/.ssh/config \
+    \
+    && chmod +x /usr/local/bin/gosu \
+    && chmod -R 600 /home/nac/.ssh/* \
+    && chown -R nac /home/nac/.ssh/     
 
-WORKDIR /build/jenkins-scripts/
+WORKDIR /scripts/
+
+COPY ./entrypoint.sh /startup/entrypoint.sh
+ENTRYPOINT ["/startup/entrypoint.sh"]
+
+EXPOSE 22
+CMD ["/bin/bash"]

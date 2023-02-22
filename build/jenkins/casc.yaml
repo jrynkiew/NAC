@@ -1,0 +1,162 @@
+x-jenkins-node: &jenkins_node_anchor
+  remoteFS: "/build/jenkins"
+  launcher:
+    jnlp:
+      workDirSettings:
+        disabled: true
+        failIfWorkDirIsMissing: false
+        internalDir: "remoting"
+        workDirPath: "/build"
+  nodeProperties:
+      - authorizationMatrix:
+          inheritanceStrategy: "inheritingGlobal"
+          permissions:
+          - "GROUP:Agent/Disconnect:authenticated"
+          - "GROUP:Agent/Build:authenticated"
+          - "USER:Agent/Build:anonymous"
+
+x-jenkins-node-ssh-launcher-config: &jenkins-node-ssh-launcher-config-anchor
+  port: 22
+  credentialsId: test
+  launchTimeoutSeconds: 60
+  maxNumRetries: 3
+  retryWaitTime: 30
+  sshHostKeyVerificationStrategy:
+    manuallyTrustedKeyVerificationStrategy:
+      requireInitialManualTrust: false
+
+jenkins:
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+       - id: ${JENKINS_ADMIN_ID}
+         password: ${JENKINS_ADMIN_PASSWORD}
+
+  authorizationStrategy:
+    globalMatrix:
+      permissions:
+        - "Overall/Administer:admin"
+        - "Overall/Read:authenticated"
+  remotingSecurity:
+      enabled: true
+
+  nodes:
+    - permanent:
+        name: "windows"
+        launcher:
+          SSHLauncher:
+            host: "windows"
+            <<: *jenkins-node-ssh-launcher-config-anchor
+        <<: *jenkins_node_anchor
+    - permanent:
+        name: "windows64"
+        launcher:
+          SSHLauncher:
+            host: "windows64"
+            <<: *jenkins-node-ssh-launcher-config-anchor
+        <<: *jenkins_node_anchor
+    - permanent:
+        name: "web"
+        launcher:
+          SSHLauncher:
+            host: "web"
+            <<: *jenkins-node-ssh-launcher-config-anchor
+        <<: *jenkins_node_anchor
+    - permanent:
+        name: "linux"
+        launcher:
+          SSHLauncher:
+            host: "linux"
+            <<: *jenkins-node-ssh-launcher-config-anchor
+        <<: *jenkins_node_anchor
+
+
+security:
+  queueItemAuthenticator:
+    authenticators:
+    - global:
+        strategy: triggeringUsersAuthorizationStrategy
+unclassified:
+  location:
+    url: http://jenkins:8080/
+
+jobs:
+  - script: >
+      folder('NAC') {
+        properties {
+          authorizationMatrix {
+            inheritanceStrategy {
+              nonInheriting()
+            }
+            permissions([
+              'GROUP:Job/Build:authenticated',
+              'GROUP:Job/Configure:authenticated',
+              'GROUP:Job/Delete:authenticated',
+              'GROUP:Job/Read:authenticated',
+            ])
+          }
+        }
+      }
+  - script: >
+      pipelineJob('NAC/buildAll') {
+        definition {
+          cps {
+            script("""\
+              pipeline{
+                agent none
+                stages{
+                  stage("Windows x32"){
+                    agent { label 'windows' } 
+                    steps{
+                      script{
+                        sh '${SCRIPT_PATH}/${BUILD}'
+                      }
+                    }
+                  }
+                  stage("Linux x64"){
+                    agent { label 'linux' } 
+                    steps{
+                      script{
+                        sh '${SCRIPT_PATH}/${BUILD}'
+                      }
+                    }
+                  }
+                  stage("Web"){
+                    agent { label 'web' }
+                    steps{
+                      script{
+                        sh '${SCRIPT_PATH}/${BUILD}'
+                      }
+                    }
+                  }
+                  stage("Windows x64"){
+                    agent { label 'windows64' } 
+                    steps{
+                      script{
+                        sh '${SCRIPT_PATH}/${BUILD}'
+                      }
+                    }
+                  }
+                }
+              }""".stripIndent())
+          }
+        }
+      }
+
+# jobs:
+#   - script: >
+#       job('Job_DSL_Seed') {
+#         scm {
+#           git {
+#             remote {
+#               url 'ssh://git.example.com/project/jenkins-jobs.git'
+#             }
+#           }
+#         }
+#         steps {
+#           jobDsl {
+#             targets 'jobs/**/*.groovy'
+#           }
+#         }
+#       }
