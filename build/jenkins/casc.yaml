@@ -1,31 +1,78 @@
-x-jenkins-node: &jenkins_node_anchor
-  remoteFS: "/build/jenkins"
-  launcher:
-    jnlp:
-      workDirSettings:
-        disabled: true
-        failIfWorkDirIsMissing: false
-        internalDir: "remoting"
-        workDirPath: "/build"
-  nodeProperties:
-      - authorizationMatrix:
-          inheritanceStrategy: "inheritingGlobal"
-          permissions:
-          - "GROUP:Agent/Disconnect:authenticated"
-          - "GROUP:Agent/Build:authenticated"
-          - "USER:Agent/Build:anonymous"
+# x-jenkins-node: &jenkins_node_anchor
+#   remoteFS: "/build"
+#   launcher:
+#     jnlp:
+#       workDirSettings:
+#         disabled: true
+#         failIfWorkDirIsMissing: false
+#         internalDir: "remoting"
+#         workDirPath: "/build"
+#   nodeProperties:
+#     - authorizationMatrix:
+#         inheritanceStrategy: "inheritingGlobal"
+#         permissions:
+#         - "GROUP:Agent/Disconnect:authenticated"
+#         - "GROUP:Agent/Build:authenticated"
+#         - "USER:Agent/Build:anonymous"
 
-x-jenkins-node-ssh-launcher-config: &jenkins-node-ssh-launcher-config-anchor
-  port: 22
-  credentialsId: test
-  launchTimeoutSeconds: 60
-  maxNumRetries: 3
-  retryWaitTime: 30
-  sshHostKeyVerificationStrategy:
-    manuallyTrustedKeyVerificationStrategy:
-      requireInitialManualTrust: false
+# x-jenkins-node-ssh-launcher-config: &jenkins-node-ssh-launcher-config-anchor
+#   port: 22
+#   credentialsId: nac
+#   launchTimeoutSeconds: 60
+#   maxNumRetries: 3
+#   retryWaitTime: 30
+#   sshHostKeyVerificationStrategy:
+#     manuallyTrustedKeyVerificationStrategy:
+#       requireInitialManualTrust: false
+
+# jenkins:
+#   securityRealm:
+#     local:
+#       allowsSignup: false
+#       users:
+#        - id: ${JENKINS_ADMIN_ID}
+#          password: ${JENKINS_ADMIN_PASSWORD}
+
+#   authorizationStrategy:
+#     globalMatrix:
+#       permissions:
+#         - "Overall/Administer:admin"
+#         - "Overall/Read:authenticated"
+#   remotingSecurity:
+#       enabled: true
+
+#   nodes:
+#     - permanent:
+#         name: "windows"
+#         launcher:
+#           SSHLauncher:
+#             host: "windows"
+#             <<: *jenkins-node-ssh-launcher-config-anchor
+#         <<: *jenkins_node_anchor
+#     - permanent:
+#         name: "windows64"
+#         launcher:
+#           SSHLauncher:
+#             host: "windows64"
+#             <<: *jenkins-node-ssh-launcher-config-anchor
+#         <<: *jenkins_node_anchor
+#     - permanent:
+#         name: "web"
+#         launcher:
+#           SSHLauncher:
+#             host: "web"
+#             <<: *jenkins-node-ssh-launcher-config-anchor
+#         <<: *jenkins_node_anchor
+#     - permanent:
+#         name: "linux"
+#         launcher:
+#           SSHLauncher:
+#             host: "linux"
+#             <<: *jenkins-node-ssh-launcher-config-anchor
+#         <<: *jenkins_node_anchor
 
 jenkins:
+
   securityRealm:
     local:
       allowsSignup: false
@@ -38,48 +85,74 @@ jenkins:
       permissions:
         - "Overall/Administer:admin"
         - "Overall/Read:authenticated"
+
   remotingSecurity:
       enabled: true
 
   nodes:
-    - permanent:
-        name: "windows"
-        launcher:
-          SSHLauncher:
-            host: "windows"
-            <<: *jenkins-node-ssh-launcher-config-anchor
-        <<: *jenkins_node_anchor
-    - permanent:
-        name: "windows64"
-        launcher:
-          SSHLauncher:
-            host: "windows64"
-            <<: *jenkins-node-ssh-launcher-config-anchor
-        <<: *jenkins_node_anchor
-    - permanent:
-        name: "web"
-        launcher:
-          SSHLauncher:
-            host: "web"
-            <<: *jenkins-node-ssh-launcher-config-anchor
-        <<: *jenkins_node_anchor
-    - permanent:
-        name: "linux"
-        launcher:
-          SSHLauncher:
-            host: "linux"
-            <<: *jenkins-node-ssh-launcher-config-anchor
-        <<: *jenkins_node_anchor
+  - permanent:
+      launcher:
+        ssh:
+          credentialsId: "ssh_with_passphrase_provided_via_file"
+          host: "jrpc-linux-builder"
+          port: 22
+          sshHostKeyVerificationStrategy: "nonVerifyingKeyVerificationStrategy"
+      name: "linux"
+      remoteFS: "/build"
+      retentionStrategy: "always"
+  - permanent:
+      launcher:
+        ssh:
+          credentialsId: "ssh_with_passphrase_provided_via_file"
+          host: "jrpc-web-builder"
+          port: 22
+          sshHostKeyVerificationStrategy: "nonVerifyingKeyVerificationStrategy"
+      name: "web"
+      remoteFS: "/build"
+      retentionStrategy: "always"
+  - permanent:
+      launcher:
+        ssh:
+          credentialsId: "ssh_with_passphrase_provided_via_file"
+          host: "jrpc-windows-builder"
+          port: 22
+          sshHostKeyVerificationStrategy: "nonVerifyingKeyVerificationStrategy"
+      name: "windows"
+      remoteFS: "/build"
+      retentionStrategy: "always"
+  - permanent:
+      launcher:
+        ssh:
+          credentialsId: "ssh_with_passphrase_provided_via_file"
+          host: "jrpc-windows64-builder"
+          port: 22
+          sshHostKeyVerificationStrategy: "nonVerifyingKeyVerificationStrategy"
+      name: "windows64"
+      remoteFS: "/build"
+      retentionStrategy: "always"
+  numExecutors: 0
 
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - basicSSHUserPrivateKey:
+              scope: SYSTEM
+              id: ssh_with_passphrase_provided_via_file
+              username: nac
+              description: "SSH with private key file provided"
+              privateKeySource:
+                directEntry:
+                  privateKey: "${readFile:/mnt/secret_keys/id_ed25519}" # Path to file loaded from Environment Variable
 
 security:
-  queueItemAuthenticator:
-    authenticators:
-    - global:
-        strategy: triggeringUsersAuthorizationStrategy
+  scriptApproval:
+    approvedScriptHashes:
+    - "SHA512:adafca9bb0ae348ba6f7a3c3a052eac18d31c12cb078e1bd834def0d8eb3997bcc99c4ed5880c741051731715cd9a4624d1e9176706a55b557cd1955effde4b7"
+    
 unclassified:
   location:
-    url: http://jenkins:8080/
+    url: "http://jenkins:8080/"
 
 jobs:
   - script: >
@@ -110,7 +183,7 @@ jobs:
                     agent { label 'windows' } 
                     steps{
                       script{
-                        sh '${SCRIPT_PATH}/${BUILD}'
+                        sh '${SCRIPT_PATH}/${EXEC}'
                       }
                     }
                   }
@@ -118,7 +191,7 @@ jobs:
                     agent { label 'linux' } 
                     steps{
                       script{
-                        sh '${SCRIPT_PATH}/${BUILD}'
+                        sh '${SCRIPT_PATH}/${EXEC}'
                       }
                     }
                   }
@@ -126,7 +199,7 @@ jobs:
                     agent { label 'web' }
                     steps{
                       script{
-                        sh '${SCRIPT_PATH}/${BUILD}'
+                        sh '${SCRIPT_PATH}/${EXEC}'
                       }
                     }
                   }
@@ -134,7 +207,7 @@ jobs:
                     agent { label 'windows64' } 
                     steps{
                       script{
-                        sh '${SCRIPT_PATH}/${BUILD}'
+                        sh '${SCRIPT_PATH}/${EXEC}'
                       }
                     }
                   }

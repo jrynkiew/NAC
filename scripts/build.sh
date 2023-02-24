@@ -6,5 +6,5 @@ then
 fi
 
 cd /src
-make clean
-make -j`nproc`
+/bin/bash -c "make clean"
+/bin/bash -c "make -j`nproc`"

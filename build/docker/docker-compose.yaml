@@ -15,9 +15,6 @@ services:
       - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
     environment:
       - BUILD_TARGET=linux
-      - JENKINS_URL=http://jenkins:8080
-      - JENKINS_USER=admin
-      - JENKINS_USER_PASS=admin
     networks:
       - jenkins_network
     command: "/scripts/start-agent.sh"
@@ -36,9 +33,6 @@ services:
       - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
     environment:
       - BUILD_TARGET=windows
-      - JENKINS_URL=http://jenkins:8080
-      - JENKINS_USER=admin
-      - JENKINS_USER_PASS=admin
     networks:
       - jenkins_network
     command: "/scripts/start-agent.sh"
@@ -57,9 +51,6 @@ services:
       - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
     environment:
       - BUILD_TARGET=windows64
-      - JENKINS_URL=http://jenkins:8080
-      - JENKINS_USER=admin
-      - JENKINS_USER_PASS=admin
     networks:
       - jenkins_network
     command: "/scripts/start-agent.sh"
@@ -77,9 +68,6 @@ services:
       - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
     environment:
       - BUILD_TARGET=web
-      - JENKINS_URL=http://jenkins:8080
-      - JENKINS_USER=admin
-      - JENKINS_USER_PASS=admin
     networks:
       - jenkins_network
     command: "/scripts/start-agent.sh"
@@ -102,11 +90,9 @@ services:
     environment:
       - JENKINS_ADMIN_ID=admin
       - JENKINS_ADMIN_PASSWORD=admin
-      - TESTS_PATH=/build/tests
-      - SDL2_TEST=test-sdl2/test.sh
-      - GLFW_TEST=test-glfw/test.sh
       - SCRIPT_PATH=/scripts
-      - BUILD=build.sh
+      - BUILD_PATH=/build
+      - EXEC=build.sh
     networks:
       - jenkins_network
 

@@ -8,6 +8,8 @@ ARG SDL_VERSION=2.26.2
 ARG NVCC_VERSION=11.7.1
 ARG GOSU_VERSION=1.7
 
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/bin/java
+
 SHELL [ "/bin/bash", "-c" ]
 
 RUN set -ex \
@@ -181,7 +183,8 @@ RUN set -ex \
     \
     && chmod +x /usr/local/bin/gosu \
     && chmod -R 600 /home/nac/.ssh/* \
-    && chown -R nac /home/nac/.ssh/     
+    && chown -R nac /home/nac/.ssh/ \
+    && chown -R nac /build/
 
 WORKDIR /scripts/
 
