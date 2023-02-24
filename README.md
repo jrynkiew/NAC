@@ -37,7 +37,8 @@ build/docker/ssh-keys.
 ```Host *
     User nac
     StrictHostKeyChecking no
-    IdentityFile /keys/id_ed25519.pub```
+    IdentityFile /keys/id_ed25519.pub
+```
 
 `id_ed25519` and `id_ed25519.pub` is needed as keys, and then after `docker exec -it jrpc-windows64-builder /bin/bash` you can do `ssh -i /keys/id_ed25519 nac@jrpc-web-builder` to login using ssh without using any passwords.
 
@@ -45,7 +46,8 @@ So summarizing, the contents should be
 ```build/docker/ssh-keys/
 config
 id_ed25519
-id_ed25519.pub```
+id_ed25519.pub
+```
 
 Please follow the appendixes for instructions and the below attached pictures for additional assistance.
 
