@@ -10,11 +10,9 @@ services:
       dockerfile: Dockerfile-Linux-x64-Builder
     restart: "always"
     volumes:
-      - "$jrpc_beta_v2/:/src/"
+      - "$jrpc_beta_v2/:/build/project/"
       - "$jrpc_beta_v2/scripts/:/scripts/"
       - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
-    environment:
-      - BUILD_TARGET=linux
     networks:
       - jenkins_network
     command: "/scripts/start-agent.sh"
@@ -28,11 +26,9 @@ services:
       dockerfile: Dockerfile-Windows-x32-Builder
     restart: "always"
     volumes:
-      - "$jrpc_beta_v2/:/src/"
+      - "$jrpc_beta_v2/:/build/project/"
       - "$jrpc_beta_v2/scripts/:/scripts/"
       - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
-    environment:
-      - BUILD_TARGET=windows
     networks:
       - jenkins_network
     command: "/scripts/start-agent.sh"
@@ -46,11 +42,9 @@ services:
       dockerfile: Dockerfile-Windows-x64-Builder
     restart: "always"
     volumes:
-      - "$jrpc_beta_v2/:/src/"
+      - "$jrpc_beta_v2/:/build/project/"
       - "$jrpc_beta_v2/scripts/:/scripts/"
       - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
-    environment:
-      - BUILD_TARGET=windows64
     networks:
       - jenkins_network
     command: "/scripts/start-agent.sh"
@@ -63,11 +57,9 @@ services:
       context: ./
       dockerfile: Dockerfile-Web-Builder
     volumes:
-      - "$jrpc_beta_v2/:/src/"
+      - "$jrpc_beta_v2/:/build/project/"
       - "$jrpc_beta_v2/scripts/:/scripts/"
       - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
-    environment:
-      - BUILD_TARGET=web
     networks:
       - jenkins_network
     command: "/scripts/start-agent.sh"

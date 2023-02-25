@@ -5,6 +5,6 @@ then
     . ./emsdk_env.sh
 fi
 
-cd /src
+cd /build/project/
 /bin/bash -c "make clean"
 /bin/bash -c "make -j`nproc`"

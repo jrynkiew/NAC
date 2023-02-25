@@ -1,0 +1,3 @@
+[submodule "external/vcmi"]
+	path = external/vcmi
+	url = https://github.com/vcmi/vcmi.git

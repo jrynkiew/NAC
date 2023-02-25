@@ -6,11 +6,12 @@
 &nbsp;
 New Age Computing LLC
 <pre>
-NFT platform cross-compiler
+Jenkins + Jenkins SSH Agents + Docker = cross-compiling platform
 </pre>
-This project is designed to streamline testing multi-architecture builds of imgui based projects.
+This project is designed to streamline testing multi-architecture builds of cross-platform projects.
 
-You will get Linux x64, Windows x32, and Emscripten Web executables as a result of a successful build.
+Current support includes C++, C, OpenGL cross platform builds for Windows x32, Windows x64, Web, Linux x64
+You will get Linux, Windows, and Emscripten Web executables as a result of a successful build.
 
 ## Requirements
 - Docker
@@ -24,11 +25,24 @@ Linux host:
 ```./install.sh``` [^1] [^2] [^3] [^4]
 
 ## Build
-Once you have set up Jenkins, connect all nodes to your Jenkins server. Configure your pipelines accordingly, then all you need to do is run the Jeknins pipeline to build the solution.
+execute `sh install.sh` 
 
-After initial installations, execute command `docker exec -it jrpc-[container]-builder /bin/bash`, so that's `docker exec -it jrpc-windows-builder /bin/bash` for example.
+This script will start the Docker stack defined in the docker-compose `build\docker\docker-compose.yaml` script. This script will initialise Jenkins with the `build\jenkins\casc.yaml` Configuration-as-Code configuration file. This file contains the intial DSL Job definition, and SSH Slave agent specification for all the Docker build containers. 
 
-The output exe will be in the generated folder, for each build node name. So a Jenkins node called windows will build it's output here - C:\Users\jrynk\Code\NAC\generated\windows solution directory, where `jrynk` is my username, you should pass your Windows User Name.  and the generated build files will be in the generated folder
+Upon launching Jenkins, the script will then launch each Docker builder, with the entrypoint.sh script contents, which defines the ssh keys and starts the SSH server.
+
+Jenkins slave agents are configured in such a way, that they continuously try to connect to the slave agents, so the moment the SSH server is up on the docker slaves, the Jenkins node will connect using the pre-defined `nac` user, using the private key in the `build\ssh-keys` folder. The SSH servers and connections are configured to be passwordless for the `nac` user between all Containers of the Docker stack.
+
+## Debug
+You can execute command `docker exec -it jrpc-[container]-builder /bin/bash`, so that's `docker exec -it jrpc-windows-builder /bin/bash` for example, to enter into an individual ssh builder agent container.
+
+To test SSH connections between Containers, first open into bash on any given Container.
+ `docker exec -it jrpc-windows64-builder /bin/bash`
+ Now log into the `nac` user, for example `su nac` and `ssh nac@jrpc-web-builder`, or a one liner: `exec /usr/local/bin/gosu nac ssh nac@jrpc-web-builder`
+- `id_ed25519` and `id_ed25519.pub` are the predefined keys. Using them, you login using ssh without using any passwords, but only for the `nac` user.
+
+## Output
+The output exe will be in the generated folder, for each build node name. So the windows builder will build it's output to `NAC\generated\windows`, while  the linux builder will build it's output to `NAC\generated\linux`
 
 ## Extra Info
 Docker data directory needs to have the ssh-keys directory, with a shared key for all containers, like so
@@ -40,8 +54,6 @@ build/docker/ssh-keys.
     IdentityFile /keys/id_ed25519.pub
 ```
 
-`id_ed25519` and `id_ed25519.pub` is needed as keys, and then after `docker exec -it jrpc-windows64-builder /bin/bash` you can do `ssh -i /keys/id_ed25519 nac@jrpc-web-builder` to login using ssh without using any passwords.
-
 So summarizing, the contents should be 
 ```build/docker/ssh-keys/
 config
@@ -51,32 +63,15 @@ id_ed25519.pub
 
 Please follow the appendixes for instructions and the below attached pictures for additional assistance.
 
-[^1]: Upon launching the installation script, you will see command line output from Jenkins - you need to find the secret password from Jenkins in it, and go to `http://localhost:8080/` in your browser window to continue the installation. See pictures below:
+[^1]: you need to set any configuration environmental variables required for your Makefiles, or any other scripts required at build time for that matter, in the Jenkins slave agent specification in `build\jenkins\casc.yaml`
 
-![Jenkins--1](https://user-images.githubusercontent.com/63042547/215334738-74a6aaf4-06f3-4297-a1a9-fd7997e9bfd9.png)
+[^2]: After first initial run of install.sh, you will need to log in to Jenkins. The pre-defined credentials are in the `docker-compose.yaml` file. Defaults are set to `U: admin` `P: admin`
 
-![Jenkins-0](https://user-images.githubusercontent.com/63042547/215334760-34e9f4cf-a1d9-4d36-b7ff-b71f04efcf65.png)
+[^3]: After initial Jenkins installation, if the Agents don't connect to Jenkins, open a command line, and run the command ```docker exec -it jrpc-[container]-builder /bin/bash``` in each of the required containers. Check the ssh connection. If you want, you can create a new Jenkins agent, and connect manually.
+Jenkins agents have a string to execute a java program in their Agent configuration page if they are disconnected. Run this on your Container, for example `docker exec -it jrpc-windows-builder /bin/bash` and paste in the line you see in Jenkins, for example ```java -jar agent.jar -jnlpUrl http://jenkins:8080/manage/computer/Windows%2Dbuilder/jenkins-agent.jnlp -secret 8dc0f6a11068790fcd60d0958fda8f3e3b172637fa35da31bf7dc0f1a9ec7063 -workDir "/build/jenkins/"```
+Execute each of those strings on each of the containers your wish to manually connect.
 
-![Jenkins-1](https://user-images.githubusercontent.com/63042547/215334781-b5242cce-cbbc-413f-a691-04715b5605a0.png)
-
-![Untitled1](https://user-images.githubusercontent.com/63042547/218255931-f40119cf-e031-4813-a7e3-75a952cd96fa.png)
-
-![Jenkins-2](https://user-images.githubusercontent.com/63042547/215334790-718e5c88-7bfa-4496-99e3-1604fbd4085c.png)
-
-![Untitled3](https://user-images.githubusercontent.com/63042547/218258526-bbb3aa19-44e7-498d-b377-d1ffc0a8eb3e.png)
-
-![Untitled1](https://user-images.githubusercontent.com/63042547/218257995-c7c4c574-d116-4c96-a74e-1fc92f539a15.png)
-
-[^2]: After first initial run of install.sh, you will need to log in to Jenkins, and set up the admin password. During the initial installation, choose "Install Recommended Plugins", and make sure to set the address of the Jenkins server to either "server" or "jenkins", like `http://jenkins:8080/` 
-
-[^3]: After initial Jenkins installation, go to the Agents section in Jenkins, and set up new agents, one for each - Web, Linux and Windows.
-Each Node in Jenkins must have the build directory set to `/build/jenkins/`, and an environment variable representing it's destination, for example for jrpc-linux-builder you need to set LINUX_BUILDER=1 as the environmental variable.
-Open three new command lines, and run the command ```docker exec -it jrpc-[container]-builder /bin/bash``` in each of them, where the container can be any of linux, windows, or web.
-After that, Jenkins will give you a string to execute a java program to run on your node. For example ```java -jar agent.jar -jnlpUrl http://jenkins:8080/manage/computer/Linux%2Dbuilder/jenkins-agent.jnlp -secret 8dc0f6a11068790fcd60d0958fda8f3e3b172637fa35da31bf7dc0f1a9ec7063 -workDir "/build/jenkins/"```
-Execute each of those strings on each of the containers.
-
-[^4]: Lastly, create a new pipeline, and copy the contents of build/jenkins/pipeline.groovy into the pipeline section. Note, that you will have to modify the line ```agent { label 'Windows-builder' }``` to correspond to each of your nodes you created, each according to their own label you set.  
-Quit (Ctrl+C) the program end edit build/jenkins/start-agent.sh initialization secret string with the proper one. This is a temporary step, will be fixed in the future.
+[^4]: the default Pipelines are defined in the casc.yaml file. You can create your own at any time. In the future there will be support for at-runtime *.groovy file detection and importing.
 
 <p align="left">
 <img src="https://user-images.githubusercontent.com/63042547/215356555-a29e78c9-8197-462a-8e73-fbaf86af9b1b.gif" width=20% height=20%>

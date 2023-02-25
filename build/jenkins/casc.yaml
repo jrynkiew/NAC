@@ -100,6 +100,11 @@ jenkins:
       name: "linux"
       remoteFS: "/build"
       retentionStrategy: "always"
+      nodeProperties:
+      - envVars:
+          env:
+          - key: "BUILD_TARGET"
+            value: "linux"
   - permanent:
       launcher:
         ssh:
@@ -110,6 +115,11 @@ jenkins:
       name: "web"
       remoteFS: "/build"
       retentionStrategy: "always"
+      nodeProperties:
+      - envVars:
+          env:
+          - key: "BUILD_TARGET"
+            value: "web"
   - permanent:
       launcher:
         ssh:
@@ -120,6 +130,13 @@ jenkins:
       name: "windows"
       remoteFS: "/build"
       retentionStrategy: "always"
+      nodeProperties:
+      - envVars:
+          env:
+          - key: "BUILD_TARGET"
+            value: "windows"
+          - key: "MINGW"
+            value: "/mingw"
   - permanent:
       launcher:
         ssh:
@@ -130,6 +147,13 @@ jenkins:
       name: "windows64"
       remoteFS: "/build"
       retentionStrategy: "always"
+      nodeProperties:
+      - envVars:
+          env:
+          - key: "BUILD_TARGET"
+            value: "windows64"
+          - key: "MINGW"
+            value: "/mingw64"
   numExecutors: 0
 
 credentials:
