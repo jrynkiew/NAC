@@ -13,7 +13,9 @@
 #else
 #include "glad/glad.h"
 #endif
-#include <renderer.h>
+#include <nac.h>
+
+using namespace _NAC;
 
 static const struct
 {
@@ -53,17 +55,6 @@ static const char *fragment_shader_text =
     "}\n";
 #endif
 
-static void error_callback(int error, const char *description)
-{
-    fprintf(stderr, "Error: %s\n", description);
-}
-
-static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-}
-
 std::function<void()> loop;
 void main_loop() { loop(); }
 
@@ -87,27 +78,28 @@ void check_error(GLuint shader)
 int main(void)
 {
     GLint mvp_location, vpos_location, vcol_location;
-    glfwSetErrorCallback(error_callback);
-    if (!glfwInit())
-        exit(EXIT_FAILURE);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    auto window = glfwCreateWindow(1280, 720, "Simple example", NULL, NULL);
-    if (!window)
+
+    //create NAC instance
+    NAC* nac = new NAC();
+
+    //initialize NAC
+    if(!nac->Initialize())
     {
-        glfwTerminate();
+        printf("Error during NAC gui initialization!\n");
+        nac->Shutdown();
         exit(EXIT_FAILURE);
     }
-    glfwSetKeyCallback(window, key_callback);
-    glfwMakeContextCurrent(window);
-#ifdef __EMSCRIPTEN__
-#else
-    gladLoadGL();
-#endif
-    glfwSwapInterval(1);
-    printf("%s\n", glGetString(GL_VERSION));
 
-    g_sRenderer->Initialize(window);
+    //assign pointer to window created during NAC initialization
+    auto window = nac->GetWindow()->GetGLFWwindow();
+    auto renderer = nac->GetRenderer();
+
+    if (!window)
+    {
+        printf("Error during NAC window creation!\n");
+        nac->Shutdown();
+        exit(EXIT_FAILURE);
+    }    
 
     glEnable(GL_CULL_FACE);
 
@@ -158,11 +150,11 @@ int main(void)
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         
-        g_sRenderer->BeginScene();
+        renderer->BeginScene();
 
         glfwPollEvents();
 
-        g_sRenderer->Render(window);
+        renderer->Render(window);
 
     };
 

@@ -1,12 +1,11 @@
 #include "renderer.h"
 
-namespace NAC
-{
-	void Renderer::error_callback(int error, const char *description)
-	{
-		fprintf(stderr, "Error: %s\n", description);
-	}
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+namespace _NAC
+{
 	void Renderer::check_error(GLuint shader)
 	{
 		GLint result;
@@ -24,7 +23,79 @@ namespace NAC
 		}
 	}
 
-	Renderer* Renderer::m_pInstance;
+	void Renderer::main_loop()
+	{
+		Renderer::loop();
+	}
+
+	void Renderer::loop() {
+		// Clear the screen
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Use our shader
+		// glUseProgram(programID);
+
+		// 1rst attribute buffer : vertices
+		glEnableVertexAttribArray(0);
+		// glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glVertexAttribPointer(
+			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+			2,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		// 2nd attribute buffer : colors
+		glEnableVertexAttribArray(1);
+		// glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+		glVertexAttribPointer(
+			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			3,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+
+		// Draw the triangle !
+		glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+
+		// Swap buffers
+		// glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+
+	void Renderer::LoadTexture(const char* path, GLuint* pTexture)
+	{
+		int width, height, channels;
+		unsigned char* data = stbi_load(path, &width, &height, &channels, 0);
+		if (data)
+		{
+			glGenTextures(1, pTexture);
+			glBindTexture(GL_TEXTURE_2D, *pTexture);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			stbi_image_free(data);
+		}
+		else
+		{
+			printf("Failed to load texture\n");
+		}
+	}
+
+	void Renderer::DisplayImage(GLuint * pTexture, const ImVec2& from, const ImVec2& to, uint32_t color) {
+		ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)*pTexture, from, to, ImVec2(0, 1), ImVec2(1, 0), color);
+	}
+
+	Renderer* Renderer::m_pInstance = nullptr;
 
 	const char* Renderer::vertex_shader_text =
 		"uniform mat4 MVP;\n"
@@ -72,6 +143,61 @@ namespace NAC
 	{
 	}
 
+	void Renderer::Shutdown() {
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
+		glfwTerminate();
+	}
+
+	void Renderer::error_callback(int error, const char* description)
+	{
+		fputs(description, stderr);
+	}
+
+	void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+	{
+		glViewport(0, 0, width, height);
+	}
+
+	void Renderer::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+	{
+	}
+
+	void Renderer::cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
+	{
+	}
+
+	void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		if (action == GLFW_PRESS)
+			io.KeysDown[key] = true;
+		if (action == GLFW_RELEASE)
+			io.KeysDown[key] = false;
+		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+			glfwSetWindowShouldClose(window, GLFW_TRUE);
+		// Modifiers are not reliable across systems
+		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
+		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+	}
+
+	void Renderer::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+	{
+	}
+
+	void Renderer::char_callback(GLFWwindow* window, unsigned int c)
+	{
+	}
+
+	//creates a new frame
+    void Renderer::NewFrame()
+    {
+
+    }
+
 	Renderer* Renderer::GetInstance()
 	{
 		if (!m_pInstance)
@@ -80,7 +206,7 @@ namespace NAC
 		return m_pInstance;
 	}
 
-	void Renderer::Initialize(GLFWwindow* window)
+	bool Renderer::Initialize(GLFWwindow* window)
 	{
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -89,21 +215,20 @@ namespace NAC
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 
-		#if defined(__EMSCRIPTEN__)
-		#else
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-    
-		ImGuiStyle& style = ImGui::GetStyle();
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			style.WindowRounding = 0.0f;
-			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-		}
+		#ifndef __EMSCRIPTEN__
+			io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		
+			ImGuiStyle& style = ImGui::GetStyle();
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				style.WindowRounding = 0.0f;
+				style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+			}
 		#endif
 
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 
-		#if defined(__EMSCRIPTEN__)
+		#ifdef __EMSCRIPTEN__
 			ImGui_ImplOpenGL3_Init("#version 300 es");
 		#else
 			ImGui_ImplOpenGL3_Init("#version 420 core");
@@ -112,6 +237,15 @@ namespace NAC
 		ImGui::StyleColorsDark();
 
     	glEnable(GL_CULL_FACE);
+
+		return true;
+	}
+
+	void Renderer::Draw()
+	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 	}
 
 	void Renderer::Render(GLFWwindow* window)
