@@ -18,6 +18,8 @@ You will get Linux, Windows, and Emscripten Web executables as a result of a suc
 - Docker-Compose
 - WSL2 Linux Containers or Linux Ubuntu (or similar)
 
+![Untitled](https://user-images.githubusercontent.com/63042547/221353492-005c38f4-c115-41b6-b35c-56c02939f7e5.png)
+
 ## Run 
 Windows host:
 ```sh .\install.sh``` 
