@@ -1,106 +1,493 @@
-// class that will render the scene using SDL2, SDL2_image, OpenGL, and imgui
+#include "renderer.h"
 
 
-// constructor
-Renderer::Renderer()
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+namespace _NAC
 {
-	// SDL2 window
-	window = nullptr;
-	glContext = nullptr;
-	majorVersion = 3;
-	minorVersion = 3;
-
-	// imgui
-	io = ImGui::GetIO();
-
-	//create a shader program
-	shaderProgram = nullptr;
-
-	//create a mesh
-	mesh = nullptr;
-	mesh2 = nullptr;
-
-	//create a texture
-	texture = nullptr;
-	texture2 = nullptr;
-
-	//create a camera
-	camera = nullptr;
-
-	//create a transform
-	transform = nullptr;
-	transform2 = nullptr;
-}
-
-// destructor
-Renderer::~Renderer()
-{
-	Shutdown();
-}
-
-// initialize the renderer
-bool Renderer::Initialize()
-{
-	// create the window
-	window = SDL_CreateWindow("NAC", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-	if (!window)
+	void Renderer::check_error(GLuint shader)
 	{
-		printf("Error during SDL window creation!\n");
-		return false;
+		GLint result;
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+		if (result == GL_FALSE)
+		{
+			GLint log_length;
+			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
+			std::vector<GLchar> log(log_length);
+
+			GLsizei length;
+			glGetShaderInfoLog(shader, log.size(), &length, log.data());
+
+			this->error_callback(0, log.data());
+		}
 	}
 
-	// create the OpenGL context
-	glContext = SDL_GL_CreateContext(window);
-	if (!glContext)
+	void Renderer::main_loop()
 	{
-		printf("Error during SDL OpenGL context creation!\n");
-		return false;
+		Renderer::loop();
 	}
 
-	// set the OpenGL version
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, majorVersion);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minorVersion);
+	void Renderer::loop() {
+		// Clear the screen
+		glClear(GL_COLOR_BUFFER_BIT);
 
-	// set the OpenGL context to the current one
-	SDL_GL_MakeCurrent(window, glContext);
+		// Use our shader
+		// glUseProgram(programID);
 
-	// initialize GLEW
-	GLenum glewError = glewInit();
-	if (glewError != GLEW_OK)
-	{
-		printf("Error during GLEW initialization: %s\n", glewGetErrorString(glewError));
-		return false;
+		// 1rst attribute buffer : vertices
+		glEnableVertexAttribArray(0);
+		// glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glVertexAttribPointer(
+			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+			2,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		// 2nd attribute buffer : colors
+		glEnableVertexAttribArray(1);
+		// glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+		glVertexAttribPointer(
+			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			3,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+
+		// Draw the triangle !
+		glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+
+		// Swap buffers
+		// glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 
-	// enable depth testing
-	glEnable(GL_DEPTH_TEST);
+	void Renderer::LoadTexture(const char* path, GLuint* pTexture)
+	{
+		int width, height, channels;
+		unsigned char* data = stbi_load(path, &width, &height, &channels, 0);
+		if (data)
+		{
+			glGenTextures(1, pTexture);
+			glBindTexture(GL_TEXTURE_2D, *pTexture);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			stbi_image_free(data);
+		}
+		else
+		{
+			printf("Failed to load texture\n");
+		}
+	}
 
-	// enable alpha blending
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	void Renderer::DisplayImage(GLuint * pTexture, const ImVec2& from, const ImVec2& to, uint32_t color) {
+		ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)*pTexture, from, to, ImVec2(0, 1), ImVec2(1, 0), color);
+	}
 
-	// create the shader program
-	shaderProgram = new ShaderProgram("shaders\\vertex.glsl", "shaders\\fragment.glsl");
+	Renderer* Renderer::m_pInstance = nullptr;
 
-	// create the mesh
-	mesh = new Mesh("res\\models\\cube.obj");
-	mesh2 = new Mesh("res\\models\\cube.obj");
+	const char* Renderer::vertex_shader_text =
+		"uniform mat4 MVP;\n"
+		"attribute vec3 vCol;\n"
+		"attribute vec2 vPos;\n"
+		"varying vec3 color;\n"
+		"void main()\n"
+		"{\n"
+		"    gl_Position = MVP * vec4(vPos, 0.0, 0.7);\n"
+		"    color = vCol;\n"
+		"}\n";
 
-	// create the texture
-	texture = new Texture("res\\textures\\test.png");
-	texture2 = new Texture("res\\textures\\test.png");
+	#ifdef __EMSCRIPTEN__
+	const char* Renderer::fragment_shader_text =
+		"precision mediump float;\n"
+		"varying vec3 color;\n"
+		"void main()\n"
+		"{\n"
+		"    gl_FragColor = vec4(color, 1.0);\n"
+		"}\n";
+	#else
+	const char* Renderer::fragment_shader_text =
+		"varying vec3 color;\n"
+		"void main()\n"
+		"{\n"
+		"    gl_FragColor = vec4(color, 1.0);\n"
+		"}\n";
+	#endif
 
-	// create the camera
-	camera = new Camera(glm::vec3(0.0f, 0.0f, 5.0f), 70.0f, (float)1280 / 720.0f, 0.01f, 1000.0f);
+	const char* Renderer::GetFragmentShaderText()
+	{
+		return fragment_shader_text;
+	}
 
-	// create the transform
-	transform = new Transform();
-	transform2 = new Transform();
+	const char* Renderer::GetVertexShaderText()
+	{
+		return vertex_shader_text;
+	}
 
-	// initialize imgui
-	ImGui_ImplOpenGL3_Init("#version 330");
-	ImGui_ImplSDL2_InitForOpenGL(window, glContext);
-	ImGui::StyleColorsDark();
+	Renderer::Renderer()
+	{
+	}
 
-	return true;
+	Renderer::~Renderer()
+	{
+	}
+
+	void Renderer::Shutdown() {
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
+		glfwTerminate();
+	}
+
+	void Renderer::error_callback(int error, const char* description)
+	{
+		fputs(description, stderr);
+	}
+
+	void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+	{
+		glViewport(0, 0, width, height);
+	}
+
+	void Renderer::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+	{
+	}
+
+	void Renderer::cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
+	{
+	}
+
+	void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		if (action == GLFW_PRESS)
+			io.KeysDown[key] = true;
+		if (action == GLFW_RELEASE)
+			io.KeysDown[key] = false;
+		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+			glfwSetWindowShouldClose(window, GLFW_TRUE);
+		// Modifiers are not reliable across systems
+		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
+		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+	}
+
+	void Renderer::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+	{
+	}
+
+	void Renderer::char_callback(GLFWwindow* window, unsigned int c)
+	{
+	}
+
+	//creates a new frame
+    void Renderer::NewFrame()
+    {
+
+    }
+
+	Renderer* Renderer::GetInstance()
+	{
+		if (!m_pInstance)
+			m_pInstance = new Renderer();
+
+		return m_pInstance;
+	}
+
+	bool Renderer::Initialize(GLFWwindow* window)
+	{
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+
+		#ifndef __EMSCRIPTEN__
+			io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		
+			ImGuiStyle& style = ImGui::GetStyle();
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				style.WindowRounding = 0.0f;
+				style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+			}
+		#endif
+
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
+
+		#ifdef __EMSCRIPTEN__
+			ImGui_ImplOpenGL3_Init("#version 300 es");
+		#else
+			ImGui_ImplOpenGL3_Init("#version 420 core");
+		#endif
+
+		ImGui::StyleColorsDark();
+
+    	glEnable(GL_CULL_FACE);
+
+		return true;
+	}
+
+	void Renderer::Draw()
+	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+	}
+
+	void Renderer::Render(GLFWwindow* window)
+	{
+		ImGui::Render();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        // glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    	
+        // Update and Render additional Platform Windows
+        // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+        //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
+
+        glfwSwapBuffers(window);
+	}
+
+	void Renderer::BeginScene()
+	{
+       	ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+		static bool show_demo_window = true;
+		static bool show_another_window = false;
+		static bool showDemo = false;
+        static float f = 0.0f;
+        static int counter = 0;
+		ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+        if (show_demo_window)
+            ImGui::ShowDemoWindow(&show_demo_window);
+
+        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+        {
+            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+            ImGui::Checkbox("Another Window", &show_another_window);
+
+            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+            ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+                counter++;
+            ImGui::SameLine();
+            ImGui::Text("counter = %d", counter);
+
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::End();
+        }
+
+        // 3. Show another simple window.
+        if (show_another_window)
+        {
+            ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+            ImGui::Text("Hello from another window!");
+            if (ImGui::Button("Close Me"))
+                show_another_window = false;
+            ImGui::End();
+        }
+
+   
+		ImVec2 window_pos = ImGui::GetWindowPos(); 
+        ImVec2 window_size = ImGui::GetWindowSize(); 
+        ImVec2 window_center = ImVec2(window_pos.x + window_size.x * 0.5f, window_pos.y + window_size.y * 0.5f); 
+        ImGui::GetBackgroundDrawList()->AddCircle(window_center, window_size.x * 0.6f, IM_COL32(255, 0, 0, 200), 0, 10 + 4); 
+        ImGui::GetForegroundDrawList()->AddCircle(window_center, window_size.y * 0.6f, IM_COL32(0, 255, 0, 200), 0, 10);
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+        static float sz = 36.0f; 
+        static float thickness = 4.0f; 
+        static ImVec4 col = ImVec4(1.0f, 1.0f, 0.4f, 1.0f); 
+        const ImVec2 p = ImGui::GetCursorScreenPos(); 
+        const ImU32 col32 = ImColor(col); 
+        float x = p.x + 4.0f, y = p.y + 4.0f;
+        draw_list->AddCircle(ImVec2(x+sz*0.5f, y+sz*0.5f), sz*0.5f, col32, 6, thickness);
+
+		ImGui::Begin("Example");
+        if (ImGui::Button("Show/Hide ImGui demo"))
+        showDemo = !showDemo;
+        ImGui::End();
+        if (showDemo)
+        ImGui::ShowDemoWindow(&showDemo);
+		// Rendering
+       
+		// ImGuiIO& io = ImGui::GetIO();
+
+		// ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		// ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.0f, 0.0f });
+		// ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0.0f, 0.0f, 0.0f, 0.0f });
+		// ImGui::Begin("##Backbuffer", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs);
+
+		// ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_Always);
+		// ImGui::SetWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y), ImGuiCond_Always);
+	}
+
+	// void Renderer::EndScene()
+	// {
+	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	// 	window->DrawList->PushClipRectFullScreen();
+
+	// 	ImGui::End();
+	// 	ImGui::PopStyleColor();
+	// 	ImGui::PopStyleVar(2);
+	// }
+
+	// float Renderer::RenderText(const std::string& text, const ImVec2& position, float size, uint32_t color, bool center)
+	// {
+	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+	// 	float a = (color >> 24) & 0xff;
+	// 	float r = (color >> 16) & 0xff;
+	// 	float g = (color >> 8) & 0xff;
+	// 	float b = (color) & 0xff;
+
+	// 	std::stringstream stream(text);
+	// 	std::string line;
+
+	// 	float y = 0.0f;
+	// 	int i = 0;
+
+	// 	while (std::getline(stream, line))
+	// 	{
+	// 		ImVec2 textSize = m_pFont->CalcTextSizeA(size, FLT_MAX, 0.0f, line.c_str());
+
+	// 		if (center)
+	// 		{
+	// 			window->DrawList->AddText(m_pFont, size, { (position.x - textSize.x / 2.0f) + 1.0f, (position.y + textSize.y * i) + 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
+	// 			window->DrawList->AddText(m_pFont, size, { (position.x - textSize.x / 2.0f) - 1.0f, (position.y + textSize.y * i) - 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
+	// 			window->DrawList->AddText(m_pFont, size, { (position.x - textSize.x / 2.0f) + 1.0f, (position.y + textSize.y * i) - 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
+	// 			window->DrawList->AddText(m_pFont, size, { (position.x - textSize.x / 2.0f) - 1.0f, (position.y + textSize.y * i) + 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
+
+	// 			window->DrawList->AddText(m_pFont, size, { position.x - textSize.x / 2.0f, position.y + textSize.y * i }, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), line.c_str());
+	// 		}
+	// 		else
+	// 		{
+	// 			window->DrawList->AddText(m_pFont, size, { (position.x) + 1.0f, (position.y + textSize.y * i) + 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
+	// 			window->DrawList->AddText(m_pFont, size, { (position.x) - 1.0f, (position.y + textSize.y * i) - 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
+	// 			window->DrawList->AddText(m_pFont, size, { (position.x) + 1.0f, (position.y + textSize.y * i) - 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
+	// 			window->DrawList->AddText(m_pFont, size, { (position.x) - 1.0f, (position.y + textSize.y * i) + 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
+
+	// 			window->DrawList->AddText(m_pFont, size, { position.x, position.y + textSize.y * i }, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), line.c_str());
+	// 		}
+
+	// 		y = position.y + textSize.y * (i + 1);
+	// 		i++;
+	// 	}
+
+	// 	return y;
+	// }
+
+	// void Renderer::RenderLine(const ImVec2& from, const ImVec2& to, uint32_t color, float thickness)
+	// {
+	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+	// 	float a = (color >> 24) & 0xff;
+	// 	float r = (color >> 16) & 0xff;
+	// 	float g = (color >> 8) & 0xff;
+	// 	float b = (color) & 0xff;
+
+	// 	window->DrawList->AddLine(from, to, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), thickness);
+	// }
+
+	// void Renderer::RenderCircle(const ImVec2& position, float radius, uint32_t color, float thickness, uint32_t segments)
+	// {
+	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+	// 	float a = (color >> 24) & 0xff;
+	// 	float r = (color >> 16) & 0xff;
+	// 	float g = (color >> 8) & 0xff;
+	// 	float b = (color) & 0xff;
+
+	// 	window->DrawList->AddCircle(position, radius, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), segments, thickness);
+	// }
+
+	// void Renderer::RenderCircleFilled(const ImVec2& position, float radius, uint32_t color, uint32_t segments)
+	// {
+	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+	// 	float a = (color >> 24) & 0xff;
+	// 	float r = (color >> 16) & 0xff;
+	// 	float g = (color >> 8) & 0xff;
+	// 	float b = (color) & 0xff;
+
+	// 	window->DrawList->AddCircleFilled(position, radius, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), segments);
+	// }
+
+	// void Renderer::RenderRect(const ImVec2& from, const ImVec2& to, uint32_t color, float rounding, uint32_t roundingCornersFlags, float thickness)
+	// {
+	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+	// 	float a = (color >> 24) & 0xFF;
+	// 	float r = (color >> 16) & 0xFF;
+	// 	float g = (color >> 8) & 0xFF;
+	// 	float b = (color) & 0xFF;
+
+	// 	window->DrawList->AddRect(from, to, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), rounding, roundingCornersFlags, thickness);
+	// }
+
+	// void Renderer::RenderRectFilled(const ImVec2& from, const ImVec2& to, uint32_t color, float rounding, uint32_t roundingCornersFlags)
+	// {
+	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+	// 	float a = (color >> 24) & 0xFF;
+	// 	float r = (color >> 16) & 0xFF;
+	// 	float g = (color >> 8) & 0xFF;
+	// 	float b = (color) & 0xFF;
+
+	// 	window->DrawList->AddRectFilled(from, to, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), rounding, roundingCornersFlags);
+	// }
+
+	// void Renderer::RenderImage(GLuint * pTexture, const ImVec2& from, const ImVec2& to, uint32_t color)
+	// {
+	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+	// 	float a = (color >> 24) & 0xFF;
+	// 	float r = (color >> 16) & 0xFF;
+	// 	float g = (color >> 8) & 0xFF;
+	// 	float b = (color) & 0xFF;
+
+	// 	window->DrawList->AddImage(pTexture, from, to, { 0.0f, 0.0f }, { 1.0f, 1.0f }, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }));
+	// }
+
+	// void Renderer::RenderImageRounded(GLuint * pTexture, const ImVec2& from, const ImVec2& to, uint32_t color, float rounding, uint32_t roundingCornersFlags)
+	// {
+	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
+
+	// 	float a = (color >> 24) & 0xFF;
+	// 	float r = (color >> 16) & 0xFF;
+	// 	float g = (color >> 8) & 0xFF;
+	// 	float b = (color) & 0xFF;
+
+	// 	window->DrawList->AddImageRounded(pTexture, from, to, { 0.0f, 0.0f }, { 1.0f, 1.0f }, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), rounding, roundingCornersFlags);
+	// }
 }

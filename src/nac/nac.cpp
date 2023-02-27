@@ -2,38 +2,29 @@
 
 namespace _NAC
 {
-    Window* NAC::m_pWindow = nullptr;
-    Renderer* NAC::m_pRenderer = nullptr;
-
-    void NAC::main_loop() { loop(); }
+    Window* NAC::m_Window = nullptr;
+    Renderer* NAC::m_Renderer = nullptr;
 
     NAC::NAC() {
-        loop = [&] {
-            m_pRenderer->DrawGUI();
-
-            glfwPollEvents();
-
-            m_pRenderer->Render(m_pWindow->GetGLFWwindow());
-        }
     }
 
     NAC::~NAC() {
     }
 
     Renderer* NAC::GetRenderer() { 
-        return m_pRenderer;
+        return m_Renderer;
     }
 
     Window* NAC::GetWindow() {
-		return m_pWindow;
+		return m_Window;
     }
 
     bool NAC::Initialize() {
         //initialize the window
-        m_pWindow = new Window();
-        if (!m_pWindow->Initialize("NAC", 1920, 1080))
+        m_Window = new Window();
+        if (!m_Window->Initialize("NAC", 1920, 1080))
             return false;
-
+            
         #ifndef __EMSCRIPTEN__
             gladLoadGL();
         #endif
@@ -42,12 +33,9 @@ namespace _NAC
         printf("%s\n", glGetString(GL_VERSION));
 
         //initialize the renderer
-        m_pRenderer = new Renderer(m_pWindow->GetGLFWwindow());
-        if (!m_pRenderer->Initialize())
+        m_Renderer = new Renderer();
+        if (!m_Renderer->Initialize(m_Window->GetGLFWwindow()))
             return false;
-
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
 
         //return success
         return true;
@@ -55,11 +43,11 @@ namespace _NAC
 
     void NAC::Shutdown() {
         //delete the renderer
-        if (m_pRenderer)
-            delete m_pRenderer;
+        if (m_Renderer)
+            delete m_Renderer;
 
         //delete the window
-        if (m_pWindow)
-            delete m_pWindow;
+        if (m_Window)
+            delete m_Window;
     }
 }

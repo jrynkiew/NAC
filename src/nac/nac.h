@@ -13,10 +13,7 @@ namespace _NAC {
             Window* GetWindow();
 
         private:
-            static Renderer* m_pRenderer;
-            static Window* m_pWindow;
-
-            std::function<void()> NAC::loop;
-            void NAC::main_loop();
+            static Renderer* m_Renderer;
+            static Window* m_Window;
     };
 }
