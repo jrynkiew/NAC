@@ -69,7 +69,7 @@ RUN set -ex \
     \ 
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz -O - | tar -xz \
     && wget -q https://github.com/glfw/glfw/releases/download/${GLFW_VERSION}/glfw-${GLFW_VERSION}.zip -O - | busybox unzip - \
-    && wget -q https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.tar.gz -O - | tar -xz \
+    && wget -q https://github.com/libsdl-org/SDL/archive/refs/tags/release-${SDL_VERSION}.tar.gz -O - | tar -xz \
     && git clone https://github.com/skaslev/gl3w.git gl3w \
     && git clone https://github.com/nigels-com/glew.git \
     && wget -O /usr/local/bin/gosu https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-$(dpkg --print-architecture) \
@@ -91,14 +91,19 @@ RUN set -ex \
     && make -j`nproc` \
     && make install \
     && cd .. \
+    \
     && cd glfw-${GLFW_VERSION} \
     && cmake . \
     && make -j`nproc` \
     && make install \
     && cd .. \
     \
-    && cd SDL2-${SDL_VERSION} \
-    && make native \
+    && cd SDL-release-${SDL_VERSION} \
+    && ./configure \
+        --enable-static \
+        --disable-shared \
+    && make -j`nproc` \
+    && make install \
     && cd .. \
     \
     && cd gl3w \
@@ -117,7 +122,7 @@ RUN set -ex \
     && make install \
     && cd ../../../ \
     \
-    && rm -r SDL2-${SDL_VERSION} \
+    && rm -r SDL-release-${SDL_VERSION} \
     && rm -r gl3w \
     && rm -r glfw-${GLFW_VERSION} \
     && rm -r glew \
