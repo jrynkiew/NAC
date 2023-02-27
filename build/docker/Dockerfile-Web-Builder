@@ -4,7 +4,6 @@ WORKDIR /build
 
 ARG CMAKE_VERSION=3.24.1
 ARG GLFW_VERSION=3.3.8
-ARG SDL_VERSION=2.26.2
 ARG GOSU_VERSION=1.7
 
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/bin/java
@@ -36,7 +35,6 @@ RUN set -ex \
         openssh-server \
     \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz -O - | tar -xz \
-    && wget -q https://github.com/libsdl-org/SDL/releases/download/release-${SDL_VERSION}/SDL2-devel-${SDL_VERSION}-mingw.tar.gz -O - | tar -xz \
     && git clone https://github.com/emscripten-core/emsdk.git emsdk \
     && wget -O /usr/local/bin/gosu https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-$(dpkg --print-architecture) \
     \
@@ -54,10 +52,6 @@ RUN set -ex \
     && ./emsdk activate latest \
     && cd .. \
     \
-    && cd SDL2-${SDL_VERSION} \
-    && make native \
-    && cd .. \
-    \
     && apt-get remove --purge -y \
         libssl-dev \
         wget \
@@ -67,7 +61,6 @@ RUN set -ex \
     \
     && apt-get clean \
     \
-    && rm -r SDL2-${SDL_VERSION} \
     && rm -r cmake-${CMAKE_VERSION} \
     \
     && useradd -rm -d /home/nac/ -s /bin/bash -g root -G sudo -u 1001 nac \
@@ -84,8 +77,6 @@ RUN set -ex \
     && chmod -R 600 /home/nac/.ssh/* \
     && chown -R nac /home/nac/.ssh/ \
     && chown -R nac /build/
-
-
 
 WORKDIR /scripts/
 

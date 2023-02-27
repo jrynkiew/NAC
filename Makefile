@@ -18,9 +18,10 @@ EXE = nac
 endif
 
 # set the sources - same for all architectures
-IMGUI_DIR = src
+SRC_DIR = src
+IMGUI_DIR = src/imgui
 SOURCES = main.cpp $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
-SOURCES += $(IMGUI_DIR)/backends/imgui_impl_sdl2.cpp $(IMGUI_DIR)/backends/imgui_impl_sdlrenderer.cpp
+SOURCES += $(SRC_DIR)/backends/imgui_impl_sdl2.cpp $(SRC_DIR)/backends/imgui_impl_sdlrenderer.cpp
 # SOURCES += $(IMGUI_DIR)/nac/nac.cpp $(IMGUI_DIR)/nac/renderer.cpp $(IMGUI_DIR)/nac/window.cpp
 
 # Create an output directory for generated objects
@@ -30,24 +31,24 @@ OBJS = $(addprefix $(OUT)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
 # Set libraries and flags for each architecture
 ifeq (${BUILD_TARGET},web)
 EMS += -s USE_SDL=2 -s DISABLE_EXCEPTION_CATCHING=1
-CPPFLAGS = -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(IMGUI_DIR)/nac -g -Wall -Wformat -Os -DIMGUI_DISABLE_FILE_FUNCTIONS $(EMS)
+CPPFLAGS = -I$(IMGUI_DIR) -I$(SRC_DIR)/backends -I$(SRC_DIR)/nac -g -Wall -Wformat -Os -DIMGUI_DISABLE_FILE_FUNCTIONS $(EMS)
 LIBS += $(EMS)
 LDFLAGS += -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -s NO_FILESYSTEM=1 --shell-file shell_minimal.html
 
 else ifeq (${BUILD_TARGET},windows)
-CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(IMGUI_DIR)/nac -g -Wall -Wformat -Dmain=SDL_main -I/usr/local/cross-tools/i686-w64-mingw32/include/SDL2
+CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(SRC_DIR)/backends -I$(SRC_DIR)/nac -g -Wall -Wformat -Dmain=SDL_main -I/usr/local/cross-tools/i686-w64-mingw32/include/SDL2
 CXXFLAGS += -I/usr/local/x86_64-w64-mingw32/include
 LIBS = -L/usr/local/cross-tools/i686-w64-mingw32/lib -lmingw32 -lSDL2main -lSDL2 -mwindows -Wl,--dynamicbase -Wl,--nxcompat -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid
 CFLAGS = $(CXXFLAGS)
 
 else ifeq (${BUILD_TARGET},windows64)
-CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(IMGUI_DIR)/nac -g -Wall -Wformat -Dmain=SDL_main -I/usr/local/cross-tools/x86_64-w64-mingw32/include/SDL2/
+CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(SRC_DIR)/backends -I$(SRC_DIR)/nac -g -Wall -Wformat -Dmain=SDL_main -I/usr/local/cross-tools/x86_64-w64-mingw32/include/SDL2/
 CXXFLAGS += -I/usr/local/x86_64-w64-mingw32/include
 LIBS = -L/usr/local/cross-tools/x86_64-w64-mingw32/lib -lmingw32 -lSDL2main -lSDL2 -mwindows -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid
 CFLAGS = $(CXXFLAGS)
 
 else ifeq (${BUILD_TARGET},linux)
-CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(IMGUI_DIR)/nac -g -Wall -Wformat -I/usr/local/include/SDL2
+CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(SRC_DIR)/backends -I$(SRC_DIR)/nac -g -Wall -Wformat -I/usr/local/include/SDL2
 LIBS = -L/usr/local/lib /usr/local/lib/libSDL2.a -lm -lpthread -lrt
 CFLAGS = $(CXXFLAGS)
 endif
@@ -59,9 +60,9 @@ $(OUT)/%.o:%.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 $(OUT)/%.o:$(IMGUI_DIR)/%.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
-$(OUT)/%.o:$(IMGUI_DIR)/backends/%.cpp
+$(OUT)/%.o:$(SRC_DIR)/backends/%.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
-$(OUT)/%.o:$(IMGUI_DIR)/nac/%.cpp
+$(OUT)/%.o:$(SRC_DIR)/nac/%.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 all: $(OUT)/$(EXE)
 	@echo Build complete for $(EXE)

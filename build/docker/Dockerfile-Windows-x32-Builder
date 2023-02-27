@@ -13,6 +13,7 @@ ARG NASM_VERSION=2.15.05
 ARG NVCC_VERSION=11.7.1
 ARG GLFW_VERSION=3.3.8
 ARG SDL_VERSION=2.26.2
+ARG SDL_IMAGE_VERSION=2.6.3
 ARG MESA_VERSION=20.1.2
 ARG GOSU_VERSION=1.7
 
@@ -77,6 +78,7 @@ RUN set -ex \
     && wget -q https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.xz -O - | tar -xJ \
     && wget -q https://github.com/glfw/glfw/releases/download/${GLFW_VERSION}/glfw-${GLFW_VERSION}.zip -O - | busybox unzip - \
     && wget -q https://github.com/libsdl-org/SDL/archive/refs/tags/release-${SDL_VERSION}.tar.gz -O - | tar -xz \
+    && wget -q https://github.com/libsdl-org/SDL_image/archive/refs/tags/release-${SDL_IMAGE_VERSION}.tar.gz -O - | tar -xz \
     && git clone https://github.com/skaslev/gl3w.git gl3w \
     && git clone https://github.com/nigels-com/glew.git \
     && wget -O /usr/local/bin/gosu https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-$(dpkg --print-architecture) \
@@ -217,6 +219,16 @@ RUN set -ex \
     && make install \
     && cd .. \
     \
+    && cd SDL_image-release-${SDL_IMAGE_VERSION} \
+    && ./configure \
+        --host=i686-w64-mingw32 \
+        --enable-static \
+        --disable-shared \
+        SDL2_CONFIG=/usr/local/cross-tools/i686-w64-mingw32/bin/sdl2-config \
+    && make -j`nproc` \
+    && make install \
+    && cd .. \
+    \
     && cd gl3w \
     && python3 gl3w_gen.py \
     && cmake \
@@ -251,6 +263,7 @@ RUN set -ex \
     && cd ../../../ \
     \
     && rm -r SDL-release-${SDL_VERSION} \
+    && rm -r SDL_image-release-${SDL_IMAGE_VERSION} \
     && rm -r gl3w \
     && rm -r glfw-${GLFW_VERSION} \
     && rm -r glad \
@@ -322,7 +335,7 @@ RUN set -ex \
     && chmod +x /usr/local/bin/gosu \
     && chmod -R 600 /home/nac/.ssh/* \
     && chown -R nac /home/nac/.ssh/ \
-    && chown -R nac /build/  
+    && chown -R nac /build/
 
 WORKDIR /scripts/
 
