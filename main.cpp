@@ -66,10 +66,17 @@
 #include "imgui_impl_sdlrenderer.h"
 #include <stdio.h>
 #include <SDL.h>
+#include <functional>
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 #if !SDL_VERSION_ATLEAST(2,0,17)
 #error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
 #endif
+
+std::function<void()> loop;
+void main_loop() { loop(); }
 
 // Main code
 int main(int, char**)
@@ -135,10 +142,10 @@ int main(int, char**)
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    // Main loop
     bool done = false;
-    while (!done)
-    {
+
+    loop = [&] {
+        
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
@@ -149,9 +156,15 @@ int main(int, char**)
         {
             ImGui_ImplSDL2_ProcessEvent(&event);
             if (event.type == SDL_QUIT)
+            {
                 done = true;
+                return;
+            }
             if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(window))
+            {
                 done = true;
+                return;
+            }
         }
 
         // Start the Dear ImGui frame
@@ -203,7 +216,15 @@ int main(int, char**)
         SDL_RenderClear(renderer);
         ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
         SDL_RenderPresent(renderer);
-    }
+
+    };
+
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop(main_loop, 0, true);
+#else
+    while (!done)
+        main_loop();
+#endif
 
     // Cleanup
     ImGui_ImplSDLRenderer_Shutdown();
