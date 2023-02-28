@@ -4,28 +4,36 @@ namespace _NAC
 {
     Window* NAC::m_pWindow = nullptr;
     Renderer* NAC::m_pRenderer = nullptr;
+    Interface* NAC::m_pInterface = nullptr;
 
     void NAC::main_loop() { loop(); }
 
     NAC::NAC() {
         loop = [&] {
-            m_pRenderer->DrawGUI();
-
-            glfwPollEvents();
-
-            m_pRenderer->Render(m_pWindow->GetGLFWwindow());
-        }
+            while (true) {
+                SDL_Event event;
+                while (SDL_PollEvent(&event)) {
+                    if (event.type == SDL_QUIT) {
+                        return;
+                    }
+                }
+            }
+        };
     }
 
     NAC::~NAC() {
     }
 
-    Renderer* NAC::GetRenderer() { 
-        return m_pRenderer;
+    SDL_Renderer* NAC::GetRenderer() { 
+        return m_pRenderer->Get_SDL_Renderer();
     }
 
-    Window* NAC::GetWindow() {
-		return m_pWindow;
+    SDL_Window* NAC::GetWindow() {
+		return m_pWindow->Get_SDL_Window();
+    }
+
+    ImGuiIO* NAC::GetInterface() {
+        return m_pInterface->Get_ImGui_Interface();
     }
 
     bool NAC::Initialize() {
@@ -34,20 +42,14 @@ namespace _NAC
         if (!m_pWindow->Initialize("NAC", 1920, 1080))
             return false;
 
-        #ifndef __EMSCRIPTEN__
-            gladLoadGL();
-        #endif
-
-        glfwSwapInterval(1);
-        printf("%s\n", glGetString(GL_VERSION));
-
         //initialize the renderer
-        m_pRenderer = new Renderer(m_pWindow->GetGLFWwindow());
+        m_pRenderer = new Renderer(GetWindow());
         if (!m_pRenderer->Initialize())
             return false;
-
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        
+        m_pInterface = new Interface(GetWindow(), GetRenderer());
+        if (!m_pInterface->Initialize())
+            return false;
 
         //return success
         return true;

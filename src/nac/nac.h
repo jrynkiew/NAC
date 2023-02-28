@@ -1,5 +1,5 @@
-#include <renderer.h>
-#include <window.h>
+#include <interface.h>
+#include <functional>
 
 namespace _NAC {
     class NAC { 
@@ -9,14 +9,16 @@ namespace _NAC {
             bool Initialize();
             void Shutdown();
 
-            Renderer* GetRenderer();
-            Window* GetWindow();
+            SDL_Renderer* GetRenderer();
+            SDL_Window* GetWindow();
+            ImGuiIO* GetInterface();
 
         private:
             static Renderer* m_pRenderer;
             static Window* m_pWindow;
+            static Interface* m_pInterface;
 
-            std::function<void()> NAC::loop;
-            void NAC::main_loop();
+            std::function<void()> loop;
+            void main_loop();
     };
 }
