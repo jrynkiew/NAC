@@ -4,36 +4,36 @@
 #include <stdio.h>
 
 namespace _NAC {
-    //definition of class that creates a window and sets up the opengl context
+    // definition of class that creates a window and sets up the opengl context
     class Window
     {
     public:
-        //constructor
+        // constructor
         Window();
-        //destructor
+        // destructor
         ~Window();
 
-        //creates the window and the opengl context
+        // creates the window and the opengl context
         bool Initialize(const char* windowTitle, int width, int height);
-        //destroys the window and the opengl context
-        void Shutdown();
-        //gets the width of the window
+        // gets the width of the window
         int GetWidth();
-        //gets the height of the window
+        // gets the height of the window
         int GetHeight();
-        //gets the window
+        // gets the window
         SDL_Window* Get_SDL_Window();
+        // destroys the window and the opengl context
+        void Shutdown();
 
     private:
-        //the width of the window
+        // the width of the window
         int m_Width;
-        //the height of the window
+        // the height of the window
         int m_Height;
-        //the window
+        // the window
         static SDL_Window* m_Window;
-        //the opengl context
+        // the opengl context
         static SDL_GLContext m_Context;
-        //the window flags
+        // the window flags
         static const SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     };
 

@@ -6,19 +6,27 @@ namespace _NAC {
         public:
             NAC();
             ~NAC();
-            bool Initialize();
-            void Shutdown();
 
             SDL_Renderer* GetRenderer();
             SDL_Window* GetWindow();
             ImGuiIO* GetInterface();
+            NAC* GetInstance();
 
+            bool Initialize();
+            void Shutdown();
+
+            void GetEvents();
+            void Run();
+            static void Draw();
+            
         private:
             static Renderer* m_pRenderer;
             static Window* m_pWindow;
             static Interface* m_pInterface;
+            static NAC* m_pNAC;
 
-            std::function<void()> loop;
-            void main_loop();
+            bool done; 
     };
+    
+    static std::function<void()> loop;
 }

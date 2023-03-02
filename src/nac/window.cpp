@@ -66,6 +66,7 @@ namespace _NAC {
         if (m_Window)
         {
             SDL_DestroyWindow(m_Window);
+            SDL_Quit();
             m_Window = nullptr;
         }
     }

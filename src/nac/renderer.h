@@ -28,6 +28,12 @@ namespace _NAC {
 			
 			bool Initialize();
 			SDL_Renderer* Get_SDL_Renderer();
+
+			void Clear();
+			void Present();
+			void New_Frame();
+			void Render();
+
 			void Shutdown();
 	};
 }

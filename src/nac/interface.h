@@ -19,15 +19,31 @@ namespace _NAC {
 	class Interface
 	{
 		private:
+			// the interface pointer
             static ImGuiIO* m_io;
+			// the renderer pointer
 			static SDL_Renderer* m_Renderer;
+			// the window pointer
 			static SDL_Window* m_Window;
+			// the interface flags
+			bool show_demo_window;
+			// the interface flags
+			bool show_another_window;
+			// the interface background/clear color
+			ImVec4 clear_color;
 
 		public:
+			// constructor
 			Interface(SDL_Window* window, SDL_Renderer* renderer);
+			// destructor
 			~Interface();
-			
+			// create the interface
 			bool Initialize();
+			// get the interface
 			ImGuiIO* Get_ImGui_Interface();
+			// draw the interface
+			void Draw_Interface();
+			// destroy the interface
+			void Shutdown();
 	};
 }

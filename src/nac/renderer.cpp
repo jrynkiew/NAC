@@ -18,6 +18,8 @@ namespace _NAC {
 	{
 		if (m_Renderer != NULL)
 		{
+			ImGui_ImplSDLRenderer_Shutdown();
+    		ImGui_ImplSDL2_Shutdown();
 			SDL_DestroyRenderer(m_Renderer);
 			m_Renderer = NULL;
 		}
@@ -52,5 +54,17 @@ namespace _NAC {
 		return true;
 	}
 
-	
+	void Renderer::New_Frame()
+	{
+		ImGui_ImplSDL2_NewFrame(m_Window);
+		ImGui_ImplSDLRenderer_NewFrame();
+		ImGui::NewFrame();
+	}
+
+	void Renderer::Render()
+	{
+        SDL_RenderClear(m_Renderer);
+        ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
+        SDL_RenderPresent(m_Renderer);
+	}
 }
