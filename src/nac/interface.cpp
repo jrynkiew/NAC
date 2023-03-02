@@ -24,8 +24,19 @@ namespace _NAC {
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         m_io = &ImGui::GetIO(); (void)m_io;
-        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+        m_io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+        m_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport
+
+        #ifndef __EMSCRIPTEN__
+			m_io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		
+			ImGuiStyle& style = ImGui::GetStyle();
+			if (m_io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				style.WindowRounding = 0.0f;
+				style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+			}
+		#endif
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();

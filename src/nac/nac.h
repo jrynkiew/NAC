@@ -29,4 +29,5 @@ namespace _NAC {
     };
     
     static std::function<void()> loop;
+    static NAC* g_pNAC = nullptr;
 }

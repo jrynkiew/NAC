@@ -5,7 +5,7 @@ namespace _NAC
     Window* NAC::m_pWindow = nullptr;
     Renderer* NAC::m_pRenderer = nullptr;
     Interface* NAC::m_pInterface = nullptr;
-    NAC* g_pNAC = nullptr;
+    NAC* NAC::m_pNAC = nullptr;
 
     static void main_loop() 
     { 
@@ -13,11 +13,7 @@ namespace _NAC
     }
 
     NAC::NAC() {
-        g_pNAC = this;
-        m_pWindow = new Window();
-        m_pRenderer = new Renderer(GetWindow());
-        m_pInterface = new Interface(GetWindow(), GetRenderer());
-
+        g_pNAC = m_pNAC = this;
         done = false;
         loop = [&] {
             GetEvents();
@@ -58,14 +54,17 @@ namespace _NAC
 
     bool NAC::Initialize() {
         //initialize the window
+        m_pWindow = new Window();
         if (!m_pWindow->Initialize("NAC", 1920, 1080))
             return false;
 
         //initialize the renderer
+        m_pRenderer = new Renderer(GetWindow());
         if (!m_pRenderer->Initialize())
             return false;
 
         //initialize the interface
+        m_pInterface = new Interface(GetWindow(), GetRenderer());
         if (!m_pInterface->Initialize())
             return false;
 
