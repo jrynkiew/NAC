@@ -2,39 +2,70 @@
 
 namespace _NAC
 {
-    Window* NAC::m_Window = nullptr;
-    Renderer* NAC::m_Renderer = nullptr;
+    Window* NAC::m_pWindow = nullptr;
+    Renderer* NAC::m_pRenderer = nullptr;
+    Interface* NAC::m_pInterface = nullptr;
+    NAC* NAC::m_pNAC = nullptr;
+
+    static void main_loop() 
+    { 
+        loop(); 
+    }
 
     NAC::NAC() {
+        g_pNAC = m_pNAC = this;
+        done = false;
+        loop = [&] {
+            GetEvents();
+            Draw();
+        };
     }
 
     NAC::~NAC() {
     }
 
-    Renderer* NAC::GetRenderer() { 
-        return m_Renderer;
+    SDL_Renderer* NAC::GetRenderer() { 
+        return m_pRenderer->Get_SDL_Renderer();
     }
 
-    Window* NAC::GetWindow() {
-		return m_Window;
+    SDL_Window* NAC::GetWindow() {
+		return m_pWindow->Get_SDL_Window();
+    }
+
+    ImGuiIO* NAC::GetInterface() {
+        return m_pInterface->Get_ImGui_Interface();
+    }
+
+    void NAC::GetEvents() {
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            ImGui_ImplSDL2_ProcessEvent(&event);
+            if (event.type == SDL_QUIT)
+            {
+                Shutdown();
+            }
+            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(m_pWindow->Get_SDL_Window()))
+            {
+                Shutdown();
+            }
+        }
     }
 
     bool NAC::Initialize() {
         //initialize the window
-        m_Window = new Window();
-        if (!m_Window->Initialize("NAC", 1920, 1080))
+        m_pWindow = new Window();
+        if (!m_pWindow->Initialize("NAC", 1920, 1080))
             return false;
-            
-        #ifndef __EMSCRIPTEN__
-            gladLoadGL();
-        #endif
-
-        glfwSwapInterval(1);
-        printf("%s\n", glGetString(GL_VERSION));
 
         //initialize the renderer
-        m_Renderer = new Renderer();
-        if (!m_Renderer->Initialize(m_Window->GetGLFWwindow()))
+        m_pRenderer = new Renderer(GetWindow());
+        if (!m_pRenderer->Initialize())
+            return false;
+
+        //initialize the interface
+        m_pInterface = new Interface(GetWindow(), GetRenderer());
+        if (!m_pInterface->Initialize())
             return false;
 
         //return success
@@ -43,11 +74,42 @@ namespace _NAC
 
     void NAC::Shutdown() {
         //delete the renderer
-        if (m_Renderer)
-            delete m_Renderer;
+        if (m_pRenderer)
+        {
+            m_pRenderer->Shutdown();
+            delete m_pRenderer;
+        }
 
         //delete the window
-        if (m_Window)
-            delete m_Window;
+        if (m_pWindow)
+        {
+            m_pWindow->Shutdown();
+            delete m_pWindow;
+        }
+
+        //delete the interface
+        if (m_pInterface)
+        {
+            m_pInterface->Shutdown();
+            delete m_pInterface;
+        }
+
+        //quit the main_loop
+        done = true;
+    }
+
+    void NAC::Run() {
+        #ifdef __EMSCRIPTEN__
+            emscripten_set_main_loop(main_loop, 0, true);
+        #else
+            while (!done)
+                main_loop();
+        #endif
+    }
+
+    void NAC::Draw() {
+        m_pRenderer->New_Frame();
+        m_pInterface->Draw_Interface();
+        m_pRenderer->Render();       
     }
 }

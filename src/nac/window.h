@@ -1,60 +1,44 @@
 #pragma once
-
 #define NAC_RENDERER_WINDOW_H
-
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#define GL_GLEXT_PROTOTYPES
-#define EGL_EGLEXT_PROTOTYPES
-#else
-#include "glad/glad.h"
-#endif
-
-#include <functional>
-
-#include <GLFW/glfw3.h>
-
-#include <stdlib.h>
+#include <SDL.h>
 #include <stdio.h>
 
-
-
 namespace _NAC {
-    //definition of class that creates a window and sets up the opengl context
+    // definition of class that creates a window and sets up the opengl context
     class Window
     {
     public:
-        //constructor
+        // constructor
         Window();
-        //destructor
+        // destructor
         ~Window();
 
-        //creates the window and the opengl context
+        // creates the window and the opengl context
         bool Initialize(const char* windowTitle, int width, int height);
-        //destroys the window and the opengl context
-        void Shutdown();
-        //gets the width of the window
+        // gets the width of the window
         int GetWidth();
-        //gets the height of the window
+        // gets the height of the window
         int GetHeight();
-        //gets the window
-        GLFWwindow* GetGLFWwindow();
-        //gets the instance
-        Window* GetInstance();
+        // gets the window
+        SDL_Window* Get_SDL_Window();
+        // destroys the window and the opengl context
+        void Shutdown();
 
     private:
-        //the width of the window
+        // the width of the window
         int m_Width;
-        //the height of the window
+        // the height of the window
         int m_Height;
-        //the window
-        static GLFWwindow* m_Window;
-        //the instance
-        static Window* m_Instance;
+        // the window
+        static SDL_Window* m_Window;
+        // the opengl context
+        static SDL_GLContext m_Context;
+        // the window flags
+        static const SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     };
 
-    #define g_sWindow _NAC::Window::GetInstance();
+    #define g_pWindow _NAC::Window::GetWindow();
 }
 
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
-void error_callback(int error, const char *description);
+// void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+// void error_callback(int error, const char *description);
