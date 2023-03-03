@@ -13,7 +13,7 @@ namespace _NAC
     }
 
     NAC::NAC() {
-        g_pNAC = m_pNAC = this;
+        m_pNAC = this;
         done = false;
         loop = [&] {
             GetEvents();

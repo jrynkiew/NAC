@@ -1,7 +1,10 @@
 #pragma once
 #define NAC_RENDERER_H
 #include <SDL.h>
+#include <SDL_image.h>
 #include <stdio.h>
+
+#include <texture.h>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -21,6 +24,8 @@ namespace _NAC {
 		private:
 			static SDL_Renderer* m_Renderer;
 			static SDL_Window* m_Window;
+			static SDL_Surface* m_Surface;
+			static SDL_Texture* m_Texture;
 
 		public:
 			Renderer(SDL_Window* window);
@@ -37,3 +42,5 @@ namespace _NAC {
 			void Shutdown();
 	};
 }
+
+#define g_pRenderer _NAC::Renderer::GetRenderer();

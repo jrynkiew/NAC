@@ -29,8 +29,6 @@ namespace _NAC {
 			bool show_demo_window;
 			// the interface flags
 			bool show_another_window;
-			// the interface background/clear color
-			ImVec4 clear_color;
 
 		public:
 			// constructor

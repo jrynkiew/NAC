@@ -3,6 +3,8 @@
 namespace _NAC {
 	SDL_Renderer* Renderer::m_Renderer = nullptr;
 	SDL_Window* Renderer::m_Window = nullptr;
+	SDL_Texture* Renderer::m_Texture = nullptr;
+	SDL_Surface* Renderer::m_Surface = nullptr;
 
 	Renderer::Renderer(SDL_Window* window)
 	{
@@ -18,6 +20,7 @@ namespace _NAC {
 	{
 		if (m_Renderer != NULL)
 		{
+			SDL_DestroyTexture(m_Texture);
 			ImGui_ImplSDLRenderer_Shutdown();
     		ImGui_ImplSDL2_Shutdown();
 			SDL_DestroyRenderer(m_Renderer);
@@ -51,6 +54,20 @@ namespace _NAC {
 		SDL_SetRenderDrawBlendMode(m_Renderer, SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(m_Renderer, 0, 0, 0, 255);
 
+		m_Surface = IMG_Load("logo.png");
+        if (m_Surface == NULL) {
+            printf("Error loading image: %s\n", SDL_GetError());
+            return 5;
+        }
+
+        m_Texture = SDL_CreateTextureFromSurface(m_Renderer, m_Surface);
+        if (m_Texture == NULL) {
+            printf("Error creating image: %s\n", SDL_GetError());
+            return 6;
+        }
+
+		SDL_FreeSurface(m_Surface);
+
 		return true;
 	}
 
@@ -64,6 +81,7 @@ namespace _NAC {
 	void Renderer::Render()
 	{
         SDL_RenderClear(m_Renderer);
+		SDL_RenderCopy(m_Renderer, m_Texture, NULL, NULL);
         ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
         SDL_RenderPresent(m_Renderer);
 	}
