@@ -38,6 +38,7 @@ namespace _NAC {
 			void Present();
 			void New_Frame();
 			void Render();
+			void Move_Texture();
 
 			void Shutdown();
 	};

@@ -71,6 +71,15 @@ namespace _NAC {
 		return true;
 	}
 
+	// write a function that will move the texture on mouse drag
+	void Renderer::Move_Texture()
+	{
+		int x, y;
+		SDL_GetMouseState(&x, &y);
+		SDL_Rect rect = { x, y, 100, 100 };
+		SDL_RenderCopy(m_Renderer, m_Texture, NULL, &rect);
+	} 
+
 	void Renderer::New_Frame()
 	{
 		ImGui_ImplSDL2_NewFrame(m_Window);
@@ -81,8 +90,8 @@ namespace _NAC {
 	void Renderer::Render()
 	{
         SDL_RenderClear(m_Renderer);
-		SDL_RenderCopy(m_Renderer, m_Texture, NULL, NULL);
         ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
+		Move_Texture();
         SDL_RenderPresent(m_Renderer);
 	}
 }
