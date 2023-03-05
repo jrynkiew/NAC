@@ -4,7 +4,7 @@
 #include <SDL_image.h>
 #include <stdio.h>
 
-#include <texture.h>
+#include "texture.h"
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
@@ -24,8 +24,26 @@ namespace _NAC {
 		private:
 			static SDL_Renderer* m_Renderer;
 			static SDL_Window* m_Window;
+
 			static SDL_Surface* m_Surface;
 			static SDL_Texture* m_Texture;
+			static SDL_Surface* m_Surface2;
+			static SDL_Texture* m_Texture2;
+
+			// array of sdl_textures
+			static SDL_Texture* m_Textures[100];
+
+			// array of sdl_surfaces
+			static SDL_Surface* m_Surfaces[100];
+
+			//array of sdl_rects
+			static SDL_Rect m_Rects[100];
+
+			//array of last sdl_rects
+			static SDL_Rect m_LastRects[100];
+
+			//array of textures
+			static Texture* m_Textures2[100];
 
 		public:
 			Renderer(SDL_Window* window);
@@ -38,10 +56,12 @@ namespace _NAC {
 			void Present();
 			void New_Frame();
 			void Render();
-			void Move_Texture();
+			void Move_Screen();
+			void Draw_Texture();
 
 			void Shutdown();
 	};
+	
 }
 
 #define g_pRenderer _NAC::Renderer::GetRenderer();
