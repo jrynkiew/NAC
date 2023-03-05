@@ -4,8 +4,6 @@
 #include <SDL_image.h>
 #include <stdio.h>
 
-#include <texture.h>
-
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
