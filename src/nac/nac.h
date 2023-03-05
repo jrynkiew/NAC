@@ -1,4 +1,5 @@
 #include <interface.h>
+#include <texture.h>
 #include <functional>
 
 namespace _NAC {
