@@ -13,7 +13,7 @@ namespace _NAC
     }
 
     NAC::NAC() {
-        g_pNAC = m_pNAC = this;
+        m_pNAC = this;
         done = false;
         loop = [&] {
             GetEvents();
@@ -49,6 +49,49 @@ namespace _NAC
             {
                 Shutdown();
             }
+            // on mouse move get delta mouse movement from the center of the screen and send it to the interface
+            if (event.type == SDL_MOUSEMOTION)
+            {
+                // ImGuiIO& io = ImGui::GetIO();
+                // io.MousePos.x = event.motion.x;
+                // io.MousePos.y = event.motion.y;
+            }
+            if (event.type == SDL_MOUSEBUTTONDOWN)
+            {
+                if (event.button.button == SDL_BUTTON_LEFT)
+                {
+                    ImGui::GetIO().MouseDown[0] = true;
+                }
+                    
+                if (event.button.button == SDL_BUTTON_RIGHT)
+                    ImGui::GetIO().MouseDown[1] = true;
+            }
+            if (event.type == SDL_MOUSEBUTTONUP)
+            {
+                if (event.button.button == SDL_BUTTON_LEFT)
+                    ImGui::GetIO().MouseDown[0] = false;
+                    
+                if (event.button.button == SDL_BUTTON_RIGHT)
+                    ImGui::GetIO().MouseDown[1] = false;
+            }
+            if (event.type == SDL_MOUSEWHEEL)
+            {
+                ImGui::GetIO().MouseWheel = event.wheel.y;
+            }
+            if (event.type == SDL_KEYDOWN)
+            {
+                ImGui::GetIO().KeysDown[event.key.keysym.scancode] = true;
+            }
+            if (event.type == SDL_KEYUP)
+            {
+                ImGui::GetIO().KeysDown[event.key.keysym.scancode] = false;
+            }
+            if (event.type == SDL_TEXTINPUT)
+            {
+                ImGui::GetIO().AddInputCharactersUTF8(event.text.text);
+            }
+            // if mouse delta 
+            
         }
     }
 

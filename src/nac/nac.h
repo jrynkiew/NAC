@@ -1,4 +1,5 @@
 #include <interface.h>
+#include <texture.h>
 #include <functional>
 
 namespace _NAC {
@@ -29,5 +30,5 @@ namespace _NAC {
     };
     
     static std::function<void()> loop;
-    static NAC* g_pNAC = nullptr;
+    // static NAC* g_pNAC = nullptr;
 }
