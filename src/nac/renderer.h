@@ -25,17 +25,6 @@ namespace _NAC {
 			static SDL_Renderer* m_Renderer;
 			static SDL_Window* m_Window;
 
-			static SDL_Surface* m_Surface;
-			static SDL_Texture* m_Texture;
-			static SDL_Surface* m_Surface2;
-			static SDL_Texture* m_Texture2;
-
-			// array of sdl_textures
-			static SDL_Texture* m_Textures[100];
-
-			// array of sdl_surfaces
-			static SDL_Surface* m_Surfaces[100];
-
 			//array of sdl_rects
 			static SDL_Rect m_Rects[100];
 
@@ -43,7 +32,14 @@ namespace _NAC {
 			static SDL_Rect m_LastRects[100];
 
 			//array of textures
-			static Texture* m_Textures2[100];
+			static Texture* m_Textures[100];
+
+			//mouse position
+			static int m_MouseX;
+			static int m_MouseY;
+
+			//static int counter
+			static int m_Counter;
 
 		public:
 			Renderer(SDL_Window* window);

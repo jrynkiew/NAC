@@ -52,14 +52,17 @@ namespace _NAC
             // on mouse move get delta mouse movement from the center of the screen and send it to the interface
             if (event.type == SDL_MOUSEMOTION)
             {
-                ImGuiIO& io = ImGui::GetIO();
-                io.MousePos.x = event.motion.x;
-                io.MousePos.y = event.motion.y;
+                // ImGuiIO& io = ImGui::GetIO();
+                // io.MousePos.x = event.motion.x;
+                // io.MousePos.y = event.motion.y;
             }
             if (event.type == SDL_MOUSEBUTTONDOWN)
             {
                 if (event.button.button == SDL_BUTTON_LEFT)
+                {
                     ImGui::GetIO().MouseDown[0] = true;
+                }
+                    
                 if (event.button.button == SDL_BUTTON_RIGHT)
                     ImGui::GetIO().MouseDown[1] = true;
             }
@@ -67,6 +70,7 @@ namespace _NAC
             {
                 if (event.button.button == SDL_BUTTON_LEFT)
                     ImGui::GetIO().MouseDown[0] = false;
+                    
                 if (event.button.button == SDL_BUTTON_RIGHT)
                     ImGui::GetIO().MouseDown[1] = false;
             }
