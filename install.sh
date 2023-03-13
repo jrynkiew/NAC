@@ -22,7 +22,7 @@ printf " ${green}done${reset}
 "
 
 docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml up -d jrpc-windows-builder jrpc-web-builder jrpc-linux-builder jrpc-windows64-builder
-
+docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml up nginx
 echo "
 ┍━━━━━━━━━━━━━━━━━━━━ ⋆⋅☆⋅⋆ ━━━━━━━━━━━━━━━━━━━━┑"
 
@@ -36,9 +36,6 @@ echo "┃ http://localhost:80                           ┃"
 
 echo "┕━━━━━━━━━━━━━━━━━━━━ ⋆⋅☆⋅⋆ ━━━━━━━━━━━━━━━━━━━━┙
 "
-
-python3 -m http.server 80 --directory $jrpc_beta_v2/generated/web
-
 
 # Exit Docker
 docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml down

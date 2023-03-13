@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: jrpc-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - "./build/nginx/nginx.conf:/etc/nginx/nginx.conf"
+      - "./generated/web/:/usr/share/nginx/html"
