@@ -66,7 +66,8 @@ namespace _NAC {
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
             static int counter = 0;
-
+            ImGui::SetNextWindowPos(ImVec2(7, 11), ImGuiCond_Once);
+            ImGui::SetNextWindowSize(ImVec2(376, 163), ImGuiCond_Once);
             ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
             ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)

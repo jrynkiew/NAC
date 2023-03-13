@@ -21,54 +21,24 @@ done
 printf " ${green}done${reset}
 "
 
-# Check if the secret file is empty
-# If it's empty, it means that it's not the first time Jenkins has been started, 
-# in which case we don't show the startup sequence
-if [ ! -s "$jrpc_beta_v2/build/jenkins/data/secrets/initialAdminPassword" ]; then
-    docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml up jrpc-windows-builder jrpc-web-builder jrpc-linux-builder jrpc-windows64-builder
-else
+docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml up -d jrpc-windows-builder jrpc-web-builder jrpc-linux-builder jrpc-windows64-builder
 
 echo "
 ┍━━━━━━━━━━━━━━━━━━━━ ⋆⋅☆⋅⋆ ━━━━━━━━━━━━━━━━━━━━┑"
-echo "
-Please finish the installation on ${green}http://localhost:8080${reset}"
-echo "You will need to set up the following:
-"
-echo "  - ${gold}Admin Account${reset}  -  set to u:admin p:admin"
-echo "  - ${gold}Server URL${reset}  -  set to http://jenkins:8080/"
-echo "  - ${gold}Install plugins${reset}  -  install recommended"
 
-echo "
-You will be asked to provide a 'one-time' Jenkins administrator password."
+echo "┃ ${green}Jenkins is ready!${reset}                             ┃"
+echo "┃ http://localhost:8080                         ┃"
 
-echo "
-Your password is 
-    ${red}
-        $(cat $jrpc_beta_v2/build/jenkins/data/secrets/initialAdminPassword)
-    ${reset}" 
+echo "┃ http://localhost:8080/configuration-as-code/  ┃"
+echo "┃                                               ┃"
+echo "┃ ${green}Python Web Server is ready!${reset}                   ┃"
+echo "┃ http://localhost:80                           ┃"
 
 echo "┕━━━━━━━━━━━━━━━━━━━━ ⋆⋅☆⋅⋆ ━━━━━━━━━━━━━━━━━━━━┙
 "
 
-while :
-do
-# Getting necessary user input
-read -p "When you have completed the Jenkins server setup, press Enter" CONTINUE
-
-case $CONTINUE in
-    *) # Build IoTeX Full Node
-    docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml up jrpc-windows-builder jrpc-web-builder jrpc-linux-builder jrpc-windows64-builder
-    exit ;;
-esac
-done
-
-fi
+python3 -m http.server 80 --directory $jrpc_beta_v2/generated/web
 
 
 # Exit Docker
 docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml down
-
-
-# investigate http://localhost:8080/configuration-as-code/reference#ComputerLauncher-command to add nodes and ssh into them after Jenkins initialization
-# script needs to be added to configuration as a service on casc.yaml in Jenkins build folder, then after Jenkins initialization, wait for nodes to startup
-# then ssh into them and connect

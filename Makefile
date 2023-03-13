@@ -35,7 +35,7 @@ ifeq (${BUILD_TARGET},web)
 EMS += -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s DISABLE_EXCEPTION_CATCHING=1
 CPPFLAGS = -I$(IMGUI_DIR) -I$(SRC_DIR)/backends -I$(NAC_DIR) -g -Wall -Wformat -Os -DIMGUI_DISABLE_FILE_FUNCTIONS $(EMS)
 LIBS += $(EMS)
-LDFLAGS += -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -s --shell-file shell_minimal.html --use-preload-plugins --preload-file $(NAC_DIR)/textures@/ -s
+LDFLAGS += -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -s --shell-file shell_minimal.html --use-preload-plugins --preload-file $(NAC_DIR)/textures@/ --preload-file $(SRC_DIR)/configuration@/
 
 else ifeq (${BUILD_TARGET},windows)
 CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(SRC_DIR)/backends -I$(NAC_DIR) -g -Wall -Wformat -Dmain=SDL_main -I/usr/local/cross-tools/i686-w64-mingw32/include/SDL2 
@@ -59,6 +59,7 @@ endif
 # Universal build targets for all sources
 $(shell mkdir -p $(OUT))
 $(shell cp -r $(NAC_DIR)/textures/* $(OUT))
+$(shell cp -r $(SRC_DIR)/configuration/* $(OUT))
 
 $(OUT)/%.o:%.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
