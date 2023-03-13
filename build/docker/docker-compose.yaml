@@ -95,7 +95,7 @@ services:
       - "80:80"
     volumes:
       - "$jrpc_beta_v2/build/nginx/nginx.conf:/etc/nginx/nginx.conf"
-      - "$jrpc_beta_v2/generated/web/:/usr/share/nginx/html"
+      - "$jrpc_beta_v2/generated/web/:/usr/share/nginx/html/"
     networks:
       - jenkins_network
 

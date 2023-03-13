@@ -35,18 +35,18 @@ ifeq (${BUILD_TARGET},web)
 EMS += -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='["png"]' -s DISABLE_EXCEPTION_CATCHING=1
 CPPFLAGS = -I$(IMGUI_DIR) -I$(SRC_DIR)/backends -I$(NAC_DIR) -g -Wall -Wformat -Os -DIMGUI_DISABLE_FILE_FUNCTIONS $(EMS)
 LIBS += $(EMS)
-LDFLAGS += -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -s --shell-file shell_minimal.html --use-preload-plugins --preload-file $(NAC_DIR)/textures@/ --preload-file $(SRC_DIR)/configuration@/
+LDFLAGS += -s WASM=1 -lpthread -s ALLOW_MEMORY_GROWTH=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -s --shell-file shell_minimal.html --use-preload-plugins --preload-file $(NAC_DIR)/textures@/ --preload-file $(SRC_DIR)/configuration@/
 
 else ifeq (${BUILD_TARGET},windows)
 CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(SRC_DIR)/backends -I$(NAC_DIR) -g -Wall -Wformat -Dmain=SDL_main -I/usr/local/cross-tools/i686-w64-mingw32/include/SDL2 
 CXXFLAGS += -I/usr/local/x86_64-w64-mingw32/include
-LIBS = -L/usr/local/cross-tools/i686-w64-mingw32/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -mwindows -Wl,--dynamicbase -Wl,--nxcompat -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid
+LIBS = -L/usr/local/cross-tools/i686-w64-mingw32/lib -lmingw32 -lSDL2main -lpthread -lSDL2 -lSDL2_image -mwindows -Wl,--dynamicbase -Wl,--nxcompat -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid
 CFLAGS = $(CXXFLAGS)
 
 else ifeq (${BUILD_TARGET},windows64)
 CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(SRC_DIR)/backends -I$(NAC_DIR) -g -Wall -Wformat -Dmain=SDL_main -I/usr/local/cross-tools/x86_64-w64-mingw32/include/SDL2/
 CXXFLAGS += -I/usr/local/x86_64-w64-mingw32/include
-LIBS = -L/usr/local/cross-tools/x86_64-w64-mingw32/lib -lmingw32 -lSDL2main -lSDL2_image -lSDL2 -mwindows -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid
+LIBS = -L/usr/local/cross-tools/x86_64-w64-mingw32/lib -lmingw32 -lpthread -lSDL2main -lSDL2_image -lSDL2 -mwindows -Wl,--dynamicbase -Wl,--nxcompat -Wl,--high-entropy-va -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid
 CFLAGS = $(CXXFLAGS)
 
 else ifeq (${BUILD_TARGET},linux)
