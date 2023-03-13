@@ -36,6 +36,9 @@ namespace _NAC
         return m_pInterface->Get_ImGui_Interface();
     }
 
+    // event loop to capture multi-touch events in SDL2 and send them to the interface
+
+
     void NAC::GetEvents() {
         SDL_Event event;
         while (SDL_PollEvent(&event))
@@ -52,12 +55,45 @@ namespace _NAC
             // on mouse move get delta mouse movement from the center of the screen and send it to the interface
             if (event.type == SDL_MOUSEMOTION)
             {
-                // ImGuiIO& io = ImGui::GetIO();
-                // io.MousePos.x = event.motion.x;
-                // io.MousePos.y = event.motion.y;
+            }
+            // on multiple finger touch get the delta of the touch and send it to the interface
+            if (event.type == SDL_FINGERDOWN)
+            {
+                if (event.tfinger.fingerId == 0)
+                {
+                    ImGui::GetIO().MouseDown[0] = true;
+                }
+                if (event.tfinger.fingerId == 1)
+                {
+                    ImGui::GetIO().MouseDown[1] = true;
+                }
+            }
+            if (event.type == SDL_FINGERUP)
+            {
+                if (event.tfinger.fingerId == 0)
+                {
+                    ImGui::GetIO().MouseDown[0] = false;
+                }
+                if (event.tfinger.fingerId == 1)
+                {
+                    ImGui::GetIO().MouseDown[1] = false;
+                }
+            }
+            if (event.type == SDL_FINGERMOTION)
+            {
+                if (event.tfinger.fingerId == 0)
+                {
+                    m_pRenderer->finger0Pos.x = event.tfinger.x;
+                    m_pRenderer->finger0Pos.y = event.tfinger.y;
+                }
+                if (event.tfinger.fingerId == 1)
+                {
+                    m_pRenderer->finger1Pos.x = event.tfinger.x;
+                    m_pRenderer->finger1Pos.y = event.tfinger.y;
+                }
             }
             if (event.type == SDL_MOUSEBUTTONDOWN)
-            {
+            {             
                 if (event.button.button == SDL_BUTTON_LEFT)
                 {
                     ImGui::GetIO().MouseDown[0] = true;
@@ -77,6 +113,8 @@ namespace _NAC
             if (event.type == SDL_MOUSEWHEEL)
             {
                 ImGui::GetIO().MouseWheel = event.wheel.y;
+                if (!ImGui::GetIO().WantCaptureMouse)
+                    ImGui::GetIO().MouseWheel < 0 ? m_pRenderer->Zoom_Decrement(1.3) : m_pRenderer->Zoom_Increment(1.3);
             }
             if (event.type == SDL_KEYDOWN)
             {

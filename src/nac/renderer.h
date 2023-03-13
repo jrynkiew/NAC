@@ -19,27 +19,35 @@
 
 namespace _NAC {
 
+	struct Position
+	{
+		float x;
+		float y;
+		float lastx;
+		float lasty;
+	};
+
 	class Renderer
 	{
 		private:
 			static SDL_Renderer* m_Renderer;
 			static SDL_Window* m_Window;
 
-			//array of sdl_rects
-			static SDL_Rect m_Rects[100];
-
-			//array of last sdl_rects
-			static SDL_Rect m_LastRects[100];
-
 			//array of textures
 			static Texture* m_Textures[100];
-
-			//mouse position
-			static int m_MouseX;
-			static int m_MouseY;
+			
+			//move texture
+			static int m_MoveX;
+			static int m_MoveY;
 
 			//static int counter
 			static int m_Counter;
+			
+			//number of textures
+			static int m_NumTextures;
+
+			// float lastDeltaDifferenceX = 0;
+			// float lastDeltaDifferenceY = 0;
 
 		public:
 			Renderer(SDL_Window* window);
@@ -48,12 +56,21 @@ namespace _NAC {
 			bool Initialize();
 			SDL_Renderer* Get_SDL_Renderer();
 
+			void Zoom_Decrement(double m_ZoomIncrement);
+			void Zoom_Increment(double m_ZoomIncrement);
+
+			Position mousePos;
+			Position finger0Pos;
+			Position finger1Pos;
+
 			void Clear();
 			void Present();
 			void New_Frame();
 			void Render();
 			void Move_Screen();
 			void Draw_Texture();
+
+			void Add_Texture(int w, int h, int x, int y, const char* path);
 
 			void Shutdown();
 	};
