@@ -2,6 +2,7 @@
 #define NAC_RENDERER_H
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_thread.h>
 #include <stdio.h>
 
 #include "texture.h"
