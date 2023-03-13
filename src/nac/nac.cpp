@@ -113,7 +113,8 @@ namespace _NAC
             if (event.type == SDL_MOUSEWHEEL)
             {
                 ImGui::GetIO().MouseWheel = event.wheel.y;
-                ImGui::GetIO().MouseWheel < 0 ? m_pRenderer->Zoom_Decrement(1.3) : m_pRenderer->Zoom_Increment(1.3);
+                if (!ImGui::GetIO().WantCaptureMouse)
+                    ImGui::GetIO().MouseWheel < 0 ? m_pRenderer->Zoom_Decrement(1.3) : m_pRenderer->Zoom_Increment(1.3);
             }
             if (event.type == SDL_KEYDOWN)
             {
