@@ -30,6 +30,13 @@
   <body>
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     <script type='text/javascript'>
+      if (window.isSecureContext) {
+        console.log("Secure context");
+        // Page is a secure context so service workers are now available
+        // navigator.serviceWorker.register("/offline-worker.js").then(() => {
+        //   // …
+        // });
+      }
       var Module = {
         preRun: [],
         postRun: [],

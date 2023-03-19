@@ -240,7 +240,90 @@ jobs:
           }
         }
       }
-
+  - script: >
+      pipelineJob('NAC/Web') {
+        definition {
+          cps {
+            script("""\
+              pipeline{
+                agent none
+                stages{
+                  stage("Web"){
+                    agent { label 'web' }
+                    steps{
+                      script{
+                        sh '${SCRIPT_PATH}/${EXEC}'
+                      }
+                    }
+                  }
+                }
+              }""".stripIndent())
+          }
+        }
+      }
+  - script: >
+      pipelineJob('NAC/Windows32') {
+        definition {
+          cps {
+            script("""\
+              pipeline{
+                agent none
+                stages{
+                  stage("Windows x32"){
+                    agent { label 'windows' } 
+                    steps{
+                      script{
+                        sh '${SCRIPT_PATH}/${EXEC}'
+                      }
+                    }
+                  }
+                }
+              }""".stripIndent())
+          }
+        }
+      }
+  - script: >
+      pipelineJob('NAC/Windows64') {
+        definition {
+          cps {
+            script("""\
+              pipeline{
+                agent none
+                stages{
+                  stage("Windows x64"){
+                    agent { label 'windows64' } 
+                    steps{
+                      script{
+                        sh '${SCRIPT_PATH}/${EXEC}'
+                      }
+                    }
+                  }
+                }
+              }""".stripIndent())
+          }
+        }
+      }
+  - script: >
+      pipelineJob('NAC/Linux64') {
+        definition {
+          cps {
+            script("""\
+              pipeline{
+                agent none
+                stages{
+                  stage("Linux x64"){
+                    agent { label 'linux' } 
+                    steps{
+                      script{
+                        sh '${SCRIPT_PATH}/${EXEC}'
+                      }
+                    }
+                  }
+                }
+              }""".stripIndent())
+          }
+        }
+      }
 # jobs:
 #   - script: >
 #       job('Job_DSL_Seed') {
