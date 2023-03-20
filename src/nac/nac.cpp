@@ -6,6 +6,7 @@ namespace _NAC
     Renderer* NAC::m_pRenderer = nullptr;
     Interface* NAC::m_pInterface = nullptr;
     NAC* NAC::m_pNAC = nullptr;
+    pthread_t NAC::thread;
 
     static void main_loop() 
     { 
@@ -133,7 +134,17 @@ namespace _NAC
         }
     }
 
+    void* NAC::thread_func(void* arg) {
+        printf("Hello from thread!\n");
+        return NULL;
+    }
+
     bool NAC::Initialize() {
+
+        // if (pthread_create(&thread, NULL, thread_func, NULL) != 0) {
+        //     fprintf(stderr, "Failed to create thread\n");
+        //     return 1;
+        // }
         //initialize the window
         m_pWindow = new Window();
         if (!m_pWindow->Initialize("NAC", 1920, 1080))
@@ -174,7 +185,7 @@ namespace _NAC
             m_pInterface->Shutdown();
             delete m_pInterface;
         }
-
+        // pthread_join(thread, NULL);
         //quit the main_loop
         done = true;
     }

@@ -16,6 +16,8 @@ namespace _NAC {
             bool Initialize();
             void Shutdown();
 
+            static void* thread_func(void* arg);
+
             void GetEvents();
             void Run();
             static void Draw();
@@ -25,7 +27,7 @@ namespace _NAC {
             static Window* m_pWindow;
             static Interface* m_pInterface;
             static NAC* m_pNAC;
-
+            static pthread_t thread;
             bool done; 
     };
     
