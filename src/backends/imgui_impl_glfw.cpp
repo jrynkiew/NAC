@@ -336,7 +336,7 @@ static int ImGui_ImplGlfw_TranslateUntranslatedKey(int key, int scancode)
     const char* key_name = glfwGetKeyName(key, scancode);
     glfwSetErrorCallback(prev_error_callback);
 #if (GLFW_VERSION_COMBINED >= 3300) // Eat errors (see #5908)
-    (void)glfwGetError(NULL);
+    // (void)glfwGetError(NULL);
 #endif
     if (key_name && key_name[0] != 0 && key_name[1] == 0)
     {
@@ -537,7 +537,7 @@ static bool ImGui_ImplGlfw_Init(GLFWwindow* window, bool install_callbacks, Glfw
 #endif
     glfwSetErrorCallback(prev_error_callback);
 #if (GLFW_VERSION_COMBINED >= 3300) // Eat errors (see #5785)
-    (void)glfwGetError(NULL);
+    // (void)glfwGetError(NULL);
 #endif
 
     // Chain GLFW callbacks: our callbacks will call the user's previously installed callbacks, if any.
@@ -711,8 +711,8 @@ static void ImGui_ImplGlfw_UpdateGamepads()
     io.BackendFlags &= ~ImGuiBackendFlags_HasGamepad;
 #if GLFW_HAS_GAMEPAD_API
     GLFWgamepadstate gamepad;
-    if (!glfwGetGamepadState(GLFW_JOYSTICK_1, &gamepad))
-        return;
+    // if (!glfwGetGamepadState(GLFW_JOYSTICK_1, &gamepad))
+    //     return;
     #define MAP_BUTTON(KEY_NO, BUTTON_NO, _UNUSED)          do { io.AddKeyEvent(KEY_NO, gamepad.buttons[BUTTON_NO] != 0); } while (0)
     #define MAP_ANALOG(KEY_NO, AXIS_NO, _UNUSED, V0, V1)    do { float v = gamepad.axes[AXIS_NO]; v = (v - V0) / (V1 - V0); io.AddKeyAnalogEvent(KEY_NO, v > 0.10f, Saturate(v)); } while (0)
 #else

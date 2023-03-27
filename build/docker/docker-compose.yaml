@@ -1,61 +1,13 @@
 version: '2'
 
 services:
-  jrpc-linux-builder:
-    container_name: jrpc-linux-builder
-    #Uncomment this line to use a pre-built container If you do so, comment out the "build" section
-    # image: jrpc1/nac-linux-builder:latest
-    build: 
-      context: ./
-      dockerfile: Dockerfile-Linux-x64-Builder
-    restart: "always"
-    volumes:
-      - "$jrpc_beta_v2/:/build/project/"
-      - "$jrpc_beta_v2/scripts/:/scripts/"
-      - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
-    networks:
-      - jenkins_network
-    command: "/scripts/start-agent.sh"
-
-  jrpc-windows-builder:
-    container_name: jrpc-windows-builder
-    #Uncomment this line to use a pre-built container If you do so, comment out the "build" section
-    # image: jrpc1/nac-windows-builder:latest
-    build: 
-      context: ./
-      dockerfile: Dockerfile-Windows-x32-Builder
-    restart: "always"
-    volumes:
-      - "$jrpc_beta_v2/:/build/project/"
-      - "$jrpc_beta_v2/scripts/:/scripts/"
-      - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
-    networks:
-      - jenkins_network
-    command: "/scripts/start-agent.sh"
-
-  jrpc-windows64-builder:
-    container_name: jrpc-windows64-builder
-    #Uncomment this line to use a pre-built container If you do so, comment out the "build" section
-    # image: jrpc1/nac-windows64-builder:latest
-    build: 
-      context: ./
-      dockerfile: Dockerfile-Windows-x64-Builder
-    restart: "always"
-    volumes:
-      - "$jrpc_beta_v2/:/build/project/"
-      - "$jrpc_beta_v2/scripts/:/scripts/"
-      - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
-    networks:
-      - jenkins_network
-    command: "/scripts/start-agent.sh"
-
   jrpc-web-builder:
     container_name: jrpc-web-builder
     #Uncomment this line to use a pre-built container If you do so, comment out the "build" section
-    # image: jrpc1/nac-web-builder:latest
-    build: 
-      context: ./
-      dockerfile: Dockerfile-Web-Builder
+    image: jrpc-web-builder:latest
+    # build: 
+    #   context: ./
+    #   dockerfile: Dockerfile-Web-Builder
     volumes:
       - "$jrpc_beta_v2/:/build/project/"
       - "$jrpc_beta_v2/scripts/:/scripts/"
@@ -85,6 +37,17 @@ services:
       - SCRIPT_PATH=/scripts
       - BUILD_PATH=/build
       - EXEC=build.sh
+    networks:
+      - jenkins_network
+
+  nginx:
+    image: nginx:latest
+    container_name: jrpc-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - "$jrpc_beta_v2/build/nginx/nginx.conf:/etc/nginx/nginx.conf"
+      - "$jrpc_beta_v2/generated/web/:/usr/share/nginx/html/"
     networks:
       - jenkins_network
 

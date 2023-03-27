@@ -94,21 +94,6 @@ jenkins:
       launcher:
         ssh:
           credentialsId: "ssh_with_passphrase_provided_via_file"
-          host: "jrpc-linux-builder"
-          port: 22
-          sshHostKeyVerificationStrategy: "nonVerifyingKeyVerificationStrategy"
-      name: "linux"
-      remoteFS: "/build"
-      retentionStrategy: "always"
-      nodeProperties:
-      - envVars:
-          env:
-          - key: "BUILD_TARGET"
-            value: "linux"
-  - permanent:
-      launcher:
-        ssh:
-          credentialsId: "ssh_with_passphrase_provided_via_file"
           host: "jrpc-web-builder"
           port: 22
           sshHostKeyVerificationStrategy: "nonVerifyingKeyVerificationStrategy"
@@ -120,40 +105,7 @@ jenkins:
           env:
           - key: "BUILD_TARGET"
             value: "web"
-  - permanent:
-      launcher:
-        ssh:
-          credentialsId: "ssh_with_passphrase_provided_via_file"
-          host: "jrpc-windows-builder"
-          port: 22
-          sshHostKeyVerificationStrategy: "nonVerifyingKeyVerificationStrategy"
-      name: "windows"
-      remoteFS: "/build"
-      retentionStrategy: "always"
-      nodeProperties:
-      - envVars:
-          env:
-          - key: "BUILD_TARGET"
-            value: "windows"
-          - key: "MINGW"
-            value: "/mingw"
-  - permanent:
-      launcher:
-        ssh:
-          credentialsId: "ssh_with_passphrase_provided_via_file"
-          host: "jrpc-windows64-builder"
-          port: 22
-          sshHostKeyVerificationStrategy: "nonVerifyingKeyVerificationStrategy"
-      name: "windows64"
-      remoteFS: "/build"
-      retentionStrategy: "always"
-      nodeProperties:
-      - envVars:
-          env:
-          - key: "BUILD_TARGET"
-            value: "windows64"
-          - key: "MINGW"
-            value: "/mingw64"
+  
   numExecutors: 0
 
 credentials:
@@ -203,32 +155,8 @@ jobs:
               pipeline{
                 agent none
                 stages{
-                  stage("Windows x32"){
-                    agent { label 'windows' } 
-                    steps{
-                      script{
-                        sh '${SCRIPT_PATH}/${EXEC}'
-                      }
-                    }
-                  }
-                  stage("Linux x64"){
-                    agent { label 'linux' } 
-                    steps{
-                      script{
-                        sh '${SCRIPT_PATH}/${EXEC}'
-                      }
-                    }
-                  }
                   stage("Web"){
                     agent { label 'web' }
-                    steps{
-                      script{
-                        sh '${SCRIPT_PATH}/${EXEC}'
-                      }
-                    }
-                  }
-                  stage("Windows x64"){
-                    agent { label 'windows64' } 
                     steps{
                       script{
                         sh '${SCRIPT_PATH}/${EXEC}'

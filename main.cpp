@@ -14,6 +14,7 @@
 #include "glad/glad.h"
 #endif
 #include <nac.h>
+#include <thread>
 
 using namespace _NAC;
 
@@ -56,7 +57,21 @@ static const char *fragment_shader_text =
 #endif
 
 std::function<void()> loop;
-void main_loop() { loop(); }
+void main_loop() { 
+    emscripten_log(EM_LOG_CONSOLE, "main_loop");
+    loop();
+ }
+
+void threadLoopIteration(void*)
+{
+        emscripten_log(EM_LOG_CONSOLE, "threadLoopIteration");
+        // loop();
+}
+
+void tw()
+{
+        emscripten_set_main_loop_arg(threadLoopIteration, nullptr, 0, 1);
+}
 
 void check_error(GLuint shader)
 {
@@ -159,6 +174,7 @@ int main(void)
     };
 
 #ifdef __EMSCRIPTEN__
+    std::thread thread(tw);
     emscripten_set_main_loop(main_loop, 0, true);
 #else
     while (!glfwWindowShouldClose(window))
