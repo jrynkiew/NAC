@@ -1,6 +1,7 @@
 #include <interface.h>
 #include <texture.h>
 #include <functional>
+#include <thread>
 
 namespace _NAC {
     class NAC { 
@@ -27,7 +28,6 @@ namespace _NAC {
             static Window* m_pWindow;
             static Interface* m_pInterface;
             static NAC* m_pNAC;
-            static pthread_t thread;
             bool done; 
     };
     
