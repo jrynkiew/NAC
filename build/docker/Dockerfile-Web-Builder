@@ -5,8 +5,9 @@ WORKDIR /build
 ARG CMAKE_VERSION=3.24.1
 ARG GLFW_VERSION=3.3.8
 ARG GOSU_VERSION=1.7
-
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/bin/java
+ARG NVM_DIR=/build/.nvm
+ARG NODE_VERSION=18.13.0
+ARG JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/bin/java
 
 SHELL [ "/bin/bash", "-c" ]
 
@@ -34,9 +35,16 @@ RUN set -ex \
         jq \
         openssh-server \
     \
+    && mkdir -p ${NVM_DIR} \
+    \
     && wget -q https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.tar.gz -O - | tar -xz \
     && git clone https://github.com/emscripten-core/emsdk.git emsdk \
     && wget -O /usr/local/bin/gosu https://github.com/tianon/gosu/releases/download/${GOSU_VERSION}/gosu-$(dpkg --print-architecture) \
+    && wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash \
+    \
+    && . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION} \
+    && . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION} \
+    && . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION} \
     \
     && cd cmake-${CMAKE_VERSION} \
     && ./configure \
@@ -53,10 +61,7 @@ RUN set -ex \
     && cd .. \
     \
     && apt-get remove --purge -y \
-        libssl-dev \
         wget \
-        git \
-        vim \
         libtool \
     \
     && apt-get clean \

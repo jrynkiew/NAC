@@ -1,3 +1,6 @@
 [submodule "external/vcmi"]
 	path = external/vcmi
 	url = https://github.com/vcmi/vcmi.git
+[submodule "external/web3.js"]
+	path = external/web3.js
+	url = https://github.com/web3/web3.js.git

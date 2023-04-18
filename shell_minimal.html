@@ -29,14 +29,66 @@
   </head>
   <body>
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    <script src="https://unpkg.com/web3@latest/dist/web3.min.js"></script>
     <script type='text/javascript'>
       if (window.isSecureContext) {
         console.log("Secure context");
-        // Page is a secure context so service workers are now available
-        // navigator.serviceWorker.register("/offline-worker.js").then(() => {
-        //   // …
-        // });
       }
+      
+      window.addEventListener('load', async () => {
+      // Wait for loading completion to avoid race conditions with web3 injection timing.
+        if (window.ethereum) {
+          const web3 = new Web3(window.ethereum);
+          try {
+            // Request account access if needed
+            await window.ethereum.enable();
+            // Accounts now exposed
+            try {
+              await ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: web3.utils.toHex(4689) }],
+              });
+            } catch (switchError) {
+              // This error code indicates that the chain has not been added to MetaMask.
+              if (switchError.code === 4902) {
+                try {
+                  await ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [
+                    {
+                      chainName: 'IoTeX Mainnet',
+                      chainId: web3.utils.toHex(chainId),
+                      nativeCurrency: { name: 'IOTX', decimals: 18, symbol: 'IOTX' },
+                      rpcUrls: ['https://iotexrpc.com']
+                    }],
+                  });
+                } catch (addError) {
+                  // handle "add" error
+                }
+              }
+              // handle other "switch" errors
+            }
+            return web3;
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        // Legacy dapp browsers...
+        else if (window.web3) {
+          // Use MetaMask/Mist's provider.
+          const web3 = window.web3;
+          console.log('Injected web3 detected.');
+          return web3;
+        }
+        // Fallback to localhost; use dev console port by default...
+        else {
+          const provider = new Web3.providers.HttpProvider('http://127.0.0.1:9545');
+          const web3 = new Web3(provider);
+          console.log('No web3 instance injected, using Local web3.');
+          return web3;
+        }
+      });
+
       var Module = {
         preRun: [],
         postRun: [],
@@ -65,6 +117,8 @@
       window.onerror = function() {
         console.log("onerror: " + event);
       };
+      const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+      console.log("web3: " + web3);
     </script>
     {{{ SCRIPT }}}
   </body>
