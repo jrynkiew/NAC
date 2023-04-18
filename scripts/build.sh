@@ -3,6 +3,9 @@ if [ "$BUILD_TARGET" = "web" ]
 then
     cd /build/emsdk/
     . ./emsdk_env.sh
+    embuilder build libpng
+    embuilder build sdl2
+    embuilder build sdl2_image
 fi
 
 cd /build/project/

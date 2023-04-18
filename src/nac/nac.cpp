@@ -6,22 +6,7 @@ namespace _NAC
     Renderer* NAC::m_pRenderer = nullptr;
     Interface* NAC::m_pInterface = nullptr;
     NAC* NAC::m_pNAC = nullptr;
-
-    void threadLoopIteration(void*)
-    {
-        emscripten_log(EM_LOG_CONSOLE, "threadLoopIteration");
-        // loop();
-    }
-
-    void tw()
-    {
-        emscripten_set_main_loop_arg(threadLoopIteration, nullptr, 0, 1);
-    }
-
-    static void main_loop() 
-    { 
-        loop(); 
-    }
+    bool NAC::done = false;
 
     NAC::NAC() {
         m_pNAC = this;
@@ -33,6 +18,30 @@ namespace _NAC
     }
 
     NAC::~NAC() {
+    }
+
+    void NAC::threadLoopIteration(void*)
+    {
+        #ifdef __EMSCRIPTEN__
+        emscripten_log(EM_LOG_CONSOLE, "threadLoopIteration");
+        #else
+        printf("threadLoopIteration");
+        #endif
+    }
+
+    void NAC::tw()
+    {
+        #ifdef __EMSCRIPTEN__
+        emscripten_set_main_loop_arg(threadLoopIteration, nullptr, 0, 1);
+        #else
+        while (!done)
+            threadLoopIteration(nullptr);
+        #endif
+    }
+
+    void NAC::main_loop() 
+    { 
+        loop(); 
     }
 
     SDL_Renderer* NAC::GetRenderer() { 
@@ -195,6 +204,7 @@ namespace _NAC
             std::thread thread(tw);
             emscripten_set_main_loop(main_loop, 0, true);
         #else
+            std::thread thread(tw);
             while (!done)
                 main_loop();
         #endif

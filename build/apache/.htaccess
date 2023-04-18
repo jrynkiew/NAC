@@ -1,0 +1,11 @@
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} !^/(www/.*)$
+RewriteRule ^(.*)$ https://jrpc.pl/ [QSA,L]
+Header add Access-Control-Allow-Origin: "https://jrpc.pl"
+Header add Access-Control-Allow-Methods: "GET,POST,OPTIONS,DELETE,PUT"
+Header add Access-Control-Allow-Headers: "Upgrade-Insecure-Requests"
+Header add Cross-Origin-Embedder-Policy "require-corp"
+Header add Cross-Origin-Opener-Policy "same-origin"	
+Header add Cache-Control "no-store"

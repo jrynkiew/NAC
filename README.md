@@ -65,6 +65,8 @@ id_ed25519.pub
 
 you might need to run `embuilder build libpng` or similar directly on the Web builder if you get build errors
 
+Specifically, you should run the following embuilder builds `libpng, sdl2, sdl2_image`
+
 Please follow the appendixes for instructions and the below attached pictures for additional assistance.
 
 [^1]: you need to set any configuration environmental variables required for your Makefiles, or any other scripts required at build time for that matter, in the Jenkins slave agent specification in `build\jenkins\casc.yaml`

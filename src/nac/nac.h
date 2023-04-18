@@ -19,6 +19,10 @@ namespace _NAC {
 
             static void* thread_func(void* arg);
 
+            static void threadLoopIteration(void*);
+            static void tw();
+            static void main_loop();
+
             void GetEvents();
             void Run();
             static void Draw();
@@ -28,7 +32,7 @@ namespace _NAC {
             static Window* m_pWindow;
             static Interface* m_pInterface;
             static NAC* m_pNAC;
-            bool done; 
+            static bool done; 
     };
     
     static std::function<void()> loop;
