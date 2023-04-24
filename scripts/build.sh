@@ -8,11 +8,11 @@ then
     cd /build/.nvm
     . ./nvm.sh
 
-    #build web3.js
-    cd /build/project/external/web3.js
-    node -v
-    npm install
-    npm run build
+    # #build web3.js
+    # cd /build/project/external/web3.js
+    # node -v
+    # npm install
+    # npm run build
 
     #set up emscripten
     cd /build/emsdk/

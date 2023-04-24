@@ -22,6 +22,7 @@ endif
 SRC_DIR = src
 IMGUI_DIR = src/imgui
 NAC_DIR = src/nac
+WEB3_DIR = external/web3.js/dist
 
 SOURCES = main.cpp $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
 SOURCES += $(SRC_DIR)/backends/imgui_impl_sdl2.cpp $(SRC_DIR)/backends/imgui_impl_sdlrenderer.cpp
@@ -60,6 +61,9 @@ endif
 $(shell mkdir -p $(OUT))
 $(shell cp -r $(NAC_DIR)/textures/* $(OUT))
 $(shell cp -r $(SRC_DIR)/configuration/* $(OUT))
+ifeq (${BUILD_TARGET},web)
+$(shell cp -r $(WEB3_DIR)/web3.min.js $(OUT))
+endif
 
 $(OUT)/%.o:%.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<

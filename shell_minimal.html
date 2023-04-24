@@ -29,7 +29,7 @@
   </head>
   <body>
     <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-    <script src="https://unpkg.com/web3@latest/dist/web3.min.js"></script>
+    <script src="/web3.min.js"></script>
     <script type='text/javascript'>
       if (window.isSecureContext) {
         console.log("Secure context");
@@ -41,10 +41,10 @@
           const web3 = new Web3(window.ethereum);
           try {
             // Request account access if needed
-            await window.ethereum.enable();
+            await web3.eth.requestAccounts()
             // Accounts now exposed
             try {
-              await ethereum.request({
+              await web3.currentProvider.request({
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: web3.utils.toHex(4689) }],
               });
@@ -52,12 +52,12 @@
               // This error code indicates that the chain has not been added to MetaMask.
               if (switchError.code === 4902) {
                 try {
-                  await ethereum.request({
+                  await web3.currentProvider.request({
                     method: 'wallet_addEthereumChain',
                     params: [
                     {
                       chainName: 'IoTeX Mainnet',
-                      chainId: web3.utils.toHex(chainId),
+                      chainId: web3.utils.toHex(4689),
                       nativeCurrency: { name: 'IOTX', decimals: 18, symbol: 'IOTX' },
                       rpcUrls: ['https://iotexrpc.com']
                     }],
@@ -117,8 +117,6 @@
       window.onerror = function() {
         console.log("onerror: " + event);
       };
-      const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
-      console.log("web3: " + web3);
     </script>
     {{{ SCRIPT }}}
   </body>
