@@ -10,6 +10,7 @@ then
 
     #build web3.js
     cd /build/project/external/web3.js
+    nvm use web3js
     node -v
     npm install
     npm run build
@@ -17,6 +18,17 @@ then
     #set up emscripten
     cd /build/emsdk/
     . ./emsdk_env.sh
+
+    #build imgui.js
+    cd /build/project/external/imgui-js
+    nvm use imguijs
+    node -v
+    npm install
+    npm install typescript -g
+    npm install @types/emscripten -g
+    make
+    npm run-script build
+    npm run-script dist
 
     #prebuild emscripten libraries
     embuilder build libpng

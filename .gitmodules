@@ -4,3 +4,6 @@
 [submodule "external/web3.js"]
 	path = external/web3.js
 	url = https://github.com/web3/web3.js.git
+[submodule "external/imgui-js"]
+	path = external/imgui-js
+	url = https://github.com/flyover/imgui-js.git

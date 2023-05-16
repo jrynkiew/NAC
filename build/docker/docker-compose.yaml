@@ -60,6 +60,7 @@ services:
       - "$jrpc_beta_v2/:/build/project/"
       - "$jrpc_beta_v2/scripts/:/scripts/"
       - "$jrpc_beta_v2/build/ssh-keys/:/mnt/secret_keys/"
+      - "$jrpc_beta_v2/build/.env/.emscripten:/build/emsdk/.emscripten"
     networks:
       - jenkins_network
     command: "/scripts/start-agent.sh"
