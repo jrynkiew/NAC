@@ -1,3 +1,61 @@
+let ImGui_web3, ImGui_web3_account, ImGui_web3_contract, ImGui_web3_contract_address, ImGui_web3_contract_abi, ImGui_web3_contract_instance;
+window.addEventListener('load', async () => {
+  // Wait for loading completion to avoid race conditions with web3 injection timing.
+    if (window.ethereum) {
+      const web3 = new Web3(window.ethereum);
+      try {
+        // Request account access if needed
+        await web3.eth.requestAccounts()
+        // Accounts now exposed
+        try {
+          await web3.currentProvider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: web3.utils.toHex(4689) }],
+          });
+        } catch (switchError) {
+          // This error code indicates that the chain has not been added to MetaMask.
+          if (switchError.code === 4902) {
+            try {
+              await web3.currentProvider.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                {
+                  chainName: 'IoTeX Mainnet',
+                  chainId: web3.utils.toHex(4689),
+                  nativeCurrency: { name: 'IOTX', decimals: 18, symbol: 'IOTX' },
+                  rpcUrls: ['https://iotexrpc.com']
+                }],
+              });
+            } catch (addError) {
+              // handle "add" error
+            }
+          }
+          // handle other "switch" errors
+        }
+        ImGui_web3 = web3;
+        web3.eth.requestAccounts().then((accounts) => {
+            console.log("Accounts", accounts);
+            ImGui_web3_account = accounts[0];
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    // Legacy dapp browsers...
+    else if (window.web3) {
+      // Use MetaMask/Mist's provider.
+      const web3 = window.web3;
+      console.log('Injected web3 detected.');
+      ImGui_web3 = web3;
+    }
+    // Fallback to localhost; use dev console port by default...
+    else {
+      const provider = new Web3.providers.HttpProvider('http://127.0.0.1:9545');
+      const web3 = new Web3(provider);
+      console.log('No web3 instance injected, using Local web3.');
+      ImGui_web3 = web3;
+    }
+  });
 (async function() {
   await ImGui.default();
   const canvas = document.getElementById("output");
@@ -21,6 +79,7 @@
   const camera = new THREE.PerspectiveCamera(50, canvas.width / canvas.height, 0.1, 10000);
   let orbitControls;
   let transformControls;
+  let web3_account;
   /* END of Initialize objects */
 
 
@@ -83,11 +142,12 @@
     ImGui.NewFrame();
 
     ImGui.SetNextWindowPos(new ImGui.ImVec2(20, 20), ImGui.Cond.FirstUseEver);
-    ImGui.SetNextWindowSize(new ImGui.ImVec2(294, 140), ImGui.Cond.FirstUseEver);
+    ImGui.SetNextWindowSize(new ImGui.ImVec2(400, 400), ImGui.Cond.FirstUseEver);
     ImGui.Begin("Debug");
     
     ImGui.ColorEdit4("clear color", clear_color);
     ImGui.Separator();
+    ImGui.Text(`Wallet Address: ${ImGui_web3_account}`);
     ImGui.Text(`Scene: ${scene.uuid.toString()}`);
     ImGui.Separator();
     ImGui.Text(`Material: ${material.uuid.toString()}`);
@@ -197,9 +257,5 @@
     ImGui.DestroyContext();
   }
   /* END of Clean up */
-
-
-  
-
 
 })();
