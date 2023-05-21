@@ -1,4 +1,4 @@
-let ImGui_web3, ImGui_web3_account, ImGui_web3_contract, ImGui_web3_contract_address, ImGui_web3_contract_abi, ImGui_web3_contract_instance;
+let ImGui_web3, ImGui_web3_account, ImGuiWindowPosX, ImGuiWindowPosY, ImGuiWindowSizeX, ImGuiWindowSizeY;
 window.addEventListener('load', async () => {
   // Wait for loading completion to avoid race conditions with web3 injection timing.
     if (window.ethereum) {
@@ -33,6 +33,7 @@ window.addEventListener('load', async () => {
           // handle other "switch" errors
         }
         ImGui_web3 = web3;
+        console.log("Injected web3 detected.");
         web3.eth.requestAccounts().then((accounts) => {
             console.log("Accounts", accounts);
             ImGui_web3_account = accounts[0];
@@ -47,16 +48,46 @@ window.addEventListener('load', async () => {
       const web3 = window.web3;
       console.log('Injected web3 detected.');
       ImGui_web3 = web3;
+      web3.eth.requestAccounts().then((accounts) => {
+        console.log("Accounts", accounts);
+        ImGui_web3_account = accounts[0];
+      });
+      console.log("MetaMask/Mist detected.");
     }
     // Fallback to localhost; use dev console port by default...
     else {
-      const provider = new Web3.providers.HttpProvider('http://127.0.0.1:9545');
+      const provider = new Web3.providers.HttpProvider('https://iotexrpc.com');
       const web3 = new Web3(provider);
       console.log('No web3 instance injected, using Local web3.');
       ImGui_web3 = web3;
+      web3.eth.requestAccounts().then((accounts) => {
+        console.log("Accounts", accounts);
+        ImGui_web3_account = accounts[0];
+      });
+      console.log("Localhost detected.");
     }
   });
 (async function() {
+  console.log(ImGui_web3);
+  // function touchHandler(event) {
+  //   var touch = event.changedTouches[0];
+  //   var simulatedEvent = new MouseEvent({
+  //       touchstart: "mousedown",
+  //       touchmove: "mousemove",
+  //       touchend: "mouseup"
+  //   }[event.type], {
+  //       bubbles: true, cancelable: true, view: window, detail: 1,
+  //       screenX: touch.screenX, screenY: touch.screenY, clientX: touch.clientX, clientY: touch.clientY,
+  //       ctrlKey: false, altKey: false, shiftKey: false, metaKey: false, button: 0, relatedTarget: null
+  //   });
+  //   touch.target.dispatchEvent(simulatedEvent);
+  // }
+  // // I suggest you be far more specific than "document"
+  // document.addEventListener("touchstart", touchHandler, true);
+  // document.addEventListener("touchmove", touchHandler, true);
+  // document.addEventListener("touchend", touchHandler, true);
+  // document.addEventListener("touchcancel", touchHandler, true);
+
   await ImGui.default();
   const canvas = document.getElementById("output");
   const devicePixelRatio = window.devicePixelRatio || 1;
@@ -144,7 +175,10 @@ window.addEventListener('load', async () => {
     ImGui.SetNextWindowPos(new ImGui.ImVec2(20, 20), ImGui.Cond.FirstUseEver);
     ImGui.SetNextWindowSize(new ImGui.ImVec2(400, 400), ImGui.Cond.FirstUseEver);
     ImGui.Begin("Debug");
-    
+    ImGuiWindowPosX = ImGui.GetWindowPos().x;
+    ImGuiWindowPosY = ImGui.GetWindowPos().y;
+    ImGuiWindowSizeX = ImGui.GetWindowSize().x;
+    ImGuiWindowSizeY = ImGui.GetWindowSize().y;
     ImGui.ColorEdit4("clear color", clear_color);
     ImGui.Separator();
     ImGui.Text(`Wallet Address: ${ImGui_web3_account}`);
@@ -246,6 +280,29 @@ window.addEventListener('load', async () => {
     else {
       orbitControls.enabled = false
       transformControls.enabled = false
+    }
+  })
+
+  window.addEventListener('touchstart', function (event) {
+    const touchX = event.touches[0].clientX // Obtain the X coordinate of the touch event
+    const touchY = event.touches[0].clientY // Obtain the Y coordinate of the touch event
+
+    if (touchX >= ImGuiWindowPosX && touchX <= (ImGuiWindowPosX + ImGuiWindowSizeX) &&
+        touchY >= ImGuiWindowPosY && touchY <= (ImGuiWindowPosY + ImGuiWindowSizeY)) {
+          orbitControls.enabled = false
+          transformControls.enabled = false
+    }
+  })
+
+  window.addEventListener('touchend', function (event) {
+    const touch = event.changedTouches[0]; // Get the first touch point
+    const touchX = touch.clientX; // X coordinate of the touch event
+    const touchY = touch.clientY;
+
+    if (touchX >= ImGuiWindowPosX && touchX <= (ImGuiWindowPosX + ImGuiWindowSizeX) &&
+        touchY >= ImGuiWindowPosY && touchY <= (ImGuiWindowPosY + ImGuiWindowSizeY)) {
+          orbitControls.enabled = true
+          transformControls.enabled = true
     }
   })
   /* END of ImGui Event Listeners */
