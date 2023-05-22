@@ -1,11 +1,14 @@
-let ImGui_web3, ImGui_web3_account, ImGuiWindowPosX, ImGuiWindowPosY, ImGuiWindowSizeX, ImGuiWindowSizeY;
+let web3, web3_account, ImGuiWindowPosX, ImGuiWindowPosY, ImGuiWindowSizeX, ImGuiWindowSizeY;
 window.addEventListener('load', async () => {
+  web3 = new Web3(window.ethereum);
   // Wait for loading completion to avoid race conditions with web3 injection timing.
     if (window.ethereum) {
-      const web3 = new Web3(window.ethereum);
       try {
         // Request account access if needed
-        await web3.eth.requestAccounts()
+        await web3.eth.requestAccounts().then((accounts) => {
+          console.log("Accounts", accounts);
+          web3_account = accounts[0];
+        });
         // Accounts now exposed
         try {
           await web3.currentProvider.request({
@@ -32,12 +35,6 @@ window.addEventListener('load', async () => {
           }
           // handle other "switch" errors
         }
-        ImGui_web3 = web3;
-        console.log("Injected web3 detected.");
-        web3.eth.requestAccounts().then((accounts) => {
-            console.log("Accounts", accounts);
-            ImGui_web3_account = accounts[0];
-        });
       } catch (error) {
         console.error(error);
       }
@@ -47,28 +44,27 @@ window.addEventListener('load', async () => {
       // Use MetaMask/Mist's provider.
       const web3 = window.web3;
       console.log('Injected web3 detected.');
-      ImGui_web3 = web3;
       web3.eth.requestAccounts().then((accounts) => {
         console.log("Accounts", accounts);
-        ImGui_web3_account = accounts[0];
+        web3_account = accounts[0];
       });
+      console.log(web3);
       console.log("MetaMask/Mist detected.");
     }
     // Fallback to localhost; use dev console port by default...
     else {
-      const provider = new Web3.providers.HttpProvider('https://iotexrpc.com');
+      const provider = new Web3.providers.HttpProvider('http://localhost:8545');
       const web3 = new Web3(provider);
       console.log('No web3 instance injected, using Local web3.');
-      ImGui_web3 = web3;
       web3.eth.requestAccounts().then((accounts) => {
         console.log("Accounts", accounts);
-        ImGui_web3_account = accounts[0];
+        web3_account = accounts[0];
       });
+      console.log(web3);
       console.log("Localhost detected.");
     }
   });
 (async function() {
-  console.log(ImGui_web3);
   // function touchHandler(event) {
   //   var touch = event.changedTouches[0];
   //   var simulatedEvent = new MouseEvent({
@@ -110,7 +106,6 @@ window.addEventListener('load', async () => {
   const camera = new THREE.PerspectiveCamera(50, canvas.width / canvas.height, 0.1, 10000);
   let orbitControls;
   let transformControls;
-  let web3_account;
   /* END of Initialize objects */
 
 
@@ -181,7 +176,7 @@ window.addEventListener('load', async () => {
     ImGuiWindowSizeY = ImGui.GetWindowSize().y;
     ImGui.ColorEdit4("clear color", clear_color);
     ImGui.Separator();
-    ImGui.Text(`Wallet Address: ${ImGui_web3_account}`);
+    ImGui.Text(`Wallet Address: ${web3_account}`);
     ImGui.Text(`Scene: ${scene.uuid.toString()}`);
     ImGui.Separator();
     ImGui.Text(`Material: ${material.uuid.toString()}`);
@@ -236,6 +231,16 @@ window.addEventListener('load', async () => {
   }
   /* END of GUI */
 
+  window.addEventListener( 'resize', onWindowResize, false );
+
+  function onWindowResize(){
+
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+
+      renderer.setSize( window.innerWidth, window.innerHeight );
+
+  }
 
   /* Transform Control Event Listeners */
   transformControls.addEventListener('mouseDown', function () {
@@ -247,6 +252,9 @@ window.addEventListener('load', async () => {
     if (ImGui.IsWindowHovered()) {
       orbitControls.enabled = true
     }
+  })
+  transformControls.addEventListener('objectChange', function () {
+    orbitControls.enabled = false // disable orbit controls when transform controls are used
   })
 
   window.addEventListener('keydown', function (event) {
@@ -295,15 +303,8 @@ window.addEventListener('load', async () => {
   })
 
   window.addEventListener('touchend', function (event) {
-    const touch = event.changedTouches[0]; // Get the first touch point
-    const touchX = touch.clientX; // X coordinate of the touch event
-    const touchY = touch.clientY;
-
-    if (touchX >= ImGuiWindowPosX && touchX <= (ImGuiWindowPosX + ImGuiWindowSizeX) &&
-        touchY >= ImGuiWindowPosY && touchY <= (ImGuiWindowPosY + ImGuiWindowSizeY)) {
-          orbitControls.enabled = true
-          transformControls.enabled = true
-    }
+      orbitControls.enabled = true
+      transformControls.enabled = true
   })
   /* END of ImGui Event Listeners */
 
