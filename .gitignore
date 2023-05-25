@@ -44,3 +44,6 @@ build/jenkins/data
 # build/docker/ssh-keys
 
 generated/
+
+threejs+imguijs/dist/
+threejs+imguijs/node_modules/

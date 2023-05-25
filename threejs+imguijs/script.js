@@ -101,9 +101,9 @@ window.addEventListener('load', async () => {
 
   /* Initialize objects */
   const clear_color = new ImGui.ImVec4(0.3, 0.3, 0.3, 1.00);
-  const renderer = new THREE.WebGLRenderer({ canvas: canvas });
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(50, canvas.width / canvas.height, 0.1, 10000);
+  const camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 10000);
   let orbitControls;
   let transformControls;
   /* END of Initialize objects */
@@ -119,7 +119,7 @@ window.addEventListener('load', async () => {
 	camera.position.set(0, 0, 500);
 	scene.add(camera);
   orbitControls = new THREE.OrbitControls(camera, canvas)
-  orbitControls.enableDamping = true
+  orbitControls.enableDamping = false
   orbitControls.target.set(0, 1, 0)
   /* END of Camera and Camera Orbit Controls */
 
@@ -174,7 +174,9 @@ window.addEventListener('load', async () => {
     ImGuiWindowPosY = ImGui.GetWindowPos().y;
     ImGuiWindowSizeX = ImGui.GetWindowSize().x;
     ImGuiWindowSizeY = ImGui.GetWindowSize().y;
-    ImGui.ColorEdit4("clear color", clear_color);
+    // imgui color picker flags
+    const flags = ImGui.ImGuiColorEditFlags.AlphaBar | ImGui.ImGuiColorEditFlags.AlphaPreviewHalf | ImGui.ImGuiColorEditFlags.PickerHueWheel;
+    ImGui.ColorEdit4("clear color", clear_color, flags);
     ImGui.Separator();
     ImGui.Text(`Wallet Address: ${web3_account}`);
     ImGui.Text(`Scene: ${scene.uuid.toString()}`);
