@@ -1,6 +1,6 @@
 import os
 emsdk_path = os.path.dirname(os.getenv('EM_CONFIG')).replace('\\', '/')
-NODE_JS = emsdk_path + '/node/15.14.0_64bit/bin/node'
+NODE_JS = emsdk_path + '/node/16.20.0_64bit/bin/node'
 LLVM_ROOT = emsdk_path + '/upstream/bin'
 TEMP_DIR = '/build/temp'
 BINARYEN_ROOT = emsdk_path + '/upstream'

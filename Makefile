@@ -37,7 +37,7 @@ ifeq (${BUILD_TARGET},web)
 EMS += -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s WASM=1 -s USE_PTHREADS=1 -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1
 CPPFLAGS = -I$(IMGUI_DIR) -I$(SRC_DIR)/backends -I$(NAC_DIR) -g -Wall -Wformat -s USE_PTHREADS=1 -Os -DIMGUI_DISABLE_FILE_FUNCTIONS $(EMS)
 LIBS += $(EMS)
-LDFLAGS += -s USE_PTHREADS=1 -s ALLOW_MEMORY_GROWTH=1 -s OFFSCREENCANVAS_SUPPORT=1 -s PTHREAD_POOL_SIZE=4 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -s --shell-file shell_minimal.html --use-preload-plugins --preload-file $(NAC_DIR)/textures@/ --preload-file $(SRC_DIR)/configuration@/
+LDFLAGS += -s USE_PTHREADS=1 -s ALLOW_MEMORY_GROWTH=1 -s OFFSCREENCANVAS_SUPPORT=1 -s PTHREAD_POOL_SIZE=4 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -s --shell-file shell_minimal.html --use-preload-plugins --preload-file $(NAC_DIR)/textures@/
 
 else ifeq (${BUILD_TARGET},windows)
 CXXFLAGS = -std=c++11 -I$(IMGUI_DIR) -I$(SRC_DIR)/backends -I$(NAC_DIR) -g -Wall -Wformat -pthread  -Dmain=SDL_main -I/usr/local/cross-tools/i686-w64-mingw32/include/SDL2 
@@ -61,7 +61,6 @@ endif
 # Universal build targets for all sources
 $(shell mkdir -p $(OUT))
 $(shell cp -r $(NAC_DIR)/textures/* $(OUT))
-$(shell cp -r $(SRC_DIR)/configuration/* $(OUT))
 ifeq (${BUILD_TARGET},web)
 $(shell cp -r $(WEB3_DIR)/web3.min.js $(OUT))
 $(shell cp -r $(IMGUIJS_DIR)/* $(OUT))
