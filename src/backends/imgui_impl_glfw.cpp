@@ -92,7 +92,7 @@
 #define GLFW_HAS_WINDOW_HOVERED         (GLFW_VERSION_COMBINED >= 3300) // 3.3+ GLFW_HOVERED
 #define GLFW_HAS_WINDOW_ALPHA           (GLFW_VERSION_COMBINED >= 3300) // 3.3+ glfwSetWindowOpacity
 #define GLFW_HAS_PER_MONITOR_DPI        (GLFW_VERSION_COMBINED >= 3300) // 3.3+ glfwGetMonitorContentScale
-#define GLFW_HAS_VULKAN                 (GLFW_VERSION_COMBINED >= 3200) // 3.2+ glfwCreateWindowSurface
+// #define GLFW_HAS_VULKAN                 (GLFW_VERSION_COMBINED >= 3200) // 3.2+ glfwCreateWindowSurface
 #define GLFW_HAS_FOCUS_WINDOW           (GLFW_VERSION_COMBINED >= 3200) // 3.2+ glfwFocusWindow
 #define GLFW_HAS_FOCUS_ON_SHOW          (GLFW_VERSION_COMBINED >= 3300) // 3.3+ GLFW_FOCUS_ON_SHOW
 #define GLFW_HAS_MONITOR_WORK_AREA      (GLFW_VERSION_COMBINED >= 3300) // 3.3+ glfwGetMonitorWorkarea
@@ -711,6 +711,28 @@ static void ImGui_ImplGlfw_UpdateGamepads()
     io.BackendFlags &= ~ImGuiBackendFlags_HasGamepad;
 #if GLFW_HAS_GAMEPAD_API
     GLFWgamepadstate gamepad;
+    gamepad.axes[GLFW_GAMEPAD_AXIS_LEFT_X] = 0.0f;
+    gamepad.axes[GLFW_GAMEPAD_AXIS_LEFT_Y] = 0.0f;
+    gamepad.axes[GLFW_GAMEPAD_AXIS_RIGHT_X] = 0.0f;
+    gamepad.axes[GLFW_GAMEPAD_AXIS_RIGHT_Y] = 0.0f;
+    gamepad.axes[GLFW_GAMEPAD_AXIS_LEFT_TRIGGER] = 0.0f;
+    gamepad.axes[GLFW_GAMEPAD_AXIS_RIGHT_TRIGGER] = 0.0f;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_A] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_B] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_X] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_Y] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_LEFT_BUMPER] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_BACK] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_START] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_GUIDE] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_LEFT_THUMB] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_RIGHT_THUMB] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_DPAD_UP] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_DPAD_RIGHT] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_DPAD_DOWN] = 0;
+    gamepad.buttons[GLFW_GAMEPAD_BUTTON_DPAD_LEFT] = 0;
+    
     // if (!glfwGetGamepadState(GLFW_JOYSTICK_1, &gamepad))
     //     return;
     #define MAP_BUTTON(KEY_NO, BUTTON_NO, _UNUSED)          do { io.AddKeyEvent(KEY_NO, gamepad.buttons[BUTTON_NO] != 0); } while (0)

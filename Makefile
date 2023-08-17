@@ -74,9 +74,7 @@ serve: all
 $(OUT)/$(EXE): $(OBJS)
 	$(CXX) -o $@ $(OBJS) $(LIBS) $(LDFLAGS)
 clean:
-	rm -rf $(OBJS)
-	rm -r $(OUT)
-
+	rm -f $(OUT)/*
 
 # GL Loader compilation for Windows and Linux (Emscripten has it's own loader)
 ifeq (${BUILD_TARGET},windows)

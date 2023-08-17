@@ -21,7 +21,7 @@ done
 printf " ${green}done${reset}
 "
 
-docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml up -d jrpc-web-builder
+docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml up -d jrpc-windows-builder jrpc-web-builder jrpc-linux-builder jrpc-windows64-builder
 docker-compose -p jrpc -f $jrpc_beta_v2/build/docker/docker-compose.yaml up -d nginx
 echo "
 ┍━━━━━━━━━━━━━━━━━━━━ ⋆⋅☆⋅⋆ ━━━━━━━━━━━━━━━━━━━━┑"

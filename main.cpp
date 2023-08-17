@@ -58,19 +58,34 @@ static const char *fragment_shader_text =
 
 std::function<void()> loop;
 void main_loop() { 
-    emscripten_log(EM_LOG_CONSOLE, "main_loop");
+    #ifdef __EMSCRIPTEN__
+        emscripten_log(EM_LOG_CONSOLE, "main_loop");
+    #else
+        printf("main_loop\n");
+    #endif
     loop();
  }
 
 void threadLoopIteration(void*)
 {
+    #ifdef __EMSCRIPTEN__
         emscripten_log(EM_LOG_CONSOLE, "threadLoopIteration");
+    #else
+        printf("threadLoopIteration\n");
+    #endif
         // loop();
 }
 
 void tw()
 {
+    #ifdef __EMSCRIPTEN__
         emscripten_set_main_loop_arg(threadLoopIteration, nullptr, 0, 1);
+    #else
+        while(true)
+        {
+            threadLoopIteration(nullptr);
+        }
+    #endif
 }
 
 void check_error(GLuint shader)
