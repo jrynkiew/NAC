@@ -1,76 +1,3 @@
-# x-jenkins-node: &jenkins_node_anchor
-#   remoteFS: "/build"
-#   launcher:
-#     jnlp:
-#       workDirSettings:
-#         disabled: true
-#         failIfWorkDirIsMissing: false
-#         internalDir: "remoting"
-#         workDirPath: "/build"
-#   nodeProperties:
-#     - authorizationMatrix:
-#         inheritanceStrategy: "inheritingGlobal"
-#         permissions:
-#         - "GROUP:Agent/Disconnect:authenticated"
-#         - "GROUP:Agent/Build:authenticated"
-#         - "USER:Agent/Build:anonymous"
-
-# x-jenkins-node-ssh-launcher-config: &jenkins-node-ssh-launcher-config-anchor
-#   port: 22
-#   credentialsId: nac
-#   launchTimeoutSeconds: 60
-#   maxNumRetries: 3
-#   retryWaitTime: 30
-#   sshHostKeyVerificationStrategy:
-#     manuallyTrustedKeyVerificationStrategy:
-#       requireInitialManualTrust: false
-
-# jenkins:
-#   securityRealm:
-#     local:
-#       allowsSignup: false
-#       users:
-#        - id: ${JENKINS_ADMIN_ID}
-#          password: ${JENKINS_ADMIN_PASSWORD}
-
-#   authorizationStrategy:
-#     globalMatrix:
-#       permissions:
-#         - "Overall/Administer:admin"
-#         - "Overall/Read:authenticated"
-#   remotingSecurity:
-#       enabled: true
-
-#   nodes:
-#     - permanent:
-#         name: "windows"
-#         launcher:
-#           SSHLauncher:
-#             host: "windows"
-#             <<: *jenkins-node-ssh-launcher-config-anchor
-#         <<: *jenkins_node_anchor
-#     - permanent:
-#         name: "windows64"
-#         launcher:
-#           SSHLauncher:
-#             host: "windows64"
-#             <<: *jenkins-node-ssh-launcher-config-anchor
-#         <<: *jenkins_node_anchor
-#     - permanent:
-#         name: "web"
-#         launcher:
-#           SSHLauncher:
-#             host: "web"
-#             <<: *jenkins-node-ssh-launcher-config-anchor
-#         <<: *jenkins_node_anchor
-#     - permanent:
-#         name: "linux"
-#         launcher:
-#           SSHLauncher:
-#             host: "linux"
-#             <<: *jenkins-node-ssh-launcher-config-anchor
-#         <<: *jenkins_node_anchor
-
 jenkins:
 
   securityRealm:
@@ -172,8 +99,11 @@ credentials:
 security:
   scriptApproval:
     approvedScriptHashes:
-    - "SHA512:adafca9bb0ae348ba6f7a3c3a052eac18d31c12cb078e1bd834def0d8eb3997bcc99c4ed5880c741051731715cd9a4624d1e9176706a55b557cd1955effde4b7"
-    
+    - "SHA512:28e09f8f1adb8df753170bafcb95985502e1ad57f76b21ec6e36a26aef93a9f91b661bc928ea54c06a0dbbd2ede0e9d69f735990e35b6ebf434bea0048822899"
+    - "SHA512:4dfd3c16fb008d750aa0870961c68fff7da4080d5b29d9556d6b30a9baa721d197109f497cd8eb47fa791b017e266ccd5bf81fcec451f557338615d3ef7b4842"
+    - "SHA512:636f61007a13a51956239fbf3bdfc6783ceedd0ae7c65e43f836cd2b4e254644203bb0d423c2c3b95c02c37bb5acdf54e9216da92b30cc9e2b588168d5838797"
+    - "SHA512:6999afbdea383ddd983f8d5e73b966edb833a04e1d13e43586087a9797fa52f4fca9425c9c3ef446a9cea7eaad0a9ac92a8df2ca994a3d10ebebe8fbf9270fcb"
+    - "SHA512:adafca9bb0ae348ba6f7a3c3a052eac18d31c12cb078e1bd834def0d8eb3997bcc99c4ed5880c741051731715cd9a4624d1e9176706a55b557cd1955effde4b7"    
 unclassified:
   location:
     url: "http://jenkins:8080/"
@@ -240,7 +170,90 @@ jobs:
           }
         }
       }
-
+  - script: >
+      pipelineJob('NAC/Web') {
+        definition {
+          cps {
+            script("""\
+              pipeline{
+                agent none
+                stages{
+                  stage("Web"){
+                    agent { label 'web' }
+                    steps{
+                      script{
+                        sh '${SCRIPT_PATH}/${EXEC}'
+                      }
+                    }
+                  }
+                }
+              }""".stripIndent())
+          }
+        }
+      }
+  - script: >
+      pipelineJob('NAC/Windows32') {
+        definition {
+          cps {
+            script("""\
+              pipeline{
+                agent none
+                stages{
+                  stage("Windows x32"){
+                    agent { label 'windows' } 
+                    steps{
+                      script{
+                        sh '${SCRIPT_PATH}/${EXEC}'
+                      }
+                    }
+                  }
+                }
+              }""".stripIndent())
+          }
+        }
+      }
+  - script: >
+      pipelineJob('NAC/Windows64') {
+        definition {
+          cps {
+            script("""\
+              pipeline{
+                agent none
+                stages{
+                  stage("Windows x64"){
+                    agent { label 'windows64' } 
+                    steps{
+                      script{
+                        sh '${SCRIPT_PATH}/${EXEC}'
+                      }
+                    }
+                  }
+                }
+              }""".stripIndent())
+          }
+        }
+      }
+  - script: >
+      pipelineJob('NAC/Linux64') {
+        definition {
+          cps {
+            script("""\
+              pipeline{
+                agent none
+                stages{
+                  stage("Linux x64"){
+                    agent { label 'linux' } 
+                    steps{
+                      script{
+                        sh '${SCRIPT_PATH}/${EXEC}'
+                      }
+                    }
+                  }
+                }
+              }""".stripIndent())
+          }
+        }
+      }
 # jobs:
 #   - script: >
 #       job('Job_DSL_Seed') {
