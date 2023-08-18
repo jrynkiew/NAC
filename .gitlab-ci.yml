@@ -6,4 +6,4 @@ build:
     - web
   stage: build-web
   script:
-    - docker build -t web-builder -f Web-Builder .
+    - sh install.sh
