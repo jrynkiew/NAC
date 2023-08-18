@@ -4,6 +4,10 @@ stages:
   - build-linux
 
 build-web:
+  artifacts:
+    name: "$CI_COMMIT_REF_NAME"
+    paths:
+      - generated/web
   variables:
     BUILD_TARGET: "web"
     GIT_STRATEGY: clone
@@ -14,6 +18,10 @@ build-web:
     - ./install.sh
   
 build-windows:
+  artifacts:
+    name: "$CI_COMMIT_REF_NAME"
+    paths:
+      - generated/windows
   variables:
     BUILD_TARGET: "windows"
     GIT_STRATEGY: clone
@@ -24,6 +32,10 @@ build-windows:
     - ./install.sh
 
 build-linux:
+  artifacts:
+    name: "$CI_COMMIT_REF_NAME"
+    paths:
+      - generated/linux
   variables:
     BUILD_TARGET: "linux"
     GIT_STRATEGY: clone
