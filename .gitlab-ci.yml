@@ -1,0 +1,9 @@
+stages:
+  - build-web
+
+build:
+  tags:
+    - web
+  stage: build-web
+  script:
+    - docker build -t web-builder -f Web-Builder .

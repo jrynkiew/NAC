@@ -1,4 +1,0 @@
-Host *
-    User nac
-    StrictHostKeyChecking no
-    IdentityFile /home/nac/.ssh/id_ed25519
