@@ -23,6 +23,7 @@ build-windows:
   variables:
     BUILD_TARGET: windows
     GIT_STRATEGY: clone
+    MINGW: /mingw64
   tags:
     - windows
   stage: build-all
