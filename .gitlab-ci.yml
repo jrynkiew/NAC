@@ -1,5 +1,6 @@
 stages:
   - build-all
+  - deploy
 
 build-web:
   artifacts:
@@ -43,3 +44,13 @@ build-linux:
   stage: build-all
   script:
     - ./install.sh
+
+run-web-server:
+  tags:
+    - web-server
+  stage: deploy
+  script:
+    - cp generated/web/* /usr/share/nginx/html/
+  needs:
+    - job: build-web
+      artifacts: true
