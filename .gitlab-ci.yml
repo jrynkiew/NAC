@@ -2,6 +2,8 @@ stages:
   - build-web
 
 build:
+  variables:
+    BUILD_TARGET: "web"
   tags:
     - web
   stage: build-web
