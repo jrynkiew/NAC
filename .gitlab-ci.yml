@@ -6,4 +6,4 @@ build:
     - web
   stage: build-web
   script:
-    - sh install.sh
+    - ./install.sh
