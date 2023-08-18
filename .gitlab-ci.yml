@@ -1,11 +1,31 @@
 stages:
   - build-web
+  - build-windows
+  - build-linux
 
-build:
+build-web:
   variables:
     BUILD_TARGET: "web"
   tags:
     - web
   stage: build-web
+  script:
+    - ./install.sh
+  
+build-windows:
+  variables:
+    BUILD_TARGET: "windows"
+  tags:
+    - windows
+  stage: build-windows
+  script:
+    - ./install.sh
+
+build-linux:
+  variables:
+    BUILD_TARGET: "linux"
+  tags:
+    - linux
+  stage: build-linux
   script:
     - ./install.sh
