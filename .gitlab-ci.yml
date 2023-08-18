@@ -1,7 +1,5 @@
 stages:
-  - build-web
-  - build-windows
-  - build-linux
+  - build-all
 
 build-web:
   artifacts:
@@ -9,11 +7,11 @@ build-web:
     paths:
       - generated/web
   variables:
-    BUILD_TARGET: "web"
+    BUILD_TARGET: web
     GIT_STRATEGY: clone
   tags:
     - web
-  stage: build-web
+  stage: build-all
   script:
     - ./install.sh
   
@@ -23,11 +21,11 @@ build-windows:
     paths:
       - generated/windows
   variables:
-    BUILD_TARGET: "windows"
+    BUILD_TARGET: windows
     GIT_STRATEGY: clone
   tags:
     - windows
-  stage: build-windows
+  stage: build-all
   script:
     - ./install.sh
 
@@ -37,10 +35,10 @@ build-linux:
     paths:
       - generated/linux
   variables:
-    BUILD_TARGET: "linux"
+    BUILD_TARGET: linux
     GIT_STRATEGY: clone
   tags:
     - linux
-  stage: build-linux
+  stage: build-all
   script:
     - ./install.sh
