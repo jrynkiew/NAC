@@ -10,7 +10,7 @@ build-web:
     BUILD_TARGET: web
     GIT_STRATEGY: clone
   tags:
-    - web
+    - web-runner
   stage: build-all
   script:
     - ./install.sh
@@ -25,7 +25,7 @@ build-windows:
     GIT_STRATEGY: clone
     MINGW: /mingw64
   tags:
-    - windows
+    - windows-runner
   stage: build-all
   script:
     - ./install.sh
@@ -39,7 +39,7 @@ build-linux:
     BUILD_TARGET: linux
     GIT_STRATEGY: clone
   tags:
-    - linux
+    - linux-runner
   stage: build-all
   script:
     - ./install.sh
