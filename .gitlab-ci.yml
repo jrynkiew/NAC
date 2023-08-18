@@ -6,6 +6,7 @@ stages:
 build-web:
   variables:
     BUILD_TARGET: "web"
+    GIT_STRATEGY: clone
   tags:
     - web
   stage: build-web
@@ -15,6 +16,7 @@ build-web:
 build-windows:
   variables:
     BUILD_TARGET: "windows"
+    GIT_STRATEGY: clone
   tags:
     - windows
   stage: build-windows
@@ -24,6 +26,7 @@ build-windows:
 build-linux:
   variables:
     BUILD_TARGET: "linux"
+    GIT_STRATEGY: clone
   tags:
     - linux
   stage: build-linux
