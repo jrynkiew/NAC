@@ -214,11 +214,10 @@ namespace _NAC
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+		ImGuiStyle* style = &ImGui::GetStyle();
 
 		#ifndef __EMSCRIPTEN__
 			io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-		
-			ImGuiStyle* style = &ImGui::GetStyle();
 			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 			{
 				style->WindowRounding = 0.0f;
@@ -235,7 +234,7 @@ namespace _NAC
 		#endif
 
 		// ImGui::StyleColorsDark();
-		
+
 		ImVec4* colors = style->Colors;
 		colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 		colors[ImGuiCol_TextDisabled]           = ImVec4(0.35f, 0.44f, 0.27f, 1.00f);
