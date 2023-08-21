@@ -292,6 +292,10 @@ namespace _NAC
 		colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
 		colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
+		style->FrameRounding = 3.0f;
+		style->ItemSpacing = ImVec2(6.0f, 6.0f);
+		style->FrameBorderSize = 1.0f;
+
     	glEnable(GL_CULL_FACE);
 
 		return true;
