@@ -218,11 +218,11 @@ namespace _NAC
 		#ifndef __EMSCRIPTEN__
 			io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 		
-			ImGuiStyle& style = ImGui::GetStyle();
+			ImGuiStyle* style = &ImGui::GetStyle();
 			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 			{
-				style.WindowRounding = 0.0f;
-				style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+				style->WindowRounding = 0.0f;
+				style->Colors[ImGuiCol_WindowBg].w = 1.0f;
 			}
 		#endif
 
