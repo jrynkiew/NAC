@@ -235,8 +235,7 @@ namespace _NAC
 		#endif
 
 		// ImGui::StyleColorsDark();
-
-		ImGuiStyle* style = &ImGui::GetStyle();
+		
 		ImVec4* colors = style->Colors;
 		colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
 		colors[ImGuiCol_TextDisabled]           = ImVec4(0.35f, 0.44f, 0.27f, 1.00f);
