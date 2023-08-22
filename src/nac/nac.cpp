@@ -22,7 +22,7 @@ namespace _NAC
     bool NAC::Initialize() {
         //initialize the window
         m_Window = new Window();
-        if (!m_Window->Initialize("NAC", 2560, 1440))
+        if (!m_Window->Initialize("NAC", 1920, 1080))
             return false;
             
         #ifndef __EMSCRIPTEN__
