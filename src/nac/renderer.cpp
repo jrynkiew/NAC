@@ -225,7 +225,7 @@ namespace _NAC
 			}
 		#endif
 
-		ImGui_ImplGlfw_InitForOpenGL(window, true);
+		ImGui_ImplGlfw_InitForOpenGL(window, false);
 
 		#ifdef __EMSCRIPTEN__
 			ImGui_ImplOpenGL3_Init("#version 300 es");
