@@ -29,7 +29,6 @@ static const struct
         {0.f, 0.6f, 0.f, 0.f, 1.f}};
 
 static const char *vertex_shader_text =
-    "#version 300 es\n"
     "uniform mat4 MVP;\n"
     "attribute vec3 vCol;\n"
     "attribute vec2 vPos;\n"
@@ -42,14 +41,12 @@ static const char *vertex_shader_text =
 
 #ifdef __EMSCRIPTEN__
 static const char *fragment_shader_text =
-    "#version 300 es\n"
 	"precision mediump float;\n"
     "varying vec3 color;\n"
     "void main()\n"
     "{\n"
     "    gl_FragColor = vec4(color, 1.0);\n"
     "}\n";
-
 #else
 static const char *fragment_shader_text =
     "varying vec3 color;\n"
@@ -58,6 +55,7 @@ static const char *fragment_shader_text =
     "    gl_FragColor = vec4(color, 1.0);\n"
     "}\n";
 #endif
+
 
 
 NAC* nac;
