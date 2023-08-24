@@ -46,13 +46,13 @@ namespace _NAC
         while (!glfwWindowShouldClose(m_Window->GetGLFWwindow()))
         {
             //clear the screen
-            m_Renderer->Clear();
+            // m_Renderer->Clear();
 
             //render the scene
             // m_Renderer->RenderScene();
 
             //render the gui
-            m_Renderer->Render();
+            // m_Renderer->Render();
 
             //swap buffers
             glfwSwapBuffers(m_Window->GetGLFWwindow());
