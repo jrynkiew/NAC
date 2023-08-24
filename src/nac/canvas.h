@@ -28,7 +28,7 @@ namespace _NAC
 		private:
 			static Canvas* m_pInstance;
             static const Vertex vertices[3];
-            const char* vertex_shader_text;          
-            const char* fragment_shader_text;
+            static const char* vertex_shader_text;       
+            static const char* fragment_shader_text;
     };
 }
