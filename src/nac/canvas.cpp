@@ -43,6 +43,7 @@ namespace _NAC
     }
 
     bool Canvas::Initialize(GLFWwindow* window) {
+        return true;
     }
 
     void Canvas::Shutdown() {

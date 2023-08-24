@@ -28,6 +28,14 @@ namespace _NAC
 		return m_pInstance;
 	}
 
+    Canvas* Renderer::GetCanvas()
+    {
+        if (!m_Canvas)
+            m_Canvas = new Canvas();
+
+        return m_Canvas;
+    }
+
 	bool Renderer::Initialize(GLFWwindow* window)
 	{
 		IMGUI_CHECKVERSION();
