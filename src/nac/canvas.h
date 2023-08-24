@@ -25,10 +25,10 @@ namespace _NAC
             const Vertex* getVertices() const {
                 return vertices;
             }
-            GLsizei getVerticesSize() const {
+            GLsizei GetVerticesSize() const {
                 return sizeof(vertices);
             }
-            GLsizei getVerticesCount() const {
+            GLsizei GetVerticesCount() const {
                 return sizeof(vertices) / sizeof(Vertex);
             }
 		private:
