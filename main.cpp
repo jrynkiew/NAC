@@ -103,13 +103,13 @@ int main(void)
 
     auto vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     const char* vertexShaderText = nac->GetRenderer()->GetCanvas()->GetVertexShaderText();
-    glShaderSource(vertex_shader, 1, &(nac->GetRenderer()->GetCanvas()->GetVertexShaderText())), NULL);
+    glShaderSource(vertex_shader, 1, nac->GetRenderer()->GetCanvas()->GetVertexShaderText()), NULL);
     glCompileShader(vertex_shader);
     check_error(vertex_shader);
 
     auto fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     const char* fragmentShaderText = nac->GetRenderer()->GetCanvas()->GetFragmentShaderText();
-    glShaderSource(fragment_shader, 1, &(nac->GetRenderer()->GetCanvas()->GetFragmentShaderText())), NULL);
+    glShaderSource(fragment_shader, 1, nac->GetRenderer()->GetCanvas()->GetFragmentShaderText(), NULL);
     glCompileShader(fragment_shader);
     check_error(fragment_shader);
 
