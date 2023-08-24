@@ -3,7 +3,7 @@
 namespace _NAC
 {
     Canvas* Canvas::m_pInstance = nullptr;
-    const char* Canvas::vertex_shader_text =
+    const char* Canvas::vertex_shader_text const =
         "uniform mat4 MVP;\n"
         "attribute vec3 vCol;\n"
         "attribute vec2 vPos;\n"
@@ -14,7 +14,7 @@ namespace _NAC
         "    color = vCol;\n"
         "}\n";
     #ifdef __EMSCRIPTEN__
-    const char* Canvas::fragment_shader_text =
+    const char* Canvas::fragment_shader_text const =
         "precision mediump float;\n"
         "varying vec3 color;\n"
         "void main()\n"
@@ -22,7 +22,7 @@ namespace _NAC
         "    gl_FragColor = vec4(color, 1.0);\n"
         "}\n";
     #else
-    const char* Canvas::fragment_shader_text =
+    const char* Canvas::fragment_shader_text const =
         "varying vec3 color;\n"
         "void main()\n"
         "{\n"
