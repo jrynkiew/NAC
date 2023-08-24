@@ -18,16 +18,6 @@
 
 using namespace _NAC;
 
-static const struct
-{
-    float x, y;
-    float r, g, b;
-} vertices[3] =
-    {
-        {-0.6f, -0.4f, 1.f, 0.f, 0.f},
-        {0.6f, -0.4f, 0.f, 1.f, 0.f},
-        {0.f, 0.6f, 0.f, 0.f, 1.f}};
-
 static const char *vertex_shader_text =
     "uniform mat4 MVP;\n"
     "attribute vec3 vCol;\n"
@@ -158,10 +148,10 @@ int main(void)
     vcol_location = glGetAttribLocation(program, "vCol");
     glEnableVertexAttribArray(vpos_location);
     glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(vertices[0]), (void *)0);
+                          nac->GetRenderer()->GetCanvas()->GetVerticesSize(), (void *)0);
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-                          sizeof(vertices[0]), (void *)(sizeof(float) * 2));
+                          nac->GetRenderer()->GetCanvas()->GetVerticesSize(), (void *)(sizeof(float) * 2));
 
     loop = [&] {
         float ratio;
