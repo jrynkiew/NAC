@@ -22,7 +22,7 @@ namespace _NAC
             const char* GetVertexShader();
             const char* GetFragmentShader();
 
-            const Vertex* getVertices() const {
+            const Vertex* GetVertices() const {
                 return vertices;
             }
             GLsizei GetVerticesSize() const {
