@@ -18,16 +18,6 @@
 
 using namespace _NAC;
 
-static const struct
-{
-    float x, y;
-    float r, g, b;
-} vertices[3] =
-    {
-        {-0.6f, -0.4f, 1.f, 0.f, 0.f},
-        {0.6f, -0.4f, 0.f, 1.f, 0.f},
-        {0.f, 0.6f, 0.f, 0.f, 1.f}};
-
 static const char *vertex_shader_text =
     "uniform mat4 MVP;\n"
     "attribute vec3 vCol;\n"
@@ -157,12 +147,10 @@ int main(void)
     vpos_location = glGetAttribLocation(program, "vPos");
     vcol_location = glGetAttribLocation(program, "vCol");
     glEnableVertexAttribArray(vpos_location);
-    //you need to pass the appropriate arguments to this function. Specifically, you need to provide the attribute location (vpos_location), the number of components (2 for x and y), the data type (GL_FLOAT), whether the data should be normalized (GL_FALSE in this case), the stride (sizeof(vertices[0])), and the pointer to the data (0 for the initial position in the array). Here's how you can do it:
-    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(Vertex), (void *)0);
+    //you need to pass the appropriate arguments to this function. Specifically, you need to provide the attribute location (vpos_location), the number of components (2 for x and y), the data type (GL_FLOAT), whether the data should be normalized (GL_FALSE in this case), the stride (sizeof(vertices[0])), and the pointer to the data (0 for the initial position in the array). struct Vertex is defined in another class. Here's how you can do it:
+    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
     glEnableVertexAttribArray(vcol_location);
-    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-                          sizeof(Vertex), (void *)(sizeof(float) * 2));
+    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)(sizeof(float) * 2));
 
     loop = [&] {
         float ratio;
