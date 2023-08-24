@@ -64,7 +64,7 @@ namespace _NAC
     }
 
     const char* Canvas::GetVertexShaderText() const {
-        return vertex_shader_text.c_str();
+        return vertex_shader_text;
     }
 
     void Canvas::SetFragmentShaderText(const char* text) {
@@ -72,7 +72,7 @@ namespace _NAC
     }
 
     const char* Canvas::GetFragmentShaderText() const {
-        return fragment_shader_text.c_str();
+        return fragment_shader_text;
     }
 
     const Vertex* Canvas::GetVertices() const {

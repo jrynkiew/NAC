@@ -17,13 +17,13 @@ namespace _NAC
 			bool Initialize(GLFWwindow* window);
 			void Shutdown();
 			void Draw();
-            static Canvas* GetInstance();
+            Canvas* GetInstance();
             const Vertex* GetVertices() const;
             GLsizei GetVerticesSize() const;
             void SetVertexShaderText(const char* text);
-            static const char* GetVertexShaderText() const;
+            const char* GetVertexShaderText() const;
             void SetFragmentShaderText(const char* text);
-            static const char* GetFragmentShaderText() const;
+            const char* GetFragmentShaderText() const;
 
 		private:
 			static Canvas* m_pInstance;
