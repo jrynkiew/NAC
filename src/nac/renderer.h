@@ -35,7 +35,8 @@ namespace _NAC
 			void Render(GLFWwindow* window);
 			static Renderer* GetInstance();
 		private:
-			static Renderer* m_pInstance;	
+			static Renderer* m_pInstance;
+			static Canvas* m_Canvas;
 	};
 }
 

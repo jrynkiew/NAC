@@ -18,7 +18,7 @@ endif
 IMGUI_DIR = src
 SOURCES = main.cpp $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
 SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp
-SOURCES += $(IMGUI_DIR)/nac/nac.cpp $(IMGUI_DIR)/nac/renderer.cpp $(IMGUI_DIR)/nac/window.cpp
+SOURCES += $(IMGUI_DIR)/nac/nac.cpp $(IMGUI_DIR)/nac/renderer.cpp $(IMGUI_DIR)/nac/window.cpp $(IMGUI_DIR)/nac/canvas.cpp
 
 # Create an output directory for generated objects
 OBJS = $(addprefix $(OUT)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))

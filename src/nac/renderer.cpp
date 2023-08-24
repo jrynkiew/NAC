@@ -3,6 +3,7 @@
 namespace _NAC
 {
 	Renderer* Renderer::m_pInstance = nullptr;
+    Canvas* Renderer::m_Canvas = nullptr;
 
 	Renderer::Renderer()
 	{
