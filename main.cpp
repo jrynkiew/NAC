@@ -47,6 +47,8 @@ static const char *fragment_shader_text =
     "    gl_FragColor = vec4(color, 1.0);\n"
     "}\n";
 
+GLFWwindow* window;
+
 std::function<void()> loop;
 void main_loop() { 
     #ifdef __EMSCRIPTEN__
@@ -112,7 +114,7 @@ int main(void)
     }
 
     //assign pointer to window created during NAC initialization
-    auto window = nac->GetWindow()->GetGLFWwindow();
+    window = nac->GetWindow()->GetGLFWwindow();
     auto renderer = nac->GetRenderer();
 
     if (!window)
@@ -195,3 +197,15 @@ int main(void)
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
+
+
+#ifdef __EMSCRIPTEN__
+extern "C" {
+    EMSCRIPTEN_KEEPALIVE
+    void updateCanvasSize(int width, int height) {
+        // canvasWidth = width;
+        // canvasHeight = height;
+        glfwSetWindowSize(window, width, height);
+    }
+}
+#endif
