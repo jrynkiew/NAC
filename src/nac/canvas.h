@@ -21,9 +21,9 @@ namespace _NAC
             const Vertex* GetVertices() const;
             GLsizei GetVerticesSize() const;
             void SetVertexShaderText(const char* text);
-            const char* GetVertexShaderText() const;
+            const char*& GetVertexShaderText() const;
             void SetFragmentShaderText(const char* text);
-            const char* GetFragmentShaderText() const;
+            const char*& GetFragmentShaderText() const;
 
 		private:
 			static Canvas* m_pInstance;

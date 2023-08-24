@@ -63,7 +63,7 @@ namespace _NAC
         vertex_shader_text = text;
     }
 
-    const char* Canvas::GetVertexShaderText() const {
+    const char*& Canvas::GetVertexShaderText() const {
         return vertex_shader_text;
     }
 
@@ -71,7 +71,7 @@ namespace _NAC
         fragment_shader_text = text;
     }
 
-    const char* Canvas::GetFragmentShaderText() const {
+    const char*& Canvas::GetFragmentShaderText() const {
         return fragment_shader_text;
     }
 
