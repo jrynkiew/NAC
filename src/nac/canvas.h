@@ -25,6 +25,12 @@ namespace _NAC
             const Vertex* getVertices() const {
                 return vertices;
             }
+            GLsizei getVerticesSize() const {
+                return sizeof(vertices);
+            }
+            GLsizei getVerticesCount() const {
+                return sizeof(vertices) / sizeof(Vertex);
+            }
 		private:
 			static Canvas* m_pInstance;
 
