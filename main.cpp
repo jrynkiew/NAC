@@ -136,7 +136,7 @@ int main(void)
     GLuint vertex_buffer;
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    glBufferData(GL_ARRAY_BUFFER, nac->GetRenderer()->GetCanvas()->getVerticesSize(), nac->GetRenderer()->GetCanvas()->GetVertices(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, nac->GetRenderer()->GetCanvas()->GetVerticesSize(), nac->GetRenderer()->GetCanvas()->GetVertices(), GL_STATIC_DRAW);
     // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     auto vertex_shader = glCreateShader(GL_VERTEX_SHADER);
