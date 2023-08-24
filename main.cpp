@@ -56,8 +56,6 @@ static const char *fragment_shader_text =
     "}\n";
 #endif
 
-
-
 NAC* nac;
 
 std::function<void()> loop;
