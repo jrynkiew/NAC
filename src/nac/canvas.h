@@ -17,26 +17,18 @@ namespace _NAC
 			bool Initialize(GLFWwindow* window);
 			void Shutdown();
 			void Draw();
-
             static Canvas* GetInstance();
-            const char* GetVertexShader();
-            const char* GetFragmentShader();
+            const Vertex* GetVertices() const;
+            GLsizei GetVerticesSize() const;
+            void SetVertexShaderText(const char* text);
+            const char* GetVertexShaderText() const;
+            void SetFragmentShaderText(const char* text);
+            const char* GetFragmentShaderText() const;
 
-            const Vertex* GetVertices() const {
-                return vertices;
-            }
-            GLsizei GetVerticesSize() const {
-                return sizeof(vertices);
-            }
-            GLsizei GetVerticesCount() const {
-                return sizeof(vertices) / sizeof(Vertex);
-            }
 		private:
 			static Canvas* m_pInstance;
-
             static const Vertex vertices[3];
-        
-            static const char* vertex_shader;
-            static const char* fragment_shader;
+            const char* vertex_shader_text;          
+            const char* fragment_shader_text;
     };
 }

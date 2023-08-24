@@ -3,7 +3,7 @@
 namespace _NAC
 {
     Canvas* Canvas::m_pInstance = nullptr;
-    const char* Canvas::vertex_shader =
+    const char* Canvas::vertex_shader_text =
         "uniform mat4 MVP;\n"
         "attribute vec3 vCol;\n"
         "attribute vec2 vPos;\n"
@@ -14,7 +14,7 @@ namespace _NAC
         "    color = vCol;\n"
         "}\n";
     #ifdef __EMSCRIPTEN__
-    const char* Canvas::fragment_shader =
+    const char* Canvas::fragment_shader_text =
         "precision mediump float;\n"
         "varying vec3 color;\n"
         "void main()\n"
@@ -22,7 +22,7 @@ namespace _NAC
         "    gl_FragColor = vec4(color, 1.0);\n"
         "}\n";
     #else
-    const char* Canvas::fragment_shader =
+    const char* Canvas::fragment_shader_text =
         "varying vec3 color;\n"
         "void main()\n"
         "{\n"
@@ -59,11 +59,27 @@ namespace _NAC
         return m_pInstance;
     }
 
-    const char* Canvas::GetVertexShader() {
-        return vertex_shader;
+    void Canvas::SetVertexShaderText(const char* text) {
+        vertex_shader_text = text;
     }
 
-    const char* Canvas::GetFragmentShader() {
-        return fragment_shader;
+    const char* Canvas::GetVertexShaderText() const {
+        return vertex_shader_text.c_str();
+    }
+
+    void Canvas::SetFragmentShaderText(const char* text) {
+        fragment_shader_text = text;
+    }
+
+    const char* Canvas::GetFragmentShaderText() const {
+        return fragment_shader_text.c_str();
+    }
+
+    const Vertex* Canvas::GetVertices() const {
+        return vertices;
+    }
+
+    GLsizei Canvas::GetVerticesSize() const {
+        return sizeof(vertices);
     }
 }

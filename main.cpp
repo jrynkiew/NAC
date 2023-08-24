@@ -130,12 +130,12 @@ int main(void)
     // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     auto vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+    glShaderSource(vertex_shader, 1, &(nac->GetRenderer()->GetCanvas()->GetVertexShaderText()), NULL);
     glCompileShader(vertex_shader);
     check_error(vertex_shader);
 
     auto fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+    glShaderSource(fragment_shader, 1, &(nac->GetRenderer()->GetCanvas()->GetFragmentShaderText()), NULL);
     glCompileShader(fragment_shader);
     check_error(fragment_shader);
 
