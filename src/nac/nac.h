@@ -7,6 +7,7 @@ namespace _NAC {
             NAC();
             ~NAC();
             bool Initialize();
+            void Run();
             void Shutdown();
 
             Renderer* GetRenderer();

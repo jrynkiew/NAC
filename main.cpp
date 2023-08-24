@@ -47,7 +47,7 @@ static const char *fragment_shader_text =
     "    gl_FragColor = vec4(color, 1.0);\n"
     "}\n";
 
-GLFWwindow* window;
+NAC* nac;
 
 std::function<void()> loop;
 void main_loop() { 
@@ -103,7 +103,7 @@ int main(void)
     GLint mvp_location, vpos_location, vcol_location;
 
     //create NAC instance
-    NAC* nac = new NAC();
+    nac = new NAC();
 
     //initialize NAC
     if(!nac->Initialize())
@@ -113,11 +113,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    //assign pointer to window created during NAC initialization
-    window = nac->GetWindow()->GetGLFWwindow();
-    auto renderer = nac->GetRenderer();
-
-    if (!window)
+    if (!nac->GetWindow()->GetGLFWwindow())
     {
         printf("Error during NAC window creation!\n");
         nac->Shutdown();
@@ -161,7 +157,7 @@ int main(void)
         float ratio;
         int width, height;
         mat4x4 m, p, mvp;
-        glfwGetFramebufferSize(window, &width, &height);
+        glfwGetFramebufferSize(nac->GetWindow()->GetGLFWwindow(), &width, &height);
         ratio = width / (float)height;
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -173,11 +169,11 @@ int main(void)
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         
-        renderer->BeginScene();
+        nac->GetRenderer()->BeginScene();
 
         glfwPollEvents();
 
-        renderer->Render(window);
+        nac->GetRenderer()->Render(nac->GetWindow()->GetGLFWwindow());
 
     };
 
@@ -185,7 +181,7 @@ int main(void)
     std::thread thread(tw);
     emscripten_set_main_loop(main_loop, 0, true);
 #else
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(nac->GetWindow()->GetGLFWwindow()))
         main_loop();
 #endif
 
@@ -193,7 +189,7 @@ int main(void)
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(nac->GetWindow()->GetGLFWwindow());
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
@@ -205,7 +201,7 @@ extern "C" {
     void updateCanvasSize(int width, int height) {
         // canvasWidth = width;
         // canvasHeight = height;
-        glfwSetWindowSize(window, width, height);
+        glfwSetWindowSize(nac->GetWindow()->GetGLFWwindow(), width, height);
     }
 }
 #endif
