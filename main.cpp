@@ -29,6 +29,7 @@ static const struct
         {0.f, 0.6f, 0.f, 0.f, 1.f}};
 
 static const char *vertex_shader_text =
+    "#version 300 es\n"
     "uniform mat4 MVP;\n"
     "attribute vec3 vCol;\n"
     "attribute vec2 vPos;\n"
@@ -40,6 +41,7 @@ static const char *vertex_shader_text =
     "}\n";
 
 static const char *fragment_shader_text =
+    "#version 300 es\n"
 	"precision mediump float;\n"
     "varying vec3 color;\n"
     "void main()\n"
