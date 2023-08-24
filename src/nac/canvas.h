@@ -1,6 +1,11 @@
 #pragma once
 #include <GLFW/glfw3.h>
 
+struct Vertex {
+    float x, y;
+    float r, g, b;
+};
+
 namespace _NAC
 {
 	class Canvas
@@ -16,16 +21,16 @@ namespace _NAC
             static Canvas* GetInstance();
             const char* GetVertexShader();
             const char* GetFragmentShader();
-            const struct { float x, y; float r, g, b; }* GetVertices();
+            const Vertex* getVertices() const {
+                return vertices;
+            }
 
 		private:
 			static Canvas* m_pInstance;
+
+            static const Vertex vertices[3];
         
             static const char* vertex_shader;
             static const char* fragment_shader;
-            static const struct { float x, y; float r, g, b; } vertices[3] = {
-                {-0.6f, -0.6f, 1.f, 0.f, 0.f},
-                {0.6f, -0.6f, 0.f, 1.f, 0.f},
-                {0.f, 0.6f, 0.f, 0.f, 1.f}};
-            };
+    };
 }
