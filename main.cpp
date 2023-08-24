@@ -161,7 +161,7 @@ int main(void)
         mat4x4 m, p, mvp;
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
-        glViewport(0, 0, 2560, 1440);
+        glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
         mat4x4_identity(m);
         mat4x4_rotate_Z(m, m, (float)glfwGetTime());
