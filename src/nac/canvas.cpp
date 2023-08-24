@@ -31,8 +31,8 @@ namespace _NAC
     #endif
 
     const Vertex Canvas::vertices[3] = {
-        {-0.6f, -0.6f, 1.f, 0.f, 0.f},
-        {0.6f, -0.6f, 0.f, 1.f, 0.f},
+        {-0.6f, -0.3f, 1.f, 0.f, 0.f},
+        {0.6f, -0.3f, 0.f, 1.f, 0.f},
         {0.f, 0.6f, 0.f, 0.f, 1.f}
     };
 
