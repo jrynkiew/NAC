@@ -65,8 +65,4 @@ namespace _NAC
     const char* Canvas::GetFragmentShader() {
         return fragment_shader;
     }
-
-    const struct { float x, y; float r, g, b; }* Canvas::GetVertices() {
-        return vertices;
-    }
 }

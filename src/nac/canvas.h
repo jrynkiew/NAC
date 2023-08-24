@@ -21,10 +21,10 @@ namespace _NAC
             static Canvas* GetInstance();
             const char* GetVertexShader();
             const char* GetFragmentShader();
+
             const Vertex* getVertices() const {
                 return vertices;
             }
-
 		private:
 			static Canvas* m_pInstance;
 
