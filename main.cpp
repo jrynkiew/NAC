@@ -103,7 +103,7 @@ int main(void)
 
     auto vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     const char* vertexShaderText = nac->GetRenderer()->GetCanvas()->GetVertexShaderText();
-    glShaderSource(vertex_shader, 1, nac->GetRenderer()->GetCanvas()->GetVertexShaderText()), NULL);
+    glShaderSource(vertex_shader, 1, nac->GetRenderer()->GetCanvas()->GetVertexShaderText(), NULL);
     glCompileShader(vertex_shader);
     check_error(vertex_shader);
 
