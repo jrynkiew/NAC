@@ -39,7 +39,6 @@ static const char *vertex_shader_text =
     "    color = vCol;\n"
     "}\n";
 
-#ifdef __EMSCRIPTEN__
 static const char *fragment_shader_text =
 	"precision mediump float;\n"
     "varying vec3 color;\n"
@@ -47,14 +46,6 @@ static const char *fragment_shader_text =
     "{\n"
     "    gl_FragColor = vec4(color, 1.0);\n"
     "}\n";
-#else
-static const char *fragment_shader_text =
-    "varying vec3 color;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_FragColor = vec4(color, 1.0);\n"
-    "}\n";
-#endif
 
 std::function<void()> loop;
 void main_loop() { 
