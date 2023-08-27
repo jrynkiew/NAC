@@ -22,7 +22,7 @@ namespace _NAC
     bool NAC::Initialize() {
         //initialize the window
         m_Window = new Window();
-        if (!m_Window->Initialize("NAC", 1920, 1080))
+        if (!m_Window->Initialize("NAC", 1024, 720))
             return false;
             
         #ifndef __EMSCRIPTEN__
@@ -39,6 +39,27 @@ namespace _NAC
 
         //return success
         return true;
+    }
+
+    void NAC::Run() {
+        //loop until the user closes the window
+        while (!glfwWindowShouldClose(m_Window->GetGLFWwindow()))
+        {
+            //clear the screen
+            // m_Renderer->Clear();
+
+            //render the scene
+            // m_Renderer->RenderScene();
+
+            //render the gui
+            // m_Renderer->Render();
+
+            //swap buffers
+            glfwSwapBuffers(m_Window->GetGLFWwindow());
+
+            //poll events
+            glfwPollEvents();
+        }
     }
 
     void NAC::Shutdown() {

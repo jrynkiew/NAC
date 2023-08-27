@@ -1,139 +1,9 @@
 #include "renderer.h"
 
-
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 namespace _NAC
 {
-	void Renderer::check_error(GLuint shader)
-	{
-		GLint result;
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
-		if (result == GL_FALSE)
-		{
-			GLint log_length;
-			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
-			std::vector<GLchar> log(log_length);
-
-			GLsizei length;
-			glGetShaderInfoLog(shader, log.size(), &length, log.data());
-
-			this->error_callback(0, log.data());
-		}
-	}
-
-	void Renderer::main_loop()
-	{
-		Renderer::loop();
-	}
-
-	void Renderer::loop() {
-		// Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		// Use our shader
-		// glUseProgram(programID);
-
-		// 1rst attribute buffer : vertices
-		glEnableVertexAttribArray(0);
-		// glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		glVertexAttribPointer(
-			0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-			2,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
-
-		// 2nd attribute buffer : colors
-		glEnableVertexAttribArray(1);
-		// glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-		glVertexAttribPointer(
-			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-			3,                                // size
-			GL_FLOAT,                         // type
-			GL_FALSE,                         // normalized?
-			0,                                // stride
-			(void*)0                          // array buffer offset
-		);
-
-		// Draw the triangle !
-		glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-
-		// Swap buffers
-		// glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-
-	void Renderer::LoadTexture(const char* path, GLuint* pTexture)
-	{
-		int width, height, channels;
-		unsigned char* data = stbi_load(path, &width, &height, &channels, 0);
-		if (data)
-		{
-			glGenTextures(1, pTexture);
-			glBindTexture(GL_TEXTURE_2D, *pTexture);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-			stbi_image_free(data);
-		}
-		else
-		{
-			printf("Failed to load texture\n");
-		}
-	}
-
-	void Renderer::DisplayImage(GLuint * pTexture, const ImVec2& from, const ImVec2& to, uint32_t color) {
-		ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)*pTexture, from, to, ImVec2(0, 1), ImVec2(1, 0), color);
-	}
-
 	Renderer* Renderer::m_pInstance = nullptr;
-
-	const char* Renderer::vertex_shader_text =
-		"uniform mat4 MVP;\n"
-		"attribute vec3 vCol;\n"
-		"attribute vec2 vPos;\n"
-		"varying vec3 color;\n"
-		"void main()\n"
-		"{\n"
-		"    gl_Position = MVP * vec4(vPos, 0.0, 0.7);\n"
-		"    color = vCol;\n"
-		"}\n";
-
-	#ifdef __EMSCRIPTEN__
-	const char* Renderer::fragment_shader_text =
-		"precision mediump float;\n"
-		"varying vec3 color;\n"
-		"void main()\n"
-		"{\n"
-		"    gl_FragColor = vec4(color, 1.0);\n"
-		"}\n";
-	#else
-	const char* Renderer::fragment_shader_text =
-		"varying vec3 color;\n"
-		"void main()\n"
-		"{\n"
-		"    gl_FragColor = vec4(color, 1.0);\n"
-		"}\n";
-	#endif
-
-	const char* Renderer::GetFragmentShaderText()
-	{
-		return fragment_shader_text;
-	}
-
-	const char* Renderer::GetVertexShaderText()
-	{
-		return vertex_shader_text;
-	}
+    Canvas* Renderer::m_Canvas = nullptr;
 
 	Renderer::Renderer()
 	{
@@ -150,54 +20,6 @@ namespace _NAC
 		glfwTerminate();
 	}
 
-	void Renderer::error_callback(int error, const char* description)
-	{
-		fputs(description, stderr);
-	}
-
-	void Renderer::framebuffer_size_callback(GLFWwindow* window, int width, int height)
-	{
-		glViewport(0, 0, width, height);
-	}
-
-	void Renderer::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-	{
-	}
-
-	void Renderer::cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
-	{
-	}
-
-	void Renderer::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-	{
-		ImGuiIO& io = ImGui::GetIO();
-		if (action == GLFW_PRESS)
-			io.KeysDown[key] = true;
-		if (action == GLFW_RELEASE)
-			io.KeysDown[key] = false;
-		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-			glfwSetWindowShouldClose(window, GLFW_TRUE);
-		// Modifiers are not reliable across systems
-		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
-		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
-		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
-		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
-	}
-
-	void Renderer::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-	{
-	}
-
-	void Renderer::char_callback(GLFWwindow* window, unsigned int c)
-	{
-	}
-
-	//creates a new frame
-    void Renderer::NewFrame()
-    {
-
-    }
-
 	Renderer* Renderer::GetInstance()
 	{
 		if (!m_pInstance)
@@ -205,6 +27,14 @@ namespace _NAC
 
 		return m_pInstance;
 	}
+
+    Canvas* Renderer::GetCanvas()
+    {
+        if (!m_Canvas)
+            m_Canvas = new Canvas();
+
+        return m_Canvas;
+    }
 
 	bool Renderer::Initialize(GLFWwindow* window)
 	{
@@ -294,33 +124,17 @@ namespace _NAC
 
 		style->FrameRounding = 3.0f;
 		style->ItemSpacing = ImVec2(6.0f, 6.0f);
-		style->FrameBorderSize = 1.0f;
 
     	glEnable(GL_CULL_FACE);
 
 		return true;
 	}
 
-	void Renderer::Draw()
-	{
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-	}
-
 	void Renderer::Render(GLFWwindow* window)
 	{
 		ImGui::Render();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
-        // int display_w, display_h;
-        // glfwGetFramebufferSize(window, &display_w, &display_h);
-        // glViewport(0, 0, display_w, display_h);
-        // glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    	
-        // Update and Render additional Platform Windows
-        // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
-        //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
             GLFWwindow* backup_current_context = glfwGetCurrentContext();
@@ -328,7 +142,6 @@ namespace _NAC
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(backup_current_context);
         }
-
         glfwSwapBuffers(window);
 	}
 
@@ -399,155 +212,5 @@ namespace _NAC
         ImGui::End();
         if (showDemo)
         ImGui::ShowDemoWindow(&showDemo);
-		// Rendering
-       
-		// ImGuiIO& io = ImGui::GetIO();
-
-		// ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		// ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.0f, 0.0f });
-		// ImGui::PushStyleColor(ImGuiCol_WindowBg, { 0.0f, 0.0f, 0.0f, 0.0f });
-		// ImGui::Begin("##Backbuffer", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs);
-
-		// ImGui::SetWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-		// ImGui::SetWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y), ImGuiCond_Always);
 	}
-
-	// void Renderer::EndScene()
-	// {
-	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
-	// 	window->DrawList->PushClipRectFullScreen();
-
-	// 	ImGui::End();
-	// 	ImGui::PopStyleColor();
-	// 	ImGui::PopStyleVar(2);
-	// }
-
-	// float Renderer::RenderText(const std::string& text, const ImVec2& position, float size, uint32_t color, bool center)
-	// {
-	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
-
-	// 	float a = (color >> 24) & 0xff;
-	// 	float r = (color >> 16) & 0xff;
-	// 	float g = (color >> 8) & 0xff;
-	// 	float b = (color) & 0xff;
-
-	// 	std::stringstream stream(text);
-	// 	std::string line;
-
-	// 	float y = 0.0f;
-	// 	int i = 0;
-
-	// 	while (std::getline(stream, line))
-	// 	{
-	// 		ImVec2 textSize = m_pFont->CalcTextSizeA(size, FLT_MAX, 0.0f, line.c_str());
-
-	// 		if (center)
-	// 		{
-	// 			window->DrawList->AddText(m_pFont, size, { (position.x - textSize.x / 2.0f) + 1.0f, (position.y + textSize.y * i) + 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
-	// 			window->DrawList->AddText(m_pFont, size, { (position.x - textSize.x / 2.0f) - 1.0f, (position.y + textSize.y * i) - 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
-	// 			window->DrawList->AddText(m_pFont, size, { (position.x - textSize.x / 2.0f) + 1.0f, (position.y + textSize.y * i) - 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
-	// 			window->DrawList->AddText(m_pFont, size, { (position.x - textSize.x / 2.0f) - 1.0f, (position.y + textSize.y * i) + 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
-
-	// 			window->DrawList->AddText(m_pFont, size, { position.x - textSize.x / 2.0f, position.y + textSize.y * i }, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), line.c_str());
-	// 		}
-	// 		else
-	// 		{
-	// 			window->DrawList->AddText(m_pFont, size, { (position.x) + 1.0f, (position.y + textSize.y * i) + 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
-	// 			window->DrawList->AddText(m_pFont, size, { (position.x) - 1.0f, (position.y + textSize.y * i) - 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
-	// 			window->DrawList->AddText(m_pFont, size, { (position.x) + 1.0f, (position.y + textSize.y * i) - 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
-	// 			window->DrawList->AddText(m_pFont, size, { (position.x) - 1.0f, (position.y + textSize.y * i) + 1.0f }, ImGui::GetColorU32({ 0.0f, 0.0f, 0.0f, a / 255.0f }), line.c_str());
-
-	// 			window->DrawList->AddText(m_pFont, size, { position.x, position.y + textSize.y * i }, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), line.c_str());
-	// 		}
-
-	// 		y = position.y + textSize.y * (i + 1);
-	// 		i++;
-	// 	}
-
-	// 	return y;
-	// }
-
-	// void Renderer::RenderLine(const ImVec2& from, const ImVec2& to, uint32_t color, float thickness)
-	// {
-	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
-
-	// 	float a = (color >> 24) & 0xff;
-	// 	float r = (color >> 16) & 0xff;
-	// 	float g = (color >> 8) & 0xff;
-	// 	float b = (color) & 0xff;
-
-	// 	window->DrawList->AddLine(from, to, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), thickness);
-	// }
-
-	// void Renderer::RenderCircle(const ImVec2& position, float radius, uint32_t color, float thickness, uint32_t segments)
-	// {
-	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
-
-	// 	float a = (color >> 24) & 0xff;
-	// 	float r = (color >> 16) & 0xff;
-	// 	float g = (color >> 8) & 0xff;
-	// 	float b = (color) & 0xff;
-
-	// 	window->DrawList->AddCircle(position, radius, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), segments, thickness);
-	// }
-
-	// void Renderer::RenderCircleFilled(const ImVec2& position, float radius, uint32_t color, uint32_t segments)
-	// {
-	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
-
-	// 	float a = (color >> 24) & 0xff;
-	// 	float r = (color >> 16) & 0xff;
-	// 	float g = (color >> 8) & 0xff;
-	// 	float b = (color) & 0xff;
-
-	// 	window->DrawList->AddCircleFilled(position, radius, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), segments);
-	// }
-
-	// void Renderer::RenderRect(const ImVec2& from, const ImVec2& to, uint32_t color, float rounding, uint32_t roundingCornersFlags, float thickness)
-	// {
-	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
-
-	// 	float a = (color >> 24) & 0xFF;
-	// 	float r = (color >> 16) & 0xFF;
-	// 	float g = (color >> 8) & 0xFF;
-	// 	float b = (color) & 0xFF;
-
-	// 	window->DrawList->AddRect(from, to, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), rounding, roundingCornersFlags, thickness);
-	// }
-
-	// void Renderer::RenderRectFilled(const ImVec2& from, const ImVec2& to, uint32_t color, float rounding, uint32_t roundingCornersFlags)
-	// {
-	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
-
-	// 	float a = (color >> 24) & 0xFF;
-	// 	float r = (color >> 16) & 0xFF;
-	// 	float g = (color >> 8) & 0xFF;
-	// 	float b = (color) & 0xFF;
-
-	// 	window->DrawList->AddRectFilled(from, to, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), rounding, roundingCornersFlags);
-	// }
-
-	// void Renderer::RenderImage(GLuint * pTexture, const ImVec2& from, const ImVec2& to, uint32_t color)
-	// {
-	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
-
-	// 	float a = (color >> 24) & 0xFF;
-	// 	float r = (color >> 16) & 0xFF;
-	// 	float g = (color >> 8) & 0xFF;
-	// 	float b = (color) & 0xFF;
-
-	// 	window->DrawList->AddImage(pTexture, from, to, { 0.0f, 0.0f }, { 1.0f, 1.0f }, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }));
-	// }
-
-	// void Renderer::RenderImageRounded(GLuint * pTexture, const ImVec2& from, const ImVec2& to, uint32_t color, float rounding, uint32_t roundingCornersFlags)
-	// {
-	// 	ImGuiWindow* window = ImGui::GetCurrentWindow();
-
-	// 	float a = (color >> 24) & 0xFF;
-	// 	float r = (color >> 16) & 0xFF;
-	// 	float g = (color >> 8) & 0xFF;
-	// 	float b = (color) & 0xFF;
-
-	// 	window->DrawList->AddImageRounded(pTexture, from, to, { 0.0f, 0.0f }, { 1.0f, 1.0f }, ImGui::GetColorU32({ r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f }), rounding, roundingCornersFlags);
-	// }
 }

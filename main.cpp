@@ -18,43 +18,7 @@
 
 using namespace _NAC;
 
-static const struct
-{
-    float x, y;
-    float r, g, b;
-} vertices[3] =
-    {
-        {-0.6f, -0.4f, 1.f, 0.f, 0.f},
-        {0.6f, -0.4f, 0.f, 1.f, 0.f},
-        {0.f, 0.6f, 0.f, 0.f, 1.f}};
-
-static const char *vertex_shader_text =
-    "uniform mat4 MVP;\n"
-    "attribute vec3 vCol;\n"
-    "attribute vec2 vPos;\n"
-    "varying vec3 color;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-    "    color = vCol;\n"
-    "}\n";
-
-#ifdef __EMSCRIPTEN__
-static const char *fragment_shader_text =
-	"precision mediump float;\n"
-    "varying vec3 color;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_FragColor = vec4(color, 1.0);\n"
-    "}\n";
-#else
-static const char *fragment_shader_text =
-    "varying vec3 color;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_FragColor = vec4(color, 1.0);\n"
-    "}\n";
-#endif
+NAC* nac;
 
 std::function<void()> loop;
 void main_loop() { 
@@ -110,7 +74,7 @@ int main(void)
     GLint mvp_location, vpos_location, vcol_location;
 
     //create NAC instance
-    NAC* nac = new NAC();
+    nac = new NAC();
 
     //initialize NAC
     if(!nac->Initialize())
@@ -120,11 +84,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    //assign pointer to window created during NAC initialization
-    auto window = nac->GetWindow()->GetGLFWwindow();
-    auto renderer = nac->GetRenderer();
-
-    if (!window)
+    if (!nac->GetWindow()->GetGLFWwindow())
     {
         printf("Error during NAC window creation!\n");
         nac->Shutdown();
@@ -138,15 +98,16 @@ int main(void)
     GLuint vertex_buffer;
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, nac->GetRenderer()->GetCanvas()->GetVerticesSize(), nac->GetRenderer()->GetCanvas()->GetVertices(), GL_STATIC_DRAW);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     auto vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+    glShaderSource(vertex_shader, 1, &(nac->GetRenderer()->GetCanvas()->GetVertexShaderText()), NULL);
     glCompileShader(vertex_shader);
     check_error(vertex_shader);
 
     auto fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+    glShaderSource(fragment_shader, 1, &(nac->GetRenderer()->GetCanvas()->GetFragmentShaderText()), NULL);
     glCompileShader(fragment_shader);
     check_error(fragment_shader);
 
@@ -158,17 +119,16 @@ int main(void)
     vpos_location = glGetAttribLocation(program, "vPos");
     vcol_location = glGetAttribLocation(program, "vCol");
     glEnableVertexAttribArray(vpos_location);
-    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(vertices[0]), (void *)0);
+    //you need to pass the appropriate arguments to this function. Specifically, you need to provide the attribute location (vpos_location), the number of components (2 for x and y), the data type (GL_FLOAT), whether the data should be normalized (GL_FALSE in this case), the stride (sizeof(vertices[0])), and the pointer to the data (0 for the initial position in the array). struct Vertex is defined in another class. Here's how you can do it:
+    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
     glEnableVertexAttribArray(vcol_location);
-    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-                          sizeof(vertices[0]), (void *)(sizeof(float) * 2));
+    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)(sizeof(float) * 2));
 
     loop = [&] {
         float ratio;
         int width, height;
         mat4x4 m, p, mvp;
-        glfwGetFramebufferSize(window, &width, &height);
+        glfwGetFramebufferSize(nac->GetWindow()->GetGLFWwindow(), &width, &height);
         ratio = width / (float)height;
         glViewport(0, 0, width, height);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -180,11 +140,11 @@ int main(void)
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         
-        renderer->BeginScene();
+        nac->GetRenderer()->BeginScene();
 
         glfwPollEvents();
 
-        renderer->Render(window);
+        nac->GetRenderer()->Render(nac->GetWindow()->GetGLFWwindow());
 
     };
 
@@ -192,7 +152,7 @@ int main(void)
     std::thread thread(tw);
     emscripten_set_main_loop(main_loop, 0, true);
 #else
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(nac->GetWindow()->GetGLFWwindow()))
         main_loop();
 #endif
 
@@ -200,7 +160,19 @@ int main(void)
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(nac->GetWindow()->GetGLFWwindow());
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
+
+
+#ifdef __EMSCRIPTEN__
+extern "C" {
+    EMSCRIPTEN_KEEPALIVE
+    void updateCanvasSize(int width, int height) {
+        // canvasWidth = width;
+        // canvasHeight = height;
+        glfwSetWindowSize(nac->GetWindow()->GetGLFWwindow(), width, height);
+    }
+}
+#endif
