@@ -36,9 +36,7 @@ namespace _NAC
             const char*& GetFragmentShaderText() const;
             void check_shader_error(GLuint shader);
             void check_program_error(GLuint program);
-            GLuint* GetProgram();
-            GLint* GetMvpLocation();
-            GLint* GetMvp();
+            GLuint GetProgram();
             
 
 		private:

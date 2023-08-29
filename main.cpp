@@ -76,41 +76,41 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    // printf("Use Modern OpenGL (with shaders)\n");
-    // // NOTE: OpenGL error checks have been omitted for brevity
-    // GLuint vertex_buffer;
-    // glGenBuffers(1, &vertex_buffer);
-    // glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    // glBufferData(GL_ARRAY_BUFFER, nac->GetRenderer()->GetCanvas()->GetVerticesSize(), nac->GetRenderer()->GetCanvas()->GetVertices(), GL_STATIC_DRAW);
-    // // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    printf("Use Modern OpenGL (with shaders)\n");
+    // NOTE: OpenGL error checks have been omitted for brevity
+    GLuint vertex_buffer;
+    glGenBuffers(1, &vertex_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glBufferData(GL_ARRAY_BUFFER, nac->GetRenderer()->GetCanvas()->GetVerticesSize(), nac->GetRenderer()->GetCanvas()->GetVertices(), GL_STATIC_DRAW);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // auto vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    // glShaderSource(vertex_shader, 1, &(nac->GetRenderer()->GetCanvas()->GetVertexShaderText()), NULL);
-    // glCompileShader(vertex_shader);
-    // check_error(vertex_shader);
+    auto vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex_shader, 1, &(nac->GetRenderer()->GetCanvas()->GetVertexShaderText()), NULL);
+    glCompileShader(vertex_shader);
+    check_error(vertex_shader);
 
-    // auto fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    // glShaderSource(fragment_shader, 1, &(nac->GetRenderer()->GetCanvas()->GetFragmentShaderText()), NULL);
-    // glCompileShader(fragment_shader);
-    // check_error(fragment_shader);
+    auto fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment_shader, 1, &(nac->GetRenderer()->GetCanvas()->GetFragmentShaderText()), NULL);
+    glCompileShader(fragment_shader);
+    check_error(fragment_shader);
 
-    // auto program = glCreateProgram();
-    // glAttachShader(program, vertex_shader);
-    // glAttachShader(program, fragment_shader);
-    // glLinkProgram(program);
-    // mvp_location = glGetUniformLocation(program, "MVP");
-    // vpos_location = glGetAttribLocation(program, "vPos");
-    // vcol_location = glGetAttribLocation(program, "vCol");
-    // glEnableVertexAttribArray(vpos_location);
-    // //you need to pass the appropriate arguments to this function. Specifically, you need to provide the attribute location (vpos_location), the number of components (2 for x and y), the data type (GL_FLOAT), whether the data should be normalized (GL_FALSE in this case), the stride (sizeof(vertices[0])), and the pointer to the data (0 for the initial position in the array). struct Vertex is defined in another class. Here's how you can do it:
-    // glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
-    // glEnableVertexAttribArray(vcol_location);
-    // glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)(sizeof(float) * 2));
+    auto program = glCreateProgram();
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
+    glLinkProgram(program);
+    mvp_location = glGetUniformLocation(program, "MVP");
+    vpos_location = glGetAttribLocation(program, "vPos");
+    vcol_location = glGetAttribLocation(program, "vCol");
+    glEnableVertexAttribArray(vpos_location);
+    //you need to pass the appropriate arguments to this function. Specifically, you need to provide the attribute location (vpos_location), the number of components (2 for x and y), the data type (GL_FLOAT), whether the data should be normalized (GL_FALSE in this case), the stride (sizeof(vertices[0])), and the pointer to the data (0 for the initial position in the array). struct Vertex is defined in another class. Here's how you can do it:
+    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
+    glEnableVertexAttribArray(vcol_location);
+    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)(sizeof(float) * 2));
 
     loop = [&] {
         float ratio;
         int width, height;
-        mat4x4 m, p;
+        mat4x4 m, p, mvp;
         glfwGetFramebufferSize(nac->GetWindow()->GetGLFWwindow(), &width, &height);
         ratio = width / (float)height;
         glViewport(0, 0, width, height);
@@ -118,12 +118,9 @@ int main(void)
         mat4x4_identity(m);
         mat4x4_rotate_Z(m, m, (float)glfwGetTime());
         mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        mat4x4_mul(nac->GetRenderer()->GetCanvas()->GetMvp(), p, m);
-        // mat4x4_mul(mvp, p, m);
-        glUseProgram(*(nac->GetRenderer()->GetCanvas()->GetProgram()));
-        // glUseProgram(program);
-        glUniformMatrix4fv(*(nac->GetRenderer()->GetCanvas()->GetMvpLocation()), 1, GL_FALSE, (const GLfloat *)nac->GetRenderer()->GetCanvas()->GetMvp()
-        // glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
+        mat4x4_mul(mvp, p, m);
+        glUseProgram(program);
+        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         
         nac->GetRenderer()->BeginScene();

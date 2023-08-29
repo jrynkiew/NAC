@@ -86,14 +86,6 @@ namespace _NAC
         return sizeof(vertices);
     }
 
-    GLint* Canvas::GetMvp() {
-        return &mvp_location;
-    }
-
-    GLint* Canvas::GetMvpLocation() {
-        return &mvp_location;
-    }
-
     void Canvas::run_shader() {
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
@@ -103,6 +95,8 @@ namespace _NAC
     GLuint Canvas::get_vertex_buffer() {
         return vertex_buffer;
     }
+
+    GLuint* Canvas::
 
     void prepare_vertex_buffer() {
         glGenBuffers(1, &vertex_buffer);
@@ -143,14 +137,6 @@ namespace _NAC
                             sizeof(Vertex), (void*) (sizeof(float) * 2));
     }
 
-    GLuint* Canvas::get_program() {
-        return &program;
-    }
-
-    GLint* Canvas::get_mvp_location() {
-        return &mvp_location;
-    }
-
     void prepare_shader() {
         prepare_vertex_shader();
         prepare_fragment_shader();
@@ -169,7 +155,7 @@ namespace _NAC
             GLsizei length;
             glGetShaderInfoLog(shader, log.size(), &length, log.data());
 
-            program_error_callback(0, log.data());
+            shader_error_callback(0, log.data());
         }
     }
 
