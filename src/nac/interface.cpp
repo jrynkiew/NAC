@@ -91,7 +91,7 @@ namespace _NAC
 		m_pImGuiColors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
         #ifndef __EMSCRIPTEN__
-            if (m_pImGuiIO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+            if (m_pImGuiIO->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
             {
                 m_pImGuiStyle->WindowRounding = 0.0f;
                 m_pImGuiStyle->Colors[ImGuiCol_WindowBg].w = 1.0f;
@@ -106,11 +106,11 @@ namespace _NAC
     }
 
     void Interface::SetConfig() {
-        m_pImGuiIO.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		m_pImGuiIO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        m_pImGuiIO->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		m_pImGuiIO->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
 		#ifndef __EMSCRIPTEN__
-			m_pImGuiIO.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+			m_pImGuiIO->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 		#endif
     }
 
