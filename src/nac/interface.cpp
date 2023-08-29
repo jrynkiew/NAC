@@ -10,17 +10,17 @@ namespace _NAC
     ImVec4* Interface::m_pImGuiColors = nullptr;
 
     Interface::Interface() {
+        IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+        m_pImGuiIO = &ImGui::GetIO(); (void)m_pImGuiIO;
+        m_pImGuiStyle = &ImGui::GetStyle();
+        m_pImGuiColors = m_pImGuiStyle->Colors;
     }
 
     Interface::~Interface() {
     }
 
     bool Interface::Initialize(GLFWwindow* window) {
-        IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-        m_pImGuiIO = &ImGui::GetIO(); (void)m_pImGuiIO;
-        m_pImGuiStyle = &ImGui::GetStyle();
-        m_pImGuiColors = m_pImGuiStyle->Colors;
         m_pWindow = window;
 		ImGui_ImplGlfw_InitForOpenGL(m_pWindow, true);
 
