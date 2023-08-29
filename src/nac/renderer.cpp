@@ -49,7 +49,7 @@ namespace _NAC
 	{
 		//initialize Interface
 		m_Interface = new Interface();
-		if(!m_Interface->Initialize())
+		if(!m_Interface->Initialize(window))
 		{
 			printf("Error during NAC gui initialization!\n");
 			m_Interface->Shutdown();
