@@ -10,25 +10,28 @@ namespace _NAC
     ImVec4* Interface::m_pImGuiColors = nullptr;
 
     Interface::Interface() {
-        IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-        m_pImGuiIO = &ImGui::GetIO(); (void)m_pImGuiIO;
-        m_pImGuiStyle = &ImGui::GetStyle();
-        m_pImGuiColors = m_pImGuiStyle->Colors;
+        // IMGUI_CHECKVERSION();
+		// ImGui::CreateContext();
+        // m_pImGuiIO = &ImGui::GetIO(); (void)m_pImGuiIO;
+        // m_pImGuiStyle = &ImGui::GetStyle();
+        // m_pImGuiColors = m_pImGuiStyle->Colors;
     }
 
     Interface::~Interface() {
     }
 
     bool Interface::Initialize(GLFWwindow* window) {
-        m_pWindow = window;
-		ImGui_ImplGlfw_InitForOpenGL(window, true);
+        IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
 
-		#ifdef __EMSCRIPTEN__
-			ImGui_ImplOpenGL3_Init("#version 300 es");
-		#else
-			ImGui_ImplOpenGL3_Init("#version 410 core");
-		#endif
+        // m_pWindow = window;
+		// ImGui_ImplGlfw_InitForOpenGL(window, true);
+
+		// #ifdef __EMSCRIPTEN__
+		// 	ImGui_ImplOpenGL3_Init("#version 300 es");
+		// #else
+		// 	ImGui_ImplOpenGL3_Init("#version 410 core");
+		// #endif
 
         return true;
     }

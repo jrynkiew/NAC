@@ -71,7 +71,7 @@ int main(void)
     //initialize NAC
     if(!nac->Initialize())
     {
-        printf("Error during NAC gui initialization!\n");
+        printf("Error during NAC renderer initialization!\n");
         nac->Shutdown();
         exit(EXIT_FAILURE);
     }

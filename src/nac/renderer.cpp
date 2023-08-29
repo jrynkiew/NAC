@@ -47,8 +47,14 @@ namespace _NAC
 
 	bool Renderer::Initialize(GLFWwindow* window)
 	{
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
+		//initialize Interface
+		m_Interface = new Interface();
+		if(!m_Interface->Initialize())
+		{
+			printf("Error during NAC gui initialization!\n");
+			m_Interface->Shutdown();
+			return false;
+		}
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
