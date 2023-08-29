@@ -4,6 +4,7 @@ namespace _NAC
 {
 	Renderer* Renderer::m_pInstance = nullptr;
     Canvas* Renderer::m_Canvas = nullptr;
+	Interface* Renderer::m_Interface = nullptr;
 
 	Renderer::Renderer()
 	{
