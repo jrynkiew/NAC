@@ -1,8 +1,5 @@
 #pragma once
 
-
-#include <vector>
-
 #include "linmath.h"
 
 #include "canvas.h"
