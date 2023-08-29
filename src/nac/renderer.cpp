@@ -8,8 +8,8 @@ namespace _NAC
 
 	Renderer::Renderer()
 	{
-		m_Canvas = GetCanvas();
-		m_Interface = GetInterface();
+		m_Canvas = new Canvas();
+		m_Interface = new Interface();
 	}
 
 	Renderer::~Renderer()
@@ -49,10 +49,10 @@ namespace _NAC
 
 	bool Renderer::Initialize(GLFWwindow* window)
 	{
-		m_Interface->Initialize(window);
-		m_Interface->SetConfig();
-		m_Interface->SetStyle();
-		m_Interface->SetTheme();
+		// m_Interface->Initialize(window);
+		// m_Interface->SetConfig();
+		// m_Interface->SetStyle();
+		// m_Interface->SetTheme();
 		glEnable(GL_CULL_FACE);
 		return true;
 	}
