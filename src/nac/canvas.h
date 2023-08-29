@@ -8,6 +8,7 @@
 #endif
 #include <GLFW/glfw3.h>
 #include <vector>
+#include <stdio.h>
 
 struct Vertex {
     float x, y;
