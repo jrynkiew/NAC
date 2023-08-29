@@ -92,33 +92,27 @@ namespace _NAC
         glDrawArrays(GL_TRIANGLES, 0, 3);
     }
 
-    GLuint Canvas::get_vertex_buffer() {
-        return vertex_buffer;
-    }
-
-    GLuint* Canvas::
-
-    void prepare_vertex_buffer() {
+    void Canvas::prepare_vertex_buffer() {
         glGenBuffers(1, &vertex_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
         glBufferData(GL_ARRAY_BUFFER, Canvas::GetInstance()->GetVerticesSize(), Canvas::GetInstance()->GetVertices(), GL_STATIC_DRAW);    
     }
 
-    void prepare_vertex_shader() {
+    void Canvas::prepare_vertex_shader() {
         vertex_shader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex_shader, 1, &(Canvas::GetInstance()->GetVertexShaderText()), NULL);
         glCompileShader(vertex_shader);
         Canvas::GetInstance()->check_shader_error(vertex_shader);
     }
 
-    void prepare_fragment_shader() {
+    void Canvas::prepare_fragment_shader() {
         fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment_shader, 1, &(Canvas::GetInstance()->GetFragmentShaderText()), NULL);
         glCompileShader(fragment_shader);
         Canvas::GetInstance()->check_shader_error(fragment_shader);
     }
 
-    void prepare_program() {
+    void Canvas::prepare_program() {
         program = glCreateProgram();
         glAttachShader(program, vertex_shader);
         glAttachShader(program, fragment_shader);
@@ -137,7 +131,7 @@ namespace _NAC
                             sizeof(Vertex), (void*) (sizeof(float) * 2));
     }
 
-    void prepare_shader() {
+    void Canvas::prepare_shader() {
         prepare_vertex_shader();
         prepare_fragment_shader();
         prepare_program();
