@@ -24,6 +24,7 @@ namespace _NAC
             const char*& GetVertexShaderText() const;
             void SetFragmentShaderText(const char* text);
             const char*& GetFragmentShaderText() const;
+            void check_shader_error(GLuint shader);
 
 		private:
 			static Canvas* m_pInstance;

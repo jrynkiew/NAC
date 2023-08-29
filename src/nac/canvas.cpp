@@ -82,4 +82,20 @@ namespace _NAC
     GLsizei Canvas::GetVerticesSize() const {
         return sizeof(vertices);
     }
+
+    void Canvas::check_shader_error(GLuint shader) {
+        GLint result;
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+        if (result == GL_FALSE)
+        {
+            GLint log_length;
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
+            std::vector<GLchar> log(log_length);
+
+            GLsizei length;
+            glGetShaderInfoLog(shader, log.size(), &length, log.data());
+
+            error_callback(0, log.data());
+        }
+    }
 }
