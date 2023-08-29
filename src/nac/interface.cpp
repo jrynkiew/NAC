@@ -9,11 +9,6 @@ namespace _NAC
     ImGuiStyle* Interface::m_pImGuiStyle = nullptr;
 
     Interface::Interface() {
-        // IMGUI_CHECKVERSION();
-		// ImGui::CreateContext();
-        // m_pImGuiIO = &ImGui::GetIO(); (void)m_pImGuiIO;
-        // m_pImGuiStyle = &ImGui::GetStyle();
-        // m_pImGuiColors = m_pImGuiStyle->Colors;
     }
 
     Interface::~Interface() {

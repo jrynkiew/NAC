@@ -37,12 +37,15 @@ namespace _NAC
     };
 
     Canvas::Canvas() {
+        m_pInstance = this;
     }
 
     Canvas::~Canvas() {
     }
 
     bool Canvas::Initialize(GLFWwindow* window) {
+        prepare_vertex_buffer();
+        prepare_shader();
         return true;
     }
 
@@ -83,6 +86,77 @@ namespace _NAC
         return sizeof(vertices);
     }
 
+    GLint* Canvas::GetMvp() {
+        return &mvp_location;
+    }
+
+    GLint* Canvas::GetMvpLocation() {
+        return &mvp_location;
+    }
+
+    void Canvas::run_shader() {
+        glUseProgram(program);
+        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+    }
+
+    GLuint Canvas::get_vertex_buffer() {
+        return vertex_buffer;
+    }
+
+    void prepare_vertex_buffer() {
+        glGenBuffers(1, &vertex_buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+        glBufferData(GL_ARRAY_BUFFER, Canvas::GetInstance()->GetVerticesSize(), Canvas::GetInstance()->GetVertices(), GL_STATIC_DRAW);    
+    }
+
+    void prepare_vertex_shader() {
+        vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertex_shader, 1, &(Canvas::GetInstance()->GetVertexShaderText()), NULL);
+        glCompileShader(vertex_shader);
+        Canvas::GetInstance()->check_shader_error(vertex_shader);
+    }
+
+    void prepare_fragment_shader() {
+        fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragment_shader, 1, &(Canvas::GetInstance()->GetFragmentShaderText()), NULL);
+        glCompileShader(fragment_shader);
+        Canvas::GetInstance()->check_shader_error(fragment_shader);
+    }
+
+    void prepare_program() {
+        program = glCreateProgram();
+        glAttachShader(program, vertex_shader);
+        glAttachShader(program, fragment_shader);
+        glLinkProgram(program);
+        Canvas::GetInstance()->check_program_error(program);
+
+        mvp_location = glGetUniformLocation(program, "MVP");
+        vpos_location = glGetAttribLocation(program, "vPos");
+        vcol_location = glGetAttribLocation(program, "vCol");
+
+        glEnableVertexAttribArray(vpos_location);
+        glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
+                            sizeof(Vertex), (void*) 0);
+        glEnableVertexAttribArray(vcol_location);
+        glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
+                            sizeof(Vertex), (void*) (sizeof(float) * 2));
+    }
+
+    GLuint* Canvas::get_program() {
+        return &program;
+    }
+
+    GLint* Canvas::get_mvp_location() {
+        return &mvp_location;
+    }
+
+    void prepare_shader() {
+        prepare_vertex_shader();
+        prepare_fragment_shader();
+        prepare_program();
+    }
+
     void Canvas::check_shader_error(GLuint shader) {
         GLint result;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
@@ -95,11 +169,31 @@ namespace _NAC
             GLsizei length;
             glGetShaderInfoLog(shader, log.size(), &length, log.data());
 
+            program_error_callback(0, log.data());
+        }
+    }
+
+    void Canvas::check_program_error(GLuint program) {
+        GLint result;
+        glGetProgramiv(program, GL_LINK_STATUS, &result);
+        if (result == GL_FALSE)
+        {
+            GLint log_length;
+            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_length);
+            std::vector<GLchar> log(log_length);
+
+            GLsizei length;
+            glGetProgramInfoLog(program, log.size(), &length, log.data());
+
             shader_error_callback(0, log.data());
         }
     }
 
     void Canvas::shader_error_callback(int error, const char *description) {
+        fprintf(stderr, "Error: %s\n", description);
+    }
+
+    void Canvas::program_error_callback(int error, const char *description) {
         fprintf(stderr, "Error: %s\n", description);
     }
 }

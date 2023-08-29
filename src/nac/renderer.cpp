@@ -58,6 +58,15 @@ namespace _NAC
 
     	glEnable(GL_CULL_FACE);
 
+		//initialize Canvas
+		m_Canvas = new Canvas();
+		if(!m_Canvas->Initialize(window))
+		{
+			printf("Error during NAC canvas initialization!\n");
+			m_Canvas->Shutdown();
+			return false;
+		}
+
 		return true;
 	}
 
