@@ -5,13 +5,6 @@
 // base:  https://www.glfw.org/docs/latest/quick.html#quick_example
 // ref: https://gist.github.com/SuperV1234/5c5ad838fe5fe1bf54f9
 
-
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#define GL_GLEXT_PROTOTYPES
-#define EGL_EGLEXT_PROTOTYPES
-#else
-#endif
 #include <nac.h>
 #include <thread>
 

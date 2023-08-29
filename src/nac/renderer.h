@@ -1,7 +1,5 @@
 #pragma once
-
 #include "linmath.h"
-
 #include "canvas.h"
 #include "interface.h"
 
