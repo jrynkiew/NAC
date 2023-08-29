@@ -39,5 +39,6 @@ namespace _NAC
             static const Vertex vertices[3];
             static const char* vertex_shader_text;       
             static const char* fragment_shader_text;
+            void shader_error_callback(int error, const char *description);
     };
 }
