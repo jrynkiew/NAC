@@ -19,6 +19,7 @@ namespace _NAC
 			void RenderInterface();
 			static Renderer* GetInstance();
 			static Canvas* GetCanvas();
+			static Interface* GetInterface();
 		private:
 			static Renderer* m_pInstance;
 			static Canvas* m_Canvas;
