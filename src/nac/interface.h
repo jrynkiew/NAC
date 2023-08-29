@@ -21,13 +21,11 @@ namespace _NAC
 
             bool Initialize(GLFWwindow* window);
             void Shutdown();
-            void Render();
-
-            void SetInstance(Interface* instance);
-            void SetWindow(GLFWwindow* window);
-            void SetImGuiContext(ImGuiContext* context);
-            void SetImGuiIO(ImGuiIO* io);
-            void SetImGuiStyle(ImGuiStyle* style);
+            void Draw();
+            // void SetWindow(GLFWwindow* window);
+            void SetTheme();
+            void SetStyle();
+            void SetConfig();
 
             Interface* GetInstance();
             GLFWwindow* GetWindow();
@@ -41,6 +39,12 @@ namespace _NAC
             static ImGuiContext* m_pImGuiContext;
             static ImGuiIO* m_pImGuiIO;
             static ImGuiStyle* m_pImGuiStyle;
+            static ImVec4* m_pImGuiColors;
     };
 }
+
+// needs to be first:
+//initialized
+//then config set
+//then style and colors set (if needed)
 

@@ -22,6 +22,7 @@ namespace _NAC
 		private:
 			static Renderer* m_pInstance;
 			static Canvas* m_Canvas;
+			static Interface* m_Interface;
 	};
 }
 

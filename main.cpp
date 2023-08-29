@@ -83,6 +83,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }    
 
+    nac->GetRenderer()->GetInterface()->Initialize(nac->GetWindow()->GetGLFWwindow());
     glEnable(GL_CULL_FACE);
 
     printf("Use Modern OpenGL (with shaders)\n");
