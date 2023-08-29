@@ -22,8 +22,6 @@ namespace _NAC
             bool Initialize(GLFWwindow* window);
             void Shutdown();
             void Draw();
-            // void SetWindow(GLFWwindow* window);
-            void SetTheme();
             void SetStyle();
             void SetConfig();
 
@@ -39,12 +37,6 @@ namespace _NAC
             static ImGuiContext* m_pImGuiContext;
             static ImGuiIO* m_pImGuiIO;
             static ImGuiStyle* m_pImGuiStyle;
-            static ImVec4* m_pImGuiColors;
     };
 }
-
-// needs to be first:
-//initialized
-//then config set
-//then style and colors set (if needed)
 
