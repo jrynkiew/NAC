@@ -11,7 +11,6 @@
 #define GL_GLEXT_PROTOTYPES
 #define EGL_EGLEXT_PROTOTYPES
 #else
-#include "glad/glad.h"
 #endif
 #include <nac.h>
 #include <thread>
