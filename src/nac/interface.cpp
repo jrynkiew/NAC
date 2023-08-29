@@ -12,7 +12,7 @@ namespace _NAC
     Interface::Interface() {
         IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
-        m_pImGuiIO = &ImGui::GetIO(); (void)io;
+        m_pImGuiIO = &ImGui::GetIO(); (void)m_pImGuiIO;
         m_pImGuiStyle = &ImGui::GetStyle();
         m_pImGuiColors = m_pImGuiStyle->Colors;
     }
@@ -22,9 +22,6 @@ namespace _NAC
 
     bool Interface::Initialize(GLFWwindow* window) {
         m_pWindow = window;
-		m_pImGuiIO = ImGui::GetIO(); (void)m_pImGuiIO;
-		
-
 		ImGui_ImplGlfw_InitForOpenGL(m_pWindow, true);
 
 		#ifdef __EMSCRIPTEN__
