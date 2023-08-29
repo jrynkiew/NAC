@@ -49,12 +49,11 @@ namespace _NAC
 
 	bool Renderer::Initialize(GLFWwindow* window)
 	{
-		glEnable(GL_CULL_FACE);
 		m_Interface->Initialize(window);
 		m_Interface->SetConfig();
 		m_Interface->SetStyle();
 		m_Interface->SetTheme();
-
+		glEnable(GL_CULL_FACE);
 		return true;
 	}
 
