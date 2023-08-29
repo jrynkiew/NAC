@@ -29,14 +29,14 @@ namespace _NAC
         SetConfig();
         SetStyle();
 
-        // m_pWindow = window;
-		// ImGui_ImplGlfw_InitForOpenGL(window, true);
+        m_pWindow = window;
+		ImGui_ImplGlfw_InitForOpenGL(m_pWindow, true);
 
-		// #ifdef __EMSCRIPTEN__
-		// 	ImGui_ImplOpenGL3_Init("#version 300 es");
-		// #else
-		// 	ImGui_ImplOpenGL3_Init("#version 410 core");
-		// #endif
+		#ifdef __EMSCRIPTEN__
+			ImGui_ImplOpenGL3_Init("#version 300 es");
+		#else
+			ImGui_ImplOpenGL3_Init("#version 410 core");
+		#endif
 
         return true;
     }

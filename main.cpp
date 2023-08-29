@@ -76,15 +76,6 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-    if (!nac->GetWindow()->GetGLFWwindow())
-    {
-        printf("Error during NAC window creation!\n");
-        nac->Shutdown();
-        exit(EXIT_FAILURE);
-    }    
-
-    glEnable(GL_CULL_FACE);
-
     printf("Use Modern OpenGL (with shaders)\n");
     // NOTE: OpenGL error checks have been omitted for brevity
     GLuint vertex_buffer;
