@@ -22,7 +22,7 @@ namespace _NAC
 
     bool Interface::Initialize(GLFWwindow* window) {
         m_pWindow = window;
-		ImGui_ImplGlfw_InitForOpenGL(m_pWindow, true);
+		ImGui_ImplGlfw_InitForOpenGL(window, true);
 
 		#ifdef __EMSCRIPTEN__
 			ImGui_ImplOpenGL3_Init("#version 300 es");
