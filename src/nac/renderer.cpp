@@ -36,6 +36,14 @@ namespace _NAC
         return m_Canvas;
     }
 
+	Interface* Renderer::GetInterface()
+	{
+		if (!m_Interface)
+			m_Interface = new Interface();
+
+		return m_Interface;
+	}
+
 	bool Renderer::Initialize(GLFWwindow* window)
 	{
 		IMGUI_CHECKVERSION();
