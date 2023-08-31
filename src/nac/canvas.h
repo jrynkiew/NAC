@@ -35,9 +35,7 @@ namespace _NAC
             void SetFragmentShaderText(const char* text);
             const char*& GetFragmentShaderText() const;
             void check_shader_error(GLuint shader);
-            void check_program_error(GLuint program);
-            GLuint GetProgram();
-            
+            void check_program_error(GLuint program);            
 
 		private:
             GLuint vertex_buffer, vertex_shader, fragment_shader, program;
@@ -47,7 +45,7 @@ namespace _NAC
             void prepare_vertex_shader();
             void prepare_fragment_shader();
             void prepare_program();
-            void run_shader();
+            void run_program();
             int width, height;
             mat4x4 m, p, mvp;
             float ratio;
