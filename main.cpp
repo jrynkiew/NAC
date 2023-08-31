@@ -71,7 +71,7 @@ void main_loop() {
                 A += 0.00004;
                 B += 0.00002;
             }
-            usleep(30000);
+            usleep(10000);
         }
     #endif
  }
@@ -83,7 +83,6 @@ void threadLoopIteration(void*)
     #else
         //printf("threadLoopIteration\n");
     #endif
-    
     thread_loop();
 }
 
@@ -92,10 +91,7 @@ void tw()
     #ifdef __EMSCRIPTEN__
         emscripten_set_main_loop_arg(threadLoopIteration, nullptr, 0, 1);
     #else
-        while(true)
-        {
-            threadLoopIteration(nullptr);
-        }
+        threadLoopIteration(nullptr);
     #endif
 }
 
