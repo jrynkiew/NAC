@@ -126,7 +126,7 @@ int main(void)
     std::thread thread(tw);
     emscripten_set_main_loop(main_loop, 0, true);
 #else
-    std::thread nativeThread(threadFunction);
+    std::thread nativeThread(tw);
     while (!glfwWindowShouldClose(nac->GetWindow()->GetGLFWwindow()))
         main_loop();
 #endif
