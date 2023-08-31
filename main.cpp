@@ -126,15 +126,12 @@ int main(void)
     std::thread thread(tw);
     emscripten_set_main_loop(main_loop, 0, true);
 #else
+    std::thread nativeThread(threadFunction);
     while (!glfwWindowShouldClose(nac->GetWindow()->GetGLFWwindow()))
-    {
         main_loop();
-        std::thread thread(tw);
-        thread.join();
-    }
-    thread.join();
 #endif
 
+    nativeThread.join();
     renderer->Shutdown();
     window->Shutdown();
 }
