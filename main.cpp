@@ -11,6 +11,7 @@
 using namespace _NAC;
 
 NAC* nac;
+Renderer* renderer;
 
 std::function<void()> loop;
 void main_loop() { 
@@ -74,12 +75,14 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    renderer = nac->GetRenderer();
     printf("Use Modern OpenGL (with shaders)\n");
 
+    //render loop
     loop = [&] {
         nac->GetRenderer()->GetCanvas()->run_program();
         
-        nac->GetRenderer()->BeginScene();
+        renderer->GetInterface()->Draw();
 
         glfwPollEvents();
 

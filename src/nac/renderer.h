@@ -14,7 +14,6 @@ namespace _NAC
 			bool Initialize(GLFWwindow* window);
 			void Shutdown();
 			void Render(GLFWwindow* window);
-			void BeginScene();
 			void RenderCanvas();
 			void RenderInterface();
 			static Renderer* GetInstance();
