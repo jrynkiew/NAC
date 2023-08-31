@@ -83,7 +83,8 @@ void threadLoopIteration(void*)
     #else
         //printf("threadLoopIteration\n");
     #endif
-        thread_loop();
+    
+    thread_loop();
 }
 
 void tw()
@@ -126,7 +127,12 @@ int main(void)
     emscripten_set_main_loop(main_loop, 0, true);
 #else
     while (!glfwWindowShouldClose(nac->GetWindow()->GetGLFWwindow()))
+    {
         main_loop();
+        std::thread thread(tw);
+        thread.join();
+    }
+    thread.join();
 #endif
 
     renderer->Shutdown();
