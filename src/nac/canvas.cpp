@@ -56,6 +56,7 @@ namespace _NAC
     }
 
     void Canvas::Draw() {
+        run_program();
     }
 
     Canvas* Canvas::GetInstance() {

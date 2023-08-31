@@ -12,6 +12,7 @@ using namespace _NAC;
 
 NAC* nac;
 Renderer* renderer;
+Window* window;
 
 std::function<void()> loop;
 void main_loop() { 
@@ -75,26 +76,20 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
+    //get renderer and window pointers
     renderer = nac->GetRenderer();
-    printf("Use Modern OpenGL (with shaders)\n");
+    window = nac->GetWindow();
 
     //render loop
     loop = [&] {
-        renderer->GetCanvas()->run_program();
-        
-        renderer->GetInterface()->Draw();
-
-        glfwPollEvents();
-
-        nac->GetRenderer()->Render(nac->GetWindow()->GetGLFWwindow());
-
+        renderer->Render(window);
     };
 
 #ifdef __EMSCRIPTEN__
     std::thread thread(tw);
     emscripten_set_main_loop(main_loop, 0, true);
 #else
-    while (!glfwWindowShouldClose(nac->GetWindow()->GetGLFWwindow()))
+    while (!glfwWindowShouldClose(window))
         main_loop();
 #endif
 
@@ -102,7 +97,7 @@ int main(void)
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwDestroyWindow(nac->GetWindow()->GetGLFWwindow());
+    glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
@@ -114,7 +109,7 @@ extern "C" {
     void updateCanvasSize(int width, int height) {
         // canvasWidth = width;
         // canvasHeight = height;
-        glfwSetWindowSize(nac->GetWindow()->GetGLFWwindow(), width, height);
+        glfwSetWindowSize(window, width, height);
     }
 }
 #endif
