@@ -74,7 +74,7 @@ namespace _NAC
 	{
 		ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        if (m_Interface->GetImGuiIO() & ImGuiConfigFlags_ViewportsEnable)
+        if (m_Interface->GetImGuiIO()->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
             GLFWwindow* backup_current_context = glfwGetCurrentContext();
             ImGui::UpdatePlatformWindows();

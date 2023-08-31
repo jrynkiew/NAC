@@ -80,7 +80,7 @@ int main(void)
 
     //render loop
     loop = [&] {
-        nac->GetRenderer()->GetCanvas()->run_program();
+        renderer->GetCanvas()->run_program();
         
         renderer->GetInterface()->Draw();
 
