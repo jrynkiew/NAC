@@ -78,18 +78,18 @@ int main(void)
 
     //get renderer and window pointers
     renderer = nac->GetRenderer();
-    window = nac->GetWindow()->GetGLFWwindow();
+    window = nac->GetWindow();
 
     //render loop
     loop = [&] {
-        renderer->Render(window);
+        renderer->Render(nac->GetWindow()->GetGLFWwindow());
     };
 
 #ifdef __EMSCRIPTEN__
     std::thread thread(tw);
     emscripten_set_main_loop(main_loop, 0, true);
 #else
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(nac->GetWindow()->GetGLFWwindow()))
         main_loop();
 #endif
 
@@ -97,7 +97,7 @@ int main(void)
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(nac->GetWindow()->GetGLFWwindow());
     glfwTerminate();
     exit(EXIT_SUCCESS);
 }
@@ -109,7 +109,7 @@ extern "C" {
     void updateCanvasSize(int width, int height) {
         // canvasWidth = width;
         // canvasHeight = height;
-        glfwSetWindowSize(window, width, height);
+        glfwSetWindowSize(nac->GetWindow()->GetGLFWwindow(), width, height);
     }
 }
 #endif
