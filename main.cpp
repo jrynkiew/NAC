@@ -24,18 +24,6 @@ void main_loop() {
     #ifdef __EMSCRIPTEN__
         emscripten_log(EM_LOG_CONSOLE, "main_loop");
     #else
-        printf("main_loop\n");
-    #endif
-    loop();
- }
-
-void threadLoopIteration(void*)
-{
-    #ifdef __EMSCRIPTEN__
-        emscripten_log(EM_LOG_CONSOLE, "threadLoopIteration");
-    #else
-        printf("threadLoopIteration\n");
-    #endif
         float A = 0, B = 0;
         float i, j;
         int k;
@@ -76,6 +64,18 @@ void threadLoopIteration(void*)
             }
             usleep(30000);
         }
+    #endif
+    loop();
+ }
+
+void threadLoopIteration(void*)
+{
+    #ifdef __EMSCRIPTEN__
+        emscripten_log(EM_LOG_CONSOLE, "threadLoopIteration");
+    #else
+        printf("threadLoopIteration\n");
+    #endif
+        // loop();
 }
 
 void tw()
