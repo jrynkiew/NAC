@@ -78,7 +78,7 @@ int main(void)
 
     //get renderer and window pointers
     renderer = nac->GetRenderer();
-    window = nac->GetWindow();
+    window = nac->GetWindow()->GetGLFWwindow();
 
     //render loop
     loop = [&] {
