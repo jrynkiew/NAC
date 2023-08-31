@@ -46,23 +46,6 @@ void tw()
     #endif
 }
 
-void check_error(GLuint shader)
-{
-    GLint result;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
-    if (result == GL_FALSE)
-    {
-        GLint log_length;
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
-        std::vector<GLchar> log(log_length);
-
-        GLsizei length;
-        glGetShaderInfoLog(shader, log.size(), &length, log.data());
-
-        error_callback(0, log.data());
-    }
-}
-
 int main(void)
 {
     //create NAC instance
@@ -85,6 +68,7 @@ int main(void)
         renderer->Render(nac->GetWindow()->GetGLFWwindow());
     };
 
+    //run NAC
 #ifdef __EMSCRIPTEN__
     std::thread thread(tw);
     emscripten_set_main_loop(main_loop, 0, true);
@@ -93,15 +77,9 @@ int main(void)
         main_loop();
 #endif
 
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
-    glfwDestroyWindow(nac->GetWindow()->GetGLFWwindow());
-    glfwTerminate();
-    exit(EXIT_SUCCESS);
+    renderer->Shutdown();
+    window->Shutdown();
 }
-
 
 #ifdef __EMSCRIPTEN__
 extern "C" {
