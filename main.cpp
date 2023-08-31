@@ -131,7 +131,9 @@ int main(void)
         main_loop();
 #endif
 
-    nativeThread.join();
+    #ifndef __EMSCRIPTEN__
+        nativeThread.join();
+    #endif
     renderer->Shutdown();
     window->Shutdown();
 }
