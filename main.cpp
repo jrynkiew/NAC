@@ -63,8 +63,6 @@ void check_error(GLuint shader)
 
 int main(void)
 {
-    GLint mvp_location, vpos_location, vcol_location;
-
     //create NAC instance
     nac = new NAC();
 
