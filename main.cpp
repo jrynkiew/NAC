@@ -22,7 +22,16 @@ Window* window;
 std::function<void()> loop;
 void main_loop() { 
     #ifdef __EMSCRIPTEN__
-        emscripten_log(EM_LOG_CONSOLE, "main_loop");
+        // emscripten_log(EM_LOG_CONSOLE, "main_loop");
+    #else
+        // printf("main_loop\n");
+    #endif
+    loop();
+ }
+
+ void thread_loop() { 
+    #ifdef __EMSCRIPTEN__
+        // emscripten_log(EM_LOG_CONSOLE, "thread_loop");
     #else
         float A = 0, B = 0;
         float i, j;
@@ -65,17 +74,16 @@ void main_loop() {
             usleep(30000);
         }
     #endif
-    loop();
  }
 
 void threadLoopIteration(void*)
 {
     #ifdef __EMSCRIPTEN__
-        emscripten_log(EM_LOG_CONSOLE, "threadLoopIteration");
+        //emscripten_log(EM_LOG_CONSOLE, "threadLoopIteration");
     #else
-        printf("threadLoopIteration\n");
+        //printf("threadLoopIteration\n");
     #endif
-        // loop();
+        thread_loop();
 }
 
 void tw()
