@@ -33,7 +33,7 @@ namespace _NAC
             
             void SetVertexShaderText(const char* text);
             void SetFragmentShaderText(const char* text);
-            void SetVertices(Vertex* newVertices);
+            void SetVertices(Vertex* vertices);
 
 			bool Initialize(GLFWwindow* window);
 			void Shutdown();
@@ -51,7 +51,7 @@ namespace _NAC
             mat4x4 m, p, mvp;
             float ratio;
             static Canvas* m_pInstance;
-            static Vertex* vertices;
+            static Vertex vertices[3];
             static const char* vertex_shader_text;       
             static const char* fragment_shader_text;
             

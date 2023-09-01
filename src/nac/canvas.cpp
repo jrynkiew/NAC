@@ -3,7 +3,6 @@
 namespace _NAC
 {
     Canvas* Canvas::m_pInstance = nullptr;
-    Vertex* Canvas::vertices = nullptr;
     const char* Canvas::vertex_shader_text =
         "uniform mat4 MVP;\n"
         "attribute vec3 vCol;\n"
@@ -31,12 +30,14 @@ namespace _NAC
         "}\n";
     #endif
 
+    const Vertex Canvas::vertices[3] = {
+        {-0.6f, -0.3f, 1.f, 0.f, 0.f},
+        {0.6f, -0.3f, 0.f, 1.f, 0.f},
+        {0.f, 0.6f, 0.f, 0.f, 1.f}
+    };
+
     Canvas::Canvas() {
         m_pInstance = this;
-        vertices = new Vertex[3];
-        vertices[0] = {-0.6f, -0.3f, 1.f, 0.f, 0.f};
-        vertices[1] = {0.6f, -0.3f, 0.f, 1.f, 0.f};
-        vertices[2] = {0.f, 0.6f, 0.f, 0.f, 1.f};
     }
 
     Canvas::~Canvas() {
@@ -81,16 +82,18 @@ namespace _NAC
         return fragment_shader_text;
     }
 
-    Vertex* Canvas::GetVertices() {
-        return &vertices;
+    const Vertex* Canvas::GetVertices() const {
+        return vertices;
     }
 
     GLsizei Canvas::GetVerticesSize() const {
-        return sizeof(&vertices);
+        return sizeof(vertices);
     }
 
-    void Canvas::SetVertices(Vertex* newVertices) {
-        this->vertices = newVertices;
+    void Canvas::SetVertices(Vertex* vertices) {
+        this->vertices[0] = vertices[0];
+        this->vertices[1] = vertices[1];
+        this->vertices[2] = vertices[2];
     }
 
     void Canvas::run_program() {
