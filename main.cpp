@@ -94,13 +94,22 @@ void tw()
         threadLoopIteration(nullptr);
     #endif
 }
+const float targetR = 1.0f;
+Vertex* vertices = new Vertex[3];
+
+void test() {
+    if (vertices[0].r < targetR)
+        vertices[0].r += 0.01f;
+    if (vertices[0].r >= targetR)
+        vertices[0].r = 0.f;
+}
 
 int main(void)
 {
     //create NAC instance
     nac = new NAC();
 
-    Vertex* vertices = new Vertex[3];
+    
     vertices[0] = {-1.f, -1.f, 1.f, 0.f, 0.f};
     vertices[1] = {1.f, -1.f, 0.f, 1.f, 0.f};
     vertices[2] = {0.f, 1.f, 0.f, 0.f, 1.f};
@@ -124,6 +133,7 @@ int main(void)
         renderer->Render(nac->GetWindow()->GetGLFWwindow());
         if(i>200 && i<202) {
             renderer->GetCanvas()->SetVertices(vertices);
+            test();
         }
     };
 
