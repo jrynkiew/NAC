@@ -31,9 +31,9 @@ namespace _NAC
     #endif
 
     Vertex* vertices = new Vertex[3];
-    vertices[0] = {-0.6f, -0.3f, 1.f, 0.f, 0.f};
-    vertices[1] = {0.6f, -0.3f, 0.f, 1.f, 0.f};
-    vertices[2] = {0.f, 0.6f, 0.f, 0.f, 1.f};
+    Vertex* vertices[0] = {-0.6f, -0.3f, 1.f, 0.f, 0.f};
+    Vertex* vertices[1] = {0.6f, -0.3f, 0.f, 1.f, 0.f};
+    Vertex* vertices[2] = {0.f, 0.6f, 0.f, 0.f, 1.f};
 
     Canvas::Canvas() {
         m_pInstance = this;
