@@ -26,7 +26,7 @@ namespace _NAC
 
             //Getters and Setters
             Canvas* GetInstance();
-            const Vertex* GetVertices() const;
+            Vertex* GetVertices() const;
             GLsizei GetVerticesSize() const;
             const char*& GetVertexShaderText() const;
             const char*& GetFragmentShaderText() const;
