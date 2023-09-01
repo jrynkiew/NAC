@@ -82,7 +82,7 @@ namespace _NAC
     }
 
     Vertex* Canvas::GetVertices() {
-        return vertices;
+        return &vertices;
     }
 
     GLsizei Canvas::GetVerticesSize() const {
