@@ -82,7 +82,7 @@ namespace _NAC
         return fragment_shader_text;
     }
 
-    const Vertex* Canvas::GetVertices() const {
+    Vertex* Canvas::GetVertices() {
         return vertices;
     }
 
