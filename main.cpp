@@ -121,10 +121,10 @@ int main(void)
     loop = [&] {
         i++;
         renderer->Render(nac->GetWindow()->GetGLFWwindow());
-        if(i>200) {
+        if(i>200 && i<202) {
             renderer->GetCanvas()->SetVertices(vertices);
             renderer->GetCanvas()->Initialize(nac->GetWindow()->GetGLFWwindow());
-            printf("reinitialized\n");
+            printf("canvas re-initialized\n");
         }
     };
 
