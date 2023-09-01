@@ -30,7 +30,7 @@ namespace _NAC
         "}\n";
     #endif
 
-    const Vertex Canvas::vertices[3] = {
+    Vertex Canvas::vertices[3] = {
         {-0.6f, -0.3f, 1.f, 0.f, 0.f},
         {0.6f, -0.3f, 0.f, 1.f, 0.f},
         {0.f, 0.6f, 0.f, 0.f, 1.f}
@@ -82,7 +82,7 @@ namespace _NAC
         return fragment_shader_text;
     }
 
-    const Vertex* Canvas::GetVertices() const {
+    Vertex* Canvas::GetVertices() const {
         return vertices;
     }
 
