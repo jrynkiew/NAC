@@ -104,6 +104,7 @@ int main(void)
     vertices[0] = {-1.f, -1.f, 1.f, 0.f, 0.f};
     vertices[1] = {1.f, -1.f, 0.f, 1.f, 0.f};
     vertices[2] = {0.f, 1.f, 0.f, 0.f, 1.f};
+    vertices[3] = {1.f, 1.f, 0.4f, 0.4f, 1.f};
 
     //initialize NAC
     if(!nac->Initialize())
@@ -123,8 +124,6 @@ int main(void)
         renderer->Render(nac->GetWindow()->GetGLFWwindow());
         if(i>200 && i<202) {
             renderer->GetCanvas()->SetVertices(vertices);
-            renderer->GetCanvas()->Initialize(nac->GetWindow()->GetGLFWwindow());
-            printf("canvas re-initialized\n");
         }
     };
 
