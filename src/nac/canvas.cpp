@@ -3,6 +3,7 @@
 namespace _NAC
 {
     Canvas* Canvas::m_pInstance = nullptr;
+    Vertex* Canvas::vertices = nullptr;
     const char* Canvas::vertex_shader_text =
         "uniform mat4 MVP;\n"
         "attribute vec3 vCol;\n"
