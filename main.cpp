@@ -107,6 +107,16 @@ void test() {
         vertices[0].y += 0.01f;
     if (vertices[0].y >= targetR)
         vertices[0].y = 0.f;
+
+    if (vertices[3].x < targetR)
+        vertices[3].x += 0.01f;
+    if (vertices[3].x >= targetR)
+        vertices[3].x = 0.f;
+
+    if (vertices[3].y < targetR)
+        vertices[3].y += 0.01f;
+    if (vertices[3].y >= targetR)
+        vertices[3].y = 0.f;
 }
 
 int main(void)
