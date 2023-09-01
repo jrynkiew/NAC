@@ -100,11 +100,10 @@ int main(void)
     //create NAC instance
     nac = new NAC();
 
-    Vertex vertices[3] = {
-        {-1.f, -1.f, 1.f, 0.f, 0.f},
-        {1.f, -1.f, 0.f, 1.f, 0.f},
-        {0.f, 1.f, 0.f, 0.f, 1.f}
-    };
+    Vertex* vertices = new Vertex[3];
+    vertices[0] = {-1.f, -1.f, 1.f, 0.f, 0.f};
+    vertices[1] = {1.f, -1.f, 0.f, 1.f, 0.f};
+    vertices[2] = {0.f, 1.f, 0.f, 0.f, 1.f};
 
     //initialize NAC
     if(!nac->Initialize())
@@ -123,7 +122,7 @@ int main(void)
         i++;
         renderer->Render(nac->GetWindow()->GetGLFWwindow());
         if(i>10000) {
-            renderer->GetCanvas()->SetVertices(&vertices);
+            renderer->GetCanvas()->SetVertices(vertices);
             renderer->GetCanvas()->Initialize(nac->GetWindow()->GetGLFWwindow());
             printf("reinitialized\n");
         }
