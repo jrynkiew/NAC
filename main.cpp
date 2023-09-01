@@ -99,8 +99,8 @@ Vertex* vertices = new Vertex[3];
 
 void test() {
     if (vertices[0].x < targetR)
-        vertices[0].x += 0.01f;
-    if (vertices[0].x >= targetR)
+        vertices[0].x -= 0.01f;
+    if (vertices[0].x >= -1*(targetR))
         vertices[0].x = 0.f;
 
     if (vertices[1].x < targetR)
