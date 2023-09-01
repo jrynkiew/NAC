@@ -51,7 +51,7 @@ namespace _NAC
             mat4x4 m, p, mvp;
             float ratio;
             static Canvas* m_pInstance;
-            static const Vertex vertices[3];
+            static Vertex vertices[3];
             static const char* vertex_shader_text;       
             static const char* fragment_shader_text;
             
