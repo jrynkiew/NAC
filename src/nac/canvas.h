@@ -33,6 +33,7 @@ namespace _NAC
             
             void SetVertexShaderText(const char* text);
             void SetFragmentShaderText(const char* text);
+            void SetVertices(const Vertex* vertices);
 
 			bool Initialize(GLFWwindow* window);
 			void Shutdown();

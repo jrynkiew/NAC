@@ -71,7 +71,7 @@ void main_loop() {
                 A += 0.00004;
                 B += 0.00002;
             }
-            usleep(10000);
+            usleep(1000);
         }
     #endif
  }
@@ -100,6 +100,12 @@ int main(void)
     //create NAC instance
     nac = new NAC();
 
+    Vertex vertices[3] = {
+        {-1.f, -1.f, 1.f, 0.f, 0.f},
+        {1.f, -1.f, 0.f, 1.f, 0.f},
+        {0.f, 1.f, 0.f, 0.f, 1.f}
+    };
+
     //initialize NAC
     if(!nac->Initialize())
     {
@@ -111,10 +117,16 @@ int main(void)
     //get renderer and window pointers
     renderer = nac->GetRenderer();
     window = nac->GetWindow();
-
+    int i=0;
     //render loop
     loop = [&] {
+        i++;
         renderer->Render(nac->GetWindow()->GetGLFWwindow());
+        if(i>10000) {
+            renderer->GetCanvas()->SetVertices(vertices);
+            renderer->GetCanvas()->Initialize(nac->GetWindow()->GetGLFWwindow());
+            printf("reinitialized\n");
+        }
     };
 
     //run NAC

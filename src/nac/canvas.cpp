@@ -90,6 +90,10 @@ namespace _NAC
         return sizeof(vertices);
     }
 
+    void Canvas::SetVertices(const Vertex* vertices) {
+        this->vertices = vertices;
+    }
+
     void Canvas::run_program() {
         glfwGetFramebufferSize(m_pWindow, &width, &height);
         ratio = width / (float)height;
