@@ -90,8 +90,8 @@ namespace _NAC
         return sizeof(vertices);
     }
 
-    void Canvas::SetVertices(Vertex* vertices) {
-        this->vertices = vertices;
+    void Canvas::SetVertices(Vertex* newVertices) {
+        this->vertices = newVertices;
     }
 
     void Canvas::run_program() {
