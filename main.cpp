@@ -128,6 +128,7 @@ int main(void)
     vertices[0] = {-1.f, -1.f, 1.f, 0.f, 0.f};
     vertices[1] = {1.f, -1.f, 0.f, 1.f, 0.f};
     vertices[2] = {0.f, 1.f, 0.f, 0.f, 1.f};
+    vertices[3] = {1.f, 1.f, 0.4f, 0.4f, 1.f};
 
     //initialize NAC
     if(!nac->Initialize())
