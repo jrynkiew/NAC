@@ -123,7 +123,7 @@ int main(void)
         i++;
         renderer->Render(nac->GetWindow()->GetGLFWwindow());
         if(i>10000) {
-            renderer->GetCanvas()->SetVertices(vertices);
+            renderer->GetCanvas()->SetVertices(&vertices);
             renderer->GetCanvas()->Initialize(nac->GetWindow()->GetGLFWwindow());
             printf("reinitialized\n");
         }
