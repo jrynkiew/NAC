@@ -86,7 +86,7 @@ namespace _NAC
     }
 
     GLsizei Canvas::GetVerticesSize() const {
-        return sizeof(vertices);
+        return sizeof(&vertices);
     }
 
     void Canvas::SetVertices(Vertex* newVertices) {
