@@ -94,6 +94,10 @@ namespace _NAC
         this->vertices[0] = vertices[0];
         this->vertices[1] = vertices[1];
         this->vertices[2] = vertices[2];
+
+        //update the vertex buffer
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+        glBufferData(GL_ARRAY_BUFFER, Canvas::GetInstance()->GetVerticesSize(), Canvas::GetInstance()->GetVertices(), GL_STATIC_DRAW);
     }
 
     void Canvas::run_program() {
