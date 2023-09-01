@@ -94,7 +94,6 @@ namespace _NAC
         this->vertices[0] = vertices[0];
         this->vertices[1] = vertices[1];
         this->vertices[2] = vertices[2];
-        this->vertices[3] = vertices[3];
 
         //update the vertex buffer
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
@@ -112,7 +111,7 @@ namespace _NAC
         mat4x4_mul(mvp, p, m);
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
-        glDrawArrays(GL_TRIANGLES, 0, 4);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
     }
 
     void Canvas::prepare_vertex_buffer() {

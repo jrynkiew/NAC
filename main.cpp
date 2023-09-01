@@ -98,15 +98,35 @@ const float targetR = 1.0f;
 Vertex* vertices = new Vertex[3];
 
 void test() {
+    if (vertices[0].x < targetR)
+        vertices[0].x += 0.01f;
+    if (vertices[0].x >= targetR)
+        vertices[0].x = 0.f;
+
     if (vertices[1].x < targetR)
         vertices[1].x += 0.01f;
     if (vertices[1].x >= targetR)
         vertices[1].x = 0.f;
 
-    if (vertices[3].x < targetR)
-        vertices[3].x += 0.01f;
-    if (vertices[3].x >= targetR)
-        vertices[3].x = 0.f;
+    if (vertices[2].x < targetR)
+        vertices[2].x += 0.01f;
+    if (vertices[2].x >= targetR)
+        vertices[2].x = 0.f;
+
+    if (vertices[0].y < targetR)
+        vertices[0].y += 0.01f;
+    if (vertices[0].y >= targetR)
+        vertices[0].y = 0.f;
+
+    if (vertices[1].y < targetR)
+        vertices[1].y += 0.01f;
+    if (vertices[1].y >= targetR)
+        vertices[1].y = 0.f;
+
+    if (vertices[2].y < targetR)
+        vertices[2].y += 0.01f;
+    if (vertices[2].y >= targetR)
+        vertices[2].y = 0.f;
 }
 
 int main(void)
@@ -118,7 +138,6 @@ int main(void)
     vertices[0] = {-1.f, -1.f, 1.f, 0.f, 0.f};
     vertices[1] = {1.f, -1.f, 0.f, 1.f, 0.f};
     vertices[2] = {0.f, 1.f, 0.f, 0.f, 1.f};
-    vertices[3] = {0.3f, 1.f, 0.5f, 0.f, 1.f};
 
     //initialize NAC
     if(!nac->Initialize())
