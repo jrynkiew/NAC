@@ -94,7 +94,6 @@ namespace _NAC
         this->vertices[0] = vertices[0];
         this->vertices[1] = vertices[1];
         this->vertices[2] = vertices[2];
-        this->vertices[3] = vertices[3];
     }
 
     void Canvas::run_program() {
