@@ -75,6 +75,7 @@ namespace _NAC {
 
         //terminate glfw
         glfwTerminate();
+        exit(EXIT_SUCCESS);
     }
 }
 

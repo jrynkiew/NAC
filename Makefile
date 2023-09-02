@@ -18,7 +18,7 @@ endif
 IMGUI_DIR = src
 SOURCES = main.cpp $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
 SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp
-SOURCES += $(IMGUI_DIR)/nac/nac.cpp $(IMGUI_DIR)/nac/renderer.cpp $(IMGUI_DIR)/nac/window.cpp
+SOURCES += $(IMGUI_DIR)/nac/nac.cpp $(IMGUI_DIR)/nac/renderer.cpp $(IMGUI_DIR)/nac/window.cpp $(IMGUI_DIR)/nac/canvas.cpp $(IMGUI_DIR)/nac/interface.cpp
 
 # Create an output directory for generated objects
 OBJS = $(addprefix $(OUT)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
@@ -29,7 +29,7 @@ ifeq (${BUILD_TARGET},web)
 EMS +=  -s USE_WEBGL2=1 -s USE_GLFW=3 -s WASM=1 -s USE_PTHREADS=1 -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1
 CPPFLAGS = -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(IMGUI_DIR)/nac -Wall  -Wformat -Os $(EMS)
 LIBS += $(EMS)
-LDFLAGS += -s USE_PTHREADS=1 -s ALLOW_MEMORY_GROWTH=1 -s OFFSCREENCANVAS_SUPPORT=1 -s PTHREAD_POOL_SIZE=4 --shell-file shell_minimal.html
+LDFLAGS += -s USE_PTHREADS=1 -s ALLOW_MEMORY_GROWTH=1 -s OFFSCREENCANVAS_SUPPORT=1 -s PTHREAD_POOL_SIZE=4 -s EXPORTED_FUNCTIONS=_updateCanvasSize --shell-file shell_minimal.html
 
 else ifeq (${BUILD_TARGET},windows)
 SOURCES += ${MINGW}/share/glad/glad.c

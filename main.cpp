@@ -5,75 +5,85 @@
 // base:  https://www.glfw.org/docs/latest/quick.html#quick_example
 // ref: https://gist.github.com/SuperV1234/5c5ad838fe5fe1bf54f9
 
-
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#define GL_GLEXT_PROTOTYPES
-#define EGL_EGLEXT_PROTOTYPES
-#else
-#include "glad/glad.h"
-#endif
 #include <nac.h>
 #include <thread>
+#include <iostream>
+#include <string.h>
+#include <math.h>
+#include <unistd.h>
 
 using namespace _NAC;
+using namespace std;
 
-static const struct
-{
-    float x, y;
-    float r, g, b;
-} vertices[3] =
-    {
-        {-0.6f, -0.4f, 1.f, 0.f, 0.f},
-        {0.6f, -0.4f, 0.f, 1.f, 0.f},
-        {0.f, 0.6f, 0.f, 0.f, 1.f}};
-
-static const char *vertex_shader_text =
-    "uniform mat4 MVP;\n"
-    "attribute vec3 vCol;\n"
-    "attribute vec2 vPos;\n"
-    "varying vec3 color;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-    "    color = vCol;\n"
-    "}\n";
-
-#ifdef __EMSCRIPTEN__
-static const char *fragment_shader_text =
-	"precision mediump float;\n"
-    "varying vec3 color;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_FragColor = vec4(color, 1.0);\n"
-    "}\n";
-#else
-static const char *fragment_shader_text =
-    "varying vec3 color;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_FragColor = vec4(color, 1.0);\n"
-    "}\n";
-#endif
+NAC* nac;
+Renderer* renderer;
+Window* window;
 
 std::function<void()> loop;
 void main_loop() { 
     #ifdef __EMSCRIPTEN__
-        emscripten_log(EM_LOG_CONSOLE, "main_loop");
+        // emscripten_log(EM_LOG_CONSOLE, "main_loop");
     #else
-        printf("main_loop\n");
+        // printf("main_loop\n");
     #endif
     loop();
+ }
+
+ void thread_loop() { 
+    #ifdef __EMSCRIPTEN__
+        // emscripten_log(EM_LOG_CONSOLE, "thread_loop");
+    #else
+        float A = 0, B = 0;
+        float i, j;
+        int k;
+        float z[1760];
+        char b[1760];
+        printf("\x1b[2J");
+        for(;;) {
+            memset(b,32,1760);
+            memset(z,0,7040);
+            for(j=0; j < 6.28; j += 0.07) {
+                for(i=0; i < 6.28; i += 0.02) {
+                    float c = sin(i);
+                    float d = cos(j);
+                    float e = sin(A);
+                    float f = sin(j);
+                    float g = cos(A);
+                    float h = d + 2;
+                    float D = 1 / (c * h * e + f * g + 5);
+                    float l = cos(i);
+                    float m = cos(B);
+                    float n = sin(B);
+                    float t = c * h * g - f * e;
+                    int x = 40 + 30 * D * (l * h * m - t * n);
+                    int y= 12 + 15 * D * (l * h * n + t * m);
+                    int o = x + 80 * y;
+                    int N = 8 * ((f * e - c * d * g) * m - c * d * e - f * g - l * d * n);
+                    if(22 > y && y > 0 && x > 0 && 80 > x && D > z[o]) {
+                        z[o] = D;
+                        b[o] = "...,,,ooo000"[N > 0 ? N : 0]; //works much better with ".,-~:;=!*#$@" or "JackEatDonut"
+                    }
+                }
+            }
+            printf("\x1b[H");
+            for(k = 0; k < 1761; k++) {
+                putchar(k % 80 ? b[k] : 10);
+                A += 0.00004;
+                B += 0.00002;
+            }
+            usleep(1000);
+        }
+    #endif
  }
 
 void threadLoopIteration(void*)
 {
     #ifdef __EMSCRIPTEN__
-        emscripten_log(EM_LOG_CONSOLE, "threadLoopIteration");
+        //emscripten_log(EM_LOG_CONSOLE, "threadLoopIteration");
     #else
-        printf("threadLoopIteration\n");
+        //printf("threadLoopIteration\n");
     #endif
-        // loop();
+    thread_loop();
 }
 
 void tw()
@@ -81,126 +91,56 @@ void tw()
     #ifdef __EMSCRIPTEN__
         emscripten_set_main_loop_arg(threadLoopIteration, nullptr, 0, 1);
     #else
-        while(true)
-        {
-            threadLoopIteration(nullptr);
-        }
+        threadLoopIteration(nullptr);
     #endif
-}
-
-void check_error(GLuint shader)
-{
-    GLint result;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
-    if (result == GL_FALSE)
-    {
-        GLint log_length;
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
-        std::vector<GLchar> log(log_length);
-
-        GLsizei length;
-        glGetShaderInfoLog(shader, log.size(), &length, log.data());
-
-        error_callback(0, log.data());
-    }
 }
 
 int main(void)
 {
-    GLint mvp_location, vpos_location, vcol_location;
-
     //create NAC instance
-    NAC* nac = new NAC();
+    nac = new NAC();
 
     //initialize NAC
     if(!nac->Initialize())
     {
-        printf("Error during NAC gui initialization!\n");
+        printf("Error during NAC renderer initialization!\n");
         nac->Shutdown();
         exit(EXIT_FAILURE);
     }
 
-    //assign pointer to window created during NAC initialization
-    auto window = nac->GetWindow()->GetGLFWwindow();
-    auto renderer = nac->GetRenderer();
+    //get renderer and window pointers
+    renderer = nac->GetRenderer();
+    window = nac->GetWindow();
 
-    if (!window)
-    {
-        printf("Error during NAC window creation!\n");
-        nac->Shutdown();
-        exit(EXIT_FAILURE);
-    }    
-
-    glEnable(GL_CULL_FACE);
-
-    printf("Use Modern OpenGL (with shaders)\n");
-    // NOTE: OpenGL error checks have been omitted for brevity
-    GLuint vertex_buffer;
-    glGenBuffers(1, &vertex_buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    auto vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-    glCompileShader(vertex_shader);
-    check_error(vertex_shader);
-
-    auto fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-    glCompileShader(fragment_shader);
-    check_error(fragment_shader);
-
-    auto program = glCreateProgram();
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-    glLinkProgram(program);
-    mvp_location = glGetUniformLocation(program, "MVP");
-    vpos_location = glGetAttribLocation(program, "vPos");
-    vcol_location = glGetAttribLocation(program, "vCol");
-    glEnableVertexAttribArray(vpos_location);
-    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(vertices[0]), (void *)0);
-    glEnableVertexAttribArray(vcol_location);
-    glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
-                          sizeof(vertices[0]), (void *)(sizeof(float) * 2));
-
+    //render loop
     loop = [&] {
-        float ratio;
-        int width, height;
-        mat4x4 m, p, mvp;
-        glfwGetFramebufferSize(window, &width, &height);
-        ratio = width / (float)height;
-        glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
-        mat4x4_identity(m);
-        mat4x4_rotate_Z(m, m, (float)glfwGetTime());
-        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        mat4x4_mul(mvp, p, m);
-        glUseProgram(program);
-        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        
-        renderer->BeginScene();
-
-        glfwPollEvents();
-
-        renderer->Render(window);
-
+        renderer->Render(nac->GetWindow()->GetGLFWwindow());
     };
 
+    //run NAC
 #ifdef __EMSCRIPTEN__
     std::thread thread(tw);
     emscripten_set_main_loop(main_loop, 0, true);
 #else
-    while (!glfwWindowShouldClose(window))
+    std::thread nativeThread(tw);
+    while (!glfwWindowShouldClose(nac->GetWindow()->GetGLFWwindow()))
         main_loop();
 #endif
 
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
-    exit(EXIT_SUCCESS);
+    #ifndef __EMSCRIPTEN__
+        nativeThread.join();
+    #endif
+    renderer->Shutdown();
+    window->Shutdown();
 }
+
+#ifdef __EMSCRIPTEN__
+extern "C" {
+    EMSCRIPTEN_KEEPALIVE
+    void updateCanvasSize(int width, int height) {
+        // canvasWidth = width;
+        // canvasHeight = height;
+        glfwSetWindowSize(nac->GetWindow()->GetGLFWwindow(), width, height);
+    }
+}
+#endif
