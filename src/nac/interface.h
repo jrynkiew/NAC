@@ -1,47 +1,42 @@
 #pragma once
-#define NAC_RENDERER_H
-
-#include <renderer.h>
-#include <window.h>
-
-#include "imgui.h"
-
 #ifdef __EMSCRIPTEN__
-#include <emscripten.h>
+    #include <emscripten.h>
+    #define GL_GLEXT_PROTOTYPES
+    #define EGL_EGLEXT_PROTOTYPES
+#else
+    #include "glad/glad.h"
 #endif
+#include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
-#if !SDL_VERSION_ATLEAST(2,0,17)
-#error This backend requires SDL 2.0.17+ because of SDL_RenderGeometry() function
-#endif
-
-namespace _NAC {
-	//definition of class that creates a gui
+namespace _NAC
+{
 	class Interface
 	{
-		private:
-			// the interface pointer
-            static ImGuiIO* m_io;
-			// the renderer pointer
-			static SDL_Renderer* m_Renderer;
-			// the window pointer
-			static SDL_Window* m_Window;
-			// the interface flags
-			bool show_demo_window;
-			// the interface flags
-			bool show_another_window;
-
 		public:
-			// constructor
-			Interface(SDL_Window* window, SDL_Renderer* renderer);
-			// destructor
+			Interface();
 			~Interface();
-			// create the interface
-			bool Initialize();
-			// get the interface
-			ImGuiIO* Get_ImGui_Interface();
-			// draw the interface
-			void Draw_Interface();
-			// destroy the interface
-			void Shutdown();
-	};
+
+            bool Initialize(GLFWwindow* window);
+            void Shutdown();
+            void Draw();
+            void SetStyle();
+            void SetConfig();
+
+            Interface* GetInstance();
+            GLFWwindow* GetWindow();
+            ImGuiContext* GetImGuiContext();
+            ImGuiIO* GetImGuiIO();
+            ImGuiStyle* GetImGuiStyle();
+        
+        private:
+            static Interface* m_pInstance;
+            static GLFWwindow* m_pWindow;
+            static ImGuiContext* m_pImGuiContext;
+            static ImGuiIO* m_pImGuiIO;
+            static ImGuiStyle* m_pImGuiStyle;
+    };
 }
+

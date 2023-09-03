@@ -14,6 +14,7 @@ namespace _NAC {
             NAC* GetInstance();
 
             bool Initialize();
+            void Run();
             void Shutdown();
 
             void GetEvents();
@@ -21,12 +22,8 @@ namespace _NAC {
             static void Draw();
             
         private:
-            static Renderer* m_pRenderer;
-            static Window* m_pWindow;
-            static Interface* m_pInterface;
-            static NAC* m_pNAC;
-
-            bool done; 
+            static Renderer* m_Renderer;
+            static Window* m_Window;
     };
     
     static std::function<void()> loop;

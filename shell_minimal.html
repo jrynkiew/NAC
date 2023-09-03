@@ -59,6 +59,18 @@
         console.log("onerror: " + event);
       };
     </script>
+    </script>
+    <script type='text/javascript'>
+      // Call the C/C++ function to notify of the canvas size
+      function updateCanvasSize() {
+          Module._updateCanvasSize(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio);
+      }
+      // Call the updateCanvasSize function when the window is resized
+      window.addEventListener('resize', updateCanvasSize);
+      Module.postRun.push(function() {
+          updateCanvasSize();
+      });
+    </script> 
     {{{ SCRIPT }}}
   </body>
 </html>

@@ -1,0 +1,56 @@
+stages:
+  - build-all
+  - deploy
+
+build-web:
+  artifacts:
+    name: "$CI_COMMIT_REF_NAME"
+    paths:
+      - generated/web
+  variables:
+    BUILD_TARGET: web
+    GIT_STRATEGY: clone
+  tags:
+    - web-runner
+  stage: build-all
+  script:
+    - ./install.sh
+  
+build-windows:
+  artifacts:
+    name: "$CI_COMMIT_REF_NAME"
+    paths:
+      - generated/windows
+  variables:
+    BUILD_TARGET: windows
+    GIT_STRATEGY: clone
+    MINGW: /mingw64
+  tags:
+    - windows-runner
+  stage: build-all
+  script:
+    - ./install.sh
+
+build-linux:
+  artifacts:
+    name: "$CI_COMMIT_REF_NAME"
+    paths:
+      - generated/linux
+  variables:
+    BUILD_TARGET: linux
+    GIT_STRATEGY: clone
+  tags:
+    - linux-runner
+  stage: build-all
+  script:
+    - ./install.sh
+
+run-web-server:
+  tags:
+    - web-server
+  stage: deploy
+  script:
+    - cp generated/web/* /usr/share/nginx/html/
+  needs:
+    - job: build-web
+      artifacts: true

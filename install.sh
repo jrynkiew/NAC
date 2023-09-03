@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Initialize Environment
 . ./build/.env/env.sh
 

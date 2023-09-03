@@ -1,6 +1,17 @@
 #pragma once
 #define NAC_RENDERER_WINDOW_H
-#include <SDL.h>
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#define GL_GLEXT_PROTOTYPES
+#define EGL_EGLEXT_PROTOTYPES
+#else
+#include "glad/glad.h"
+#endif
+
+#include <functional>
+#include <GLFW/glfw3.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 namespace _NAC {

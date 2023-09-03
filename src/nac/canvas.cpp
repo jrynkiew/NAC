@@ -1,72 +1,195 @@
-namespace _NAC {
-    // constructor
-    Canvas::Canvas(SDL_Window* window, SDL_Renderer* renderer) 
-    {
-        m_Renderer = renderer;
-        m_Window = window;
+#include "canvas.h"
+
+namespace _NAC
+{
+    Canvas* Canvas::m_pInstance = nullptr;
+    const char* Canvas::vertex_shader_text =
+        "uniform mat4 MVP;\n"
+        "attribute vec3 vCol;\n"
+        "attribute vec2 vPos;\n"
+        "varying vec3 color;\n"
+        "void main()\n"
+        "{\n"
+        "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+        "    color = vCol;\n"
+        "}\n";
+    #ifdef __EMSCRIPTEN__
+    const char* Canvas::fragment_shader_text =
+        "precision mediump float;\n"
+        "varying vec3 color;\n"
+        "void main()\n"
+        "{\n"
+        "    gl_FragColor = vec4(color, 1.0);\n"
+        "}\n";
+    #else
+    const char* Canvas::fragment_shader_text =
+        "varying vec3 color;\n"
+        "void main()\n"
+        "{\n"
+        "    gl_FragColor = vec4(color, 1.0);\n"
+        "}\n";
+    #endif
+
+    Vertex Canvas::vertices[3] = {
+        {-0.2f, -0.2f, 1.f, 0.f, 0.f},
+        {0.2f, -0.2f, 0.f, 1.f, 0.f},
+        {0.f, 0.2f, 0.f, 0.f, 1.f}
+    };
+
+    Canvas::Canvas() {
+        m_pInstance = this;
     }
 
-    Canvas::~Canvas() 
-    {
-        Shutdown();
+    Canvas::~Canvas() {
     }
 
-    bool Canvas::Initialize()
-    {
-        // create a viewport
-        m_Viewport = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_TARGETTEXTURE);
-        if(m_Viewport == NULL)
-        {
-            printf("Error creating viewport: %s\n", SDL_GetError());
-            return false;
-        }
-
-        // create a render target
-        m_RenderTarget = SDL_CreateTexture(m_Renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 800, 600);
-        if(m_RenderTarget == NULL)
-        {
-            printf("Error creating render target: %s\n", SDL_GetError());
-            return false;
-        }
-
+    bool Canvas::Initialize(GLFWwindow* window) {
+        m_pWindow = window;
+        prepare_vertex_buffer();
+        prepare_vertex_shader();
+        prepare_fragment_shader();
+        prepare_program();
         return true;
     }
 
-    void Canvas::Draw_Canvas()
-    {
-        // set the viewport
-        SDL_RenderSetViewport(m_Renderer, NULL);
-        // set the render target
-        SDL_SetRenderTarget(m_Renderer, m_RenderTarget);
-        // set the viewport
-        SDL_RenderSetViewport(m_Viewport, NULL);
-        // set the render target
-        SDL_SetRenderTarget(m_Viewport, m_RenderTarget);
-        // clear the render target
-        SDL_SetRenderDrawColor(m_Viewport, 0, 0, 0, 255);
-        SDL_RenderClear(m_Viewport);
-
-        // draw the canvas
-        SDL_Rect rect;
-        rect.x = 0;
-        rect.y = 0;
-        rect.w = 800;
-        rect.h = 600;
-        SDL_SetRenderDrawColor(m_Viewport, 255, 255, 255, 255);
-        SDL_RenderFillRect(m_Viewport, &rect);
-
-        // set the viewport
-        SDL_RenderSetViewport(m_Renderer, NULL);
-        // set the render target
-        SDL_SetRenderTarget(m_Renderer, NULL);
-
-        // render the render target to the viewport
-        SDL_RenderCopy(m_Renderer, m_RenderTarget, NULL, NULL);
+    void Canvas::Shutdown() {
     }
 
-    void Canvas::Shutdown()
-    {
-        SDL_DestroyTexture(m_RenderTarget);
-        SDL_DestroyRenderer(m_Viewport);
+    void Canvas::Draw() {
+        run_program();
+    }
+
+    Canvas* Canvas::GetInstance() {
+        if (!m_pInstance)
+            m_pInstance = new Canvas();
+
+        return m_pInstance;
+    }
+
+    void Canvas::SetVertexShaderText(const char* text) {
+        vertex_shader_text = text;
+    }
+
+    const char*& Canvas::GetVertexShaderText() const {
+        return vertex_shader_text;
+    }
+
+    void Canvas::SetFragmentShaderText(const char* text) {
+        fragment_shader_text = text;
+    }
+
+    const char*& Canvas::GetFragmentShaderText() const {
+        return fragment_shader_text;
+    }
+
+    Vertex* Canvas::GetVertices() {
+        return vertices;
+    }
+
+    GLsizei Canvas::GetVerticesSize() const {
+        return sizeof(vertices);
+    }
+
+    void Canvas::SetVertices(Vertex* vertices) {
+        this->vertices[0] = vertices[0];
+        this->vertices[1] = vertices[1];
+        this->vertices[2] = vertices[2];
+
+        //update the vertex buffer
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+        glBufferData(GL_ARRAY_BUFFER, Canvas::GetInstance()->GetVerticesSize(), Canvas::GetInstance()->GetVertices(), GL_STATIC_DRAW);
+    }
+
+    void Canvas::run_program() {
+        glfwGetFramebufferSize(m_pWindow, &width, &height);
+        ratio = width / (float)height;
+        glViewport(0, 0, width, height);
+        glClear(GL_COLOR_BUFFER_BIT);
+        mat4x4_identity(m);
+        mat4x4_rotate_Z(m, m, (float)glfwGetTime());
+        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+        mat4x4_mul(mvp, p, m);
+        glUseProgram(program);
+        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+    }
+
+    void Canvas::prepare_vertex_buffer() {
+        glGenBuffers(1, &vertex_buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+        glBufferData(GL_ARRAY_BUFFER, Canvas::GetInstance()->GetVerticesSize(), Canvas::GetInstance()->GetVertices(), GL_STATIC_DRAW);    
+    }
+
+    void Canvas::prepare_vertex_shader() {
+        vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertex_shader, 1, &(Canvas::GetInstance()->GetVertexShaderText()), NULL);
+        glCompileShader(vertex_shader);
+        check_shader_error(vertex_shader);
+    }
+
+    void Canvas::prepare_fragment_shader() {
+        fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragment_shader, 1, &(Canvas::GetInstance()->GetFragmentShaderText()), NULL);
+        glCompileShader(fragment_shader);
+        check_shader_error(fragment_shader);
+    }
+
+    void Canvas::prepare_program() {
+        program = glCreateProgram();
+        glAttachShader(program, vertex_shader);
+        glAttachShader(program, fragment_shader);
+        glLinkProgram(program);
+        check_program_error(program);
+
+        mvp_location = glGetUniformLocation(program, "MVP");
+        vpos_location = glGetAttribLocation(program, "vPos");
+        vcol_location = glGetAttribLocation(program, "vCol");
+
+        glEnableVertexAttribArray(vpos_location);
+        glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
+                            sizeof(Vertex), (void*) 0);
+        glEnableVertexAttribArray(vcol_location);
+        glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
+                            sizeof(Vertex), (void*) (sizeof(float) * 2));
+    }
+
+    void Canvas::check_shader_error(GLuint shader) {
+        GLint result;
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+        if (result == GL_FALSE)
+        {
+            GLint log_length;
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_length);
+            std::vector<GLchar> log(log_length);
+
+            GLsizei length;
+            glGetShaderInfoLog(shader, log.size(), &length, log.data());
+
+            shader_error_callback(0, log.data());
+        }
+    }
+
+    void Canvas::check_program_error(GLuint program) {
+        GLint result;
+        glGetProgramiv(program, GL_LINK_STATUS, &result);
+        if (result == GL_FALSE)
+        {
+            GLint log_length;
+            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_length);
+            std::vector<GLchar> log(log_length);
+
+            GLsizei length;
+            glGetProgramInfoLog(program, log.size(), &length, log.data());
+
+            program_error_callback(0, log.data());
+        }
+    }
+
+    void Canvas::shader_error_callback(int error, const char *description) {
+        fprintf(stderr, "Error in shader: %s\n", description);
+    }
+
+    void Canvas::program_error_callback(int error, const char *description) {
+        fprintf(stderr, "Error in program: %s\n", description);
     }
 }

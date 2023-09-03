@@ -69,5 +69,9 @@ namespace _NAC {
             SDL_Quit();
             m_Window = nullptr;
         }
+
+        //terminate glfw
+        glfwTerminate();
+        exit(EXIT_SUCCESS);
     }
 }

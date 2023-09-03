@@ -2,195 +2,73 @@
 
 namespace _NAC
 {
-    Window* NAC::m_pWindow = nullptr;
-    Renderer* NAC::m_pRenderer = nullptr;
-    Interface* NAC::m_pInterface = nullptr;
-    NAC* NAC::m_pNAC = nullptr;
-
-    static void main_loop() 
-    { 
-        loop(); 
-    }
+    Window* NAC::m_Window = nullptr;
+    Renderer* NAC::m_Renderer = nullptr;
 
     NAC::NAC() {
-        m_pNAC = this;
-        done = false;
-        loop = [&] {
-            GetEvents();
-            Draw();
-        };
     }
 
     NAC::~NAC() {
     }
 
-    SDL_Renderer* NAC::GetRenderer() { 
-        return m_pRenderer->Get_SDL_Renderer();
+    Renderer* NAC::GetRenderer() { 
+        return m_Renderer;
     }
 
-    SDL_Window* NAC::GetWindow() {
-		return m_pWindow->Get_SDL_Window();
-    }
-
-    ImGuiIO* NAC::GetInterface() {
-        return m_pInterface->Get_ImGui_Interface();
-    }
-
-    // event loop to capture multi-touch events in SDL2 and send them to the interface
-
-
-    void NAC::GetEvents() {
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
-        {
-            ImGui_ImplSDL2_ProcessEvent(&event);
-            if (event.type == SDL_QUIT)
-            {
-                Shutdown();
-            }
-            if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(m_pWindow->Get_SDL_Window()))
-            {
-                Shutdown();
-            }
-            // on mouse move get delta mouse movement from the center of the screen and send it to the interface
-            if (event.type == SDL_MOUSEMOTION)
-            {
-            }
-            // on multiple finger touch get the delta of the touch and send it to the interface
-            if (event.type == SDL_FINGERDOWN)
-            {
-                if (event.tfinger.fingerId == 0)
-                {
-                    ImGui::GetIO().MouseDown[0] = true;
-                }
-                if (event.tfinger.fingerId == 1)
-                {
-                    ImGui::GetIO().MouseDown[1] = true;
-                }
-            }
-            if (event.type == SDL_FINGERUP)
-            {
-                if (event.tfinger.fingerId == 0)
-                {
-                    ImGui::GetIO().MouseDown[0] = false;
-                }
-                if (event.tfinger.fingerId == 1)
-                {
-                    ImGui::GetIO().MouseDown[1] = false;
-                }
-            }
-            if (event.type == SDL_FINGERMOTION)
-            {
-                if (event.tfinger.fingerId == 0)
-                {
-                    m_pRenderer->finger0Pos.x = event.tfinger.x;
-                    m_pRenderer->finger0Pos.y = event.tfinger.y;
-                }
-                if (event.tfinger.fingerId == 1)
-                {
-                    m_pRenderer->finger1Pos.x = event.tfinger.x;
-                    m_pRenderer->finger1Pos.y = event.tfinger.y;
-                }
-            }
-            if (event.type == SDL_MOUSEBUTTONDOWN)
-            {             
-                if (event.button.button == SDL_BUTTON_LEFT)
-                {
-                    ImGui::GetIO().MouseDown[0] = true;
-                }
-                    
-                if (event.button.button == SDL_BUTTON_RIGHT)
-                    ImGui::GetIO().MouseDown[1] = true;
-            }
-            if (event.type == SDL_MOUSEBUTTONUP)
-            {
-                if (event.button.button == SDL_BUTTON_LEFT)
-                    ImGui::GetIO().MouseDown[0] = false;
-                    
-                if (event.button.button == SDL_BUTTON_RIGHT)
-                    ImGui::GetIO().MouseDown[1] = false;
-            }
-            if (event.type == SDL_MOUSEWHEEL)
-            {
-                ImGui::GetIO().MouseWheel = event.wheel.y;
-                if (!ImGui::GetIO().WantCaptureMouse)
-                    ImGui::GetIO().MouseWheel < 0 ? m_pRenderer->Zoom_Decrement(1.3) : m_pRenderer->Zoom_Increment(1.3);
-            }
-            if (event.type == SDL_KEYDOWN)
-            {
-                ImGui::GetIO().KeysDown[event.key.keysym.scancode] = true;
-            }
-            if (event.type == SDL_KEYUP)
-            {
-                ImGui::GetIO().KeysDown[event.key.keysym.scancode] = false;
-            }
-            if (event.type == SDL_TEXTINPUT)
-            {
-                ImGui::GetIO().AddInputCharactersUTF8(event.text.text);
-            }
-            // if mouse delta 
-            
-        }
+    Window* NAC::GetWindow() {
+		return m_Window;
     }
 
     bool NAC::Initialize() {
         //initialize the window
-        m_pWindow = new Window();
-        if (!m_pWindow->Initialize("NAC", 1920, 1080))
+        m_Window = new Window();
+        if (!m_Window->Initialize("NAC", 1024, 720))
             return false;
+            
+        #ifndef __EMSCRIPTEN__
+            gladLoadGL();
+        #endif
+
+        glfwSwapInterval(1);
+        printf("%s\n", glGetString(GL_VERSION));
 
         //initialize the renderer
-        m_pRenderer = new Renderer(GetWindow());
-        if (!m_pRenderer->Initialize())
-            return false;
-
-        //initialize the interface
-        m_pInterface = new Interface(GetWindow(), GetRenderer());
-        if (!m_pInterface->Initialize())
+        m_Renderer = new Renderer();
+        if (!m_Renderer->Initialize(m_Window->GetGLFWwindow()))
             return false;
 
         //return success
         return true;
     }
 
+    void NAC::Run() {
+        //loop until the user closes the window
+        while (!glfwWindowShouldClose(m_Window->GetGLFWwindow()))
+        {
+            //clear the screen
+            // m_Renderer->Clear();
+
+            //render the scene
+            // m_Renderer->RenderScene();
+
+            //render the gui
+            // m_Renderer->Render();
+
+            //swap buffers
+            glfwSwapBuffers(m_Window->GetGLFWwindow());
+
+            //poll events
+            glfwPollEvents();
+        }
+    }
+
     void NAC::Shutdown() {
         //delete the renderer
-        if (m_pRenderer)
-        {
-            m_pRenderer->Shutdown();
-            delete m_pRenderer;
-        }
+        if (m_Renderer)
+            delete m_Renderer;
 
         //delete the window
-        if (m_pWindow)
-        {
-            m_pWindow->Shutdown();
-            delete m_pWindow;
-        }
-
-        //delete the interface
-        if (m_pInterface)
-        {
-            m_pInterface->Shutdown();
-            delete m_pInterface;
-        }
-
-        //quit the main_loop
-        done = true;
-    }
-
-    void NAC::Run() {
-        #ifdef __EMSCRIPTEN__
-            emscripten_set_main_loop(main_loop, 0, true);
-        #else
-            while (!done)
-                main_loop();
-        #endif
-    }
-
-    void NAC::Draw() {
-        m_pRenderer->New_Frame();
-        m_pInterface->Draw_Interface();
-        m_pRenderer->Render();       
+        if (m_Window)
+            delete m_Window;
     }
 }
