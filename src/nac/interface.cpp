@@ -181,6 +181,16 @@ namespace _NAC
         ImGui::End();
         if (showDemo)
         ImGui::ShowDemoWindow(&showDemo);
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        if (m_pImGuiIO->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
     }
 
     Interface* Interface::GetInstance() {

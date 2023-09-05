@@ -45,9 +45,6 @@ namespace _NAC
         //loop until the user closes the window
         while (!glfwWindowShouldClose(m_Window->GetGLFWwindow()))
         {
-            //clear the screen
-            m_Renderer->Clear();
-
             //render the scene
             m_Renderer->Render(m_Window->GetGLFWwindow());
         }
