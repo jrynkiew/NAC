@@ -138,7 +138,8 @@ namespace _NAC
 
     void Canvas::Draw() {
         // Rotate the cube
-         // Adjust the speed as needed
+        // Adjust the speed as needed
+        mat4x4_identity(model);
         mat4x4_rotate_Y(model, model, rotationSpeed);
         mat4x4_rotate_Z(model, model, rotationSpeed);
 
