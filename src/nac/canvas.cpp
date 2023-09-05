@@ -118,7 +118,6 @@ namespace _NAC
         glEnableVertexAttribArray(1);
 
         // Compile and link the shaders
-        GLuint vertexShader, fragmentShader, shaderProgram;
         vertexShader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
         glCompileShader(vertexShader);
@@ -141,7 +140,6 @@ namespace _NAC
         glUseProgram(shaderProgram);
 
         // Set up transformation matrices using mat4x4
-        mat4x4 model, view, projection;
         mat4x4_identity(model);
         mat4x4_translate_in_place(model, 0.0f, 0.0f, -3.0f); // Translate the cube back in the -z direction
         mat4x4_identity(view);
