@@ -60,7 +60,7 @@ namespace _NAC {
         //sets the mouse position
         void SetMousePosition(double x, double y);
         //the mouse move callback
-        void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+        static void mouse_callback(GLFWwindow *window, double xpos, double ypos);
     };
 
     #define g_sWindow _NAC::Window::GetInstance();
