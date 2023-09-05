@@ -92,23 +92,23 @@ namespace _NAC {
 
     void Window::SetMousePosition(double x, double y)
 	{
-		mouseX = x;
-		mouseY = y;
+		m_MouseX = x;
+		m_MouseY = y;
 		#ifdef __EMSCRIPTEN__
-        	emscripten_log(EM_LOG_CONSOLE, "mouseX: %f, mouseY: %f", mouseX, mouseY);
+        	emscripten_log(EM_LOG_CONSOLE, "mouseX: %f, mouseY: %f", m_MouseX, m_MouseY);
     	#else
-			printf("mouseX: %f, mouseY: %f", mouseX, mouseY);
+			printf("mouseX: %f, mouseY: %f", m_MouseX, m_MouseY);
 		#endif
 	}
 
     double Window::GetMouseX()
     {
-        return mouseX;
+        return m_MouseX;
     }
 
     double Window::GetMouseY()
     {
-        return mouseY;
+        return m_MouseY;
     }
 }
 
