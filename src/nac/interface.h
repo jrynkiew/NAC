@@ -16,10 +16,10 @@ namespace _NAC
 	class Interface
 	{
 		public:
-			Interface();
+			Interface(GLFWwindow* window);
 			~Interface();
 
-            bool Initialize(GLFWwindow* window);
+            bool Initialize();
             void Shutdown();
             void Draw();
             void SetStyle();

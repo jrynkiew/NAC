@@ -21,7 +21,7 @@ namespace _NAC
 
 			bool Initialize();
 			void Shutdown();
-			void Draw();
+			void Draw(int width, int height);
 		private:
             GLint modelLoc, viewLoc, projectionLoc;
             GLuint vertexShader, fragmentShader, shaderProgram;
@@ -30,7 +30,6 @@ namespace _NAC
             static const char* fragmentShaderSource;       
             static const char* vertexShaderSource;
             GLFWwindow* m_pWindow;
-            int width, height;
             float aspectRatio;
             float rotationSpeed;
             static float cubeVertices[];

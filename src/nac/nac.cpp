@@ -21,8 +21,8 @@ namespace _NAC
 
     bool NAC::Initialize() {
         //initialize the window
-        m_Window = new Window();
-        if (!m_Window->Initialize("NAC", 1024, 720))
+        m_Window = new Window("NAC", 1024, 720);
+        if (!m_Window->Initialize())
             return false;
             
         #ifndef __EMSCRIPTEN__
@@ -33,8 +33,8 @@ namespace _NAC
         printf("%s\n", glGetString(GL_VERSION));
 
         //initialize the renderer
-        m_Renderer = new Renderer();
-        if (!m_Renderer->Initialize(m_Window->GetGLFWwindow()))
+        m_Renderer = new Renderer(m_Window->GetGLFWwindow());
+        if (!m_Renderer->Initialize())
             return false;
 
         //return success

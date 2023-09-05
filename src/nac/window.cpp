@@ -7,8 +7,17 @@ namespace _NAC {
     GLFWwindow* Window::m_Window = nullptr;
 
 	//constructor
-	Window::Window()
+	Window::Window(const char* windowTitle, int width, int height)
     {
+        //set the instance
+        m_Instance = this;
+
+        //set the width and height
+        m_Width = width;
+        m_Height = height;
+
+        //set the window title
+        strcpy(this->windowTitle, windowTitle);
     }
 
 	//destructor
@@ -27,14 +36,10 @@ namespace _NAC {
     }
 
 	//creates the window and the opengl context
-	bool Window::Initialize(const char* windowTitle, int width, int height)
+	bool Window::Initialize()
 	{
         //set the error callback
         glfwSetErrorCallback(error_callback);
-
-		//set the width and height
-		m_Width = width;
-		m_Height = height;
 
 		//initialize glfw
 		if (!glfwInit())

@@ -7,8 +7,13 @@ namespace _NAC
 	Interface* Renderer::m_Interface = nullptr;
 	GLFWwindow* Renderer::m_pWindow = nullptr;
 
-	Renderer::Renderer()
+	Renderer::Renderer(GLFWwindow* window)
 	{
+		//set window
+		m_pWindow = window;
+
+		//set the instance
+		m_pInstance = this;
 	}
 
 	Renderer::~Renderer()
@@ -45,13 +50,11 @@ namespace _NAC
 		return m_Interface;
 	}
 
-	bool Renderer::Initialize(GLFWwindow* window)
+	bool Renderer::Initialize()
 	{
-		m_pWindow = window;
-
 		//initialize Interface
-		m_Interface = new Interface();
-		if(!m_Interface->Initialize(window))
+		m_Interface = new Interface(m_pWindow);
+		if(!m_Interface->Initialize())
 		{
 			printf("Error during NAC gui initialization!\n");
 			m_Interface->Shutdown();
@@ -61,7 +64,7 @@ namespace _NAC
 		glEnable(GL_DEPTH_TEST); // Enable depth testing
 
 		//initialize Canvas
-		m_Canvas = new Canvas(window);
+		m_Canvas = new Canvas(m_pWindow);
 		if(!m_Canvas->Initialize())
 		{
 			printf("Error during NAC canvas initialization!\n");
@@ -79,7 +82,9 @@ namespace _NAC
 
 	void Renderer::RenderCanvas()
 	{
-		m_Canvas->Draw();
+		int width, height;
+		glfwGetFramebufferSize(m_pWindow, &width, &height);
+		m_Canvas->Draw(width, height);
 	}
 
 	void Renderer::RenderInterface()

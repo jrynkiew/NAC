@@ -23,12 +23,12 @@ namespace _NAC {
     {
     public:
         //constructor
-        Window();
+        Window(const char* windowTitle, int width, int height);
         //destructor
         ~Window();
 
         //creates the window and the opengl context
-        bool Initialize(const char* windowTitle, int width, int height);
+        bool Initialize();
         //destroys the window and the opengl context
         void Shutdown();
         //gets the width of the window
@@ -47,6 +47,8 @@ namespace _NAC {
         int m_Height;
         //the window
         static GLFWwindow* m_Window;
+        //the window title
+        char windowTitle[256];
         //the instance
         static Window* m_Instance;
     };

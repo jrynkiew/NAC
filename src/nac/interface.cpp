@@ -8,13 +8,14 @@ namespace _NAC
     ImGuiIO* Interface::m_pImGuiIO = nullptr;
     ImGuiStyle* Interface::m_pImGuiStyle = nullptr;
 
-    Interface::Interface() {
+    Interface::Interface(GLFWwindow* window) {
+        m_pWindow = window;
     }
 
     Interface::~Interface() {
     }
 
-    bool Interface::Initialize(GLFWwindow* window) {
+    bool Interface::Initialize() {
         IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 
@@ -23,8 +24,7 @@ namespace _NAC
 
         SetConfig();
         SetStyle();
-
-        m_pWindow = window;
+        
 		ImGui_ImplGlfw_InitForOpenGL(m_pWindow, true);
 
 		#ifdef __EMSCRIPTEN__

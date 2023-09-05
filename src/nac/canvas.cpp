@@ -136,16 +136,17 @@ namespace _NAC
         glDeleteProgram(shaderProgram);
     }
 
-    void Canvas::Draw() {
-        glfwGetFramebufferSize(m_pWindow, &width, &height);
+    void Canvas::Draw(int width, int height) {
         aspectRatio = width / (float)height;
-        glViewport(0, 0, width, height);       
+        glViewport(0, 0, width, height);   
+
+        // Update the projection matrix with the new aspect ratio
+        mat4x4_perspective(projection, 45.0f, aspectRatio, 0.1f, 100.0f);    
 
         // Rotate the cube
         // Adjust the speed as needed
         mat4x4_rotate_Y(model, model, rotationSpeed);
         mat4x4_rotate_X(model, model, rotationSpeed);
-        mat4x4_ortho(projectionLoc, -aspectRatio, aspectRatio, -1.f, 1.f, 1.f, -1.f);
 
         // Update the uniform matrices
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat*)model);

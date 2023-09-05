@@ -8,10 +8,10 @@ namespace _NAC
 	class Renderer 
 	{
 		public:
-			Renderer();
+			Renderer(GLFWwindow* window);
 			~Renderer();
 
-			bool Initialize(GLFWwindow* window);
+			bool Initialize();
 			void Shutdown();
 			void Render();
 			void Clear();
