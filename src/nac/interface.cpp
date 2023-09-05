@@ -195,7 +195,7 @@ namespace _NAC
 
     Interface* Interface::GetInstance() {
         if (!m_pInstance)
-            m_pInstance = new Interface();
+            m_pInstance = new Interface(m_pWindow);
 
         return m_pInstance;
     }

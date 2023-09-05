@@ -29,7 +29,7 @@ namespace _NAC
 	Renderer* Renderer::GetInstance()
 	{
 		if (!m_pInstance)
-			m_pInstance = new Renderer();
+			m_pInstance = new Renderer(m_pWindow);
 
 		return m_pInstance;
 	}
@@ -45,7 +45,7 @@ namespace _NAC
 	Interface* Renderer::GetInterface()
 	{
 		if (!m_Interface)
-			m_Interface = new Interface();
+			m_Interface = new Interface(m_pWindow);
 
 		return m_Interface;
 	}

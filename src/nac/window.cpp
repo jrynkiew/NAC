@@ -17,7 +17,7 @@ namespace _NAC {
         m_Height = height;
 
         //set the window title
-        strcpy(this->windowTitle, windowTitle);
+        this->windowTitle = strdup(windowTitle);
     }
 
 	//destructor
@@ -70,14 +70,14 @@ namespace _NAC {
     //destroys the window and the opengl context
     void Window::Shutdown()
     {
-
         //destroy the window
         if (m_Window)
         {
             glfwDestroyWindow(m_Window);
             m_Window = nullptr;
         }
-
+        free(windowTitle);
+        
         //terminate glfw
         glfwTerminate();
         exit(EXIT_SUCCESS);
