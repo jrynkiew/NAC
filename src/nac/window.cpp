@@ -113,7 +113,7 @@ namespace _NAC {
 
     void Window::mouse_callback(GLFWwindow *window, double xpos, double ypos)
     {
-        SetMousePosition(xpos, ypos);
+        m_Instance->SetMousePosition(xpos, ypos);
     }
 }
 
