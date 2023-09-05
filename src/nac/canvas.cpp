@@ -20,18 +20,18 @@ namespace _NAC
     #ifdef __EMSCRIPTEN__
     const char* Canvas::fragment_shader_text =
         "precision mediump float;\n"
-        "in vec4 Color;\n"
+        "varying vec3 Color;\n"
 
         "void main()\n"
         "{\n"
-        "    gl_FragColor = Color;\n"
+        "    gl_FragColor = vec4(Color, 1.0);\n"
         "}\n";
     #else
     const char* Canvas::fragment_shader_text =
-        "in vec4 Color;\n"
+        "varying vec3 Color;\n"
         "void main()\n"
         "{\n"
-        "    gl_FragColor = Color;\n"
+        "    gl_FragColor = vec4(Color, 1.0);\n"
         "}\n";
     #endif
 
