@@ -105,9 +105,25 @@ namespace _NAC
         // mat4x4_rotate_Z(m, m, (float)glfwGetTime());
         // mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
         // mat4x4_mul(mvp, p, m);
+
         glUseProgram(program);
-        glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, &World[0][0]);
+        glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, &World.m[0][0]);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
+
+        // position
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+
+        // color
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
         glDrawElements(GL_TRIANGLES, 54, GL_UNSIGNED_INT, 0);
+
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
     }
 
     void Canvas::prepare_vertex_buffer() {
