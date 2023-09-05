@@ -26,10 +26,10 @@ OBJS = $(addprefix $(OUT)/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
 
 # Set libraries and flags for each architecture
 ifeq (${BUILD_TARGET},web)
-EMS +=  -s USE_WEBGL2=1 -s USE_GLFW=3 -s WASM=1 -s USE_PTHREADS=1 -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1
+EMS +=  -s USE_WEBGL2=1 -s USE_GLFW=3 -s WASM=1 -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1
 CPPFLAGS = -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends -I$(IMGUI_DIR)/nac -Wall  -Wformat -Os $(EMS)
 LIBS += $(EMS)
-LDFLAGS += -s USE_PTHREADS=1 -s ALLOW_MEMORY_GROWTH=1 -s OFFSCREENCANVAS_SUPPORT=1 -s PTHREAD_POOL_SIZE=4 -s EXPORTED_FUNCTIONS=_updateCanvasSize --shell-file shell_minimal.html
+LDFLAGS += -s ALLOW_MEMORY_GROWTH=1 -s EXPORTED_FUNCTIONS=_updateCanvasSize --shell-file shell_minimal.html
 
 else ifeq (${BUILD_TARGET},windows)
 SOURCES += ${MINGW}/share/glad/glad.c

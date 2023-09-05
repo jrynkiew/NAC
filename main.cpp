@@ -6,7 +6,7 @@
 // ref: https://gist.github.com/SuperV1234/5c5ad838fe5fe1bf54f9
 
 #include <nac.h>
-#include <thread>
+// #include <thread>
 #include <iostream>
 #include <string.h>
 #include <math.h>
@@ -75,7 +75,6 @@ int main(void)
 
     //run NAC
 #ifdef __EMSCRIPTEN__
-    std::thread thread(tw);
     emscripten_set_main_loop(main_loop, 0, true);
 #else
     std::thread nativeThread(tw);
