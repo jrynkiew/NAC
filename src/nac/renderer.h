@@ -25,6 +25,7 @@ namespace _NAC
 			static Canvas* m_Canvas;
 			static Interface* m_Interface;
 			static GLFWwindow* m_pWindow;
+			int width, height;
 	};
 }
 

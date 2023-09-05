@@ -2,36 +2,35 @@
 
 namespace _NAC
 {
-    const char* Canvas::vertexShaderSource =
-        "attribute vec3 vPos;\n"
-
-        "uniform mat4 model;\n"
-        "uniform mat4 view;\n"
-        "uniform mat4 projection;\n"
-
-        "varying vec3 FragColor;\n"
-
-        "void main()\n"
-        "{\n"
-        "    gl_Position = model * view * projection * vec4(vPos, 1.0);\n"
-        "    FragColor = vPos;\n"
-        "}\n";
+    const char* Canvas::vertexShaderSource = R"(
+        attribute vec3 aPos;
+        uniform mat4 model;
+        uniform mat4 view;
+        uniform mat4 projection;
+        varying vec3 FragColor;
+        void main()
+        {
+            gl_Position = projection * view * model * vec4(aPos, 1.0);
+            FragColor = aPos; // Color vertices based on their position
+        }
+    )";
     #ifdef __EMSCRIPTEN__
-    const char* Canvas::fragmentShaderSource =
-        "precision mediump float;\n"
-        "varying vec3 Color;\n"
-
-        "void main()\n"
-        "{\n"
-        "    gl_FragColor = vec4(Color, 1.0);\n"
-        "}\n";
+    const char* Canvas::fragmentShaderSource = R"(
+        precision mediump float;
+        varying vec3 FragColor;
+        void main()
+        {
+            gl_FragColor = vec4(FragColor, 1.0);
+        }
+    )";
     #else
-    const char* Canvas::fragmentShaderSource =
-        "varying vec3 Color;\n"
-        "void main()\n"
-        "{\n"
-        "    gl_FragColor = vec4(Color, 1.0);\n"
-        "}\n";
+    const char* Canvas::fragmentShaderSource = R"(
+        varying vec3 FragColor;
+        void main()
+        {
+            gl_FragColor = vec4(FragColor, 1.0);
+        }
+    )";
     #endif
 
     float Canvas::cubeVertices[] = {
@@ -69,6 +68,7 @@ namespace _NAC
     }
 
     bool Canvas::Initialize() {
+        // Create Vertex Array Object (VAO), Vertex Buffer Object (VBO), and Element Buffer Object (EBO)
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);
@@ -92,14 +92,21 @@ namespace _NAC
         vertexShader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
         glCompileShader(vertexShader);
+
+        // Check for vertex shader compilation errors...
+
         fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
         glCompileShader(fragmentShader);
+
+        // Check for fragment shader compilation errors...
 
         shaderProgram = glCreateProgram();
         glAttachShader(shaderProgram, vertexShader);
         glAttachShader(shaderProgram, fragmentShader);
         glLinkProgram(shaderProgram);
+
+        // Check for shader program linking errors...
 
         glUseProgram(shaderProgram);
 
@@ -110,9 +117,9 @@ namespace _NAC
         mat4x4_perspective(projection, 45.0f * (3.14159265359f / 180.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
         // Get the uniform locations for the shaders
-        model_location = glGetUniformLocation(shaderProgram, "model");
-        view_location = glGetUniformLocation(shaderProgram, "view");
-        projection_location = glGetUniformLocation(shaderProgram, "projection");
+        modelLoc = glGetUniformLocation(shaderProgram, "model");
+        viewLoc = glGetUniformLocation(shaderProgram, "view");
+        projectionLoc = glGetUniformLocation(shaderProgram, "projection");
 
         glEnable(GL_DEPTH_TEST);
         return true;
@@ -128,20 +135,13 @@ namespace _NAC
     }
 
     void Canvas::Draw() {
-        run_program();
-    }
-
-    void Canvas::run_program() {
-        glfwGetFramebufferSize(m_pWindow, &width, &height);
-        ratio = width / (float)height;
-        glViewport(0, 0, width, height);
         // Rotate the cube
         mat4x4_rotate_Z(model, model, (float)glfwGetTime());
 
         // Update the uniform matrices
-        glUniformMatrix4fv(model_location, 1, GL_FALSE, (const GLfloat*)model);
-        glUniformMatrix4fv(view_location, 1, GL_FALSE, (const GLfloat*)view);
-        glUniformMatrix4fv(projection_location, 1, GL_FALSE, (const GLfloat*)projection);
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat*)model);
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (const GLfloat*)view);
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, (const GLfloat*)projection);
 
         // Draw the cube
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);

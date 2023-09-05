@@ -89,6 +89,8 @@ namespace _NAC
 
 	void Renderer::Render()
 	{
+		glfwGetFramebufferSize(m_pWindow, &width, &height);
+        glViewport(0, 0, width, height);
 		Clear();
 		RenderCanvas();
 		RenderInterface();

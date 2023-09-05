@@ -23,7 +23,7 @@ namespace _NAC
 			void Shutdown();
 			void Draw();
 		private:
-            GLint model_location, view_location, projection_location;
+            GLint modelLoc, viewLoc, projectionLoc;
             GLuint vertexShader, fragmentShader, shaderProgram;
             mat4x4 model, view, projection;
             unsigned int VAO, VBO, EBO;
@@ -32,9 +32,6 @@ namespace _NAC
             GLFWwindow* m_pWindow;
             int width, height;
             float ratio;
-
-            void run_program();
-
             static float cubeVertices[];
             static unsigned int cubeIndices[];
     };
