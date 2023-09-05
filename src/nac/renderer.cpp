@@ -86,6 +86,8 @@ namespace _NAC
 
 	void Renderer::Render(GLFWwindow* window)
 	{
+		Clear();
+		
 		RenderCanvas();
 		RenderInterface();
 
