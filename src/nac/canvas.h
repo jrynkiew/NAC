@@ -22,6 +22,7 @@ namespace _NAC
 			bool Initialize();
 			void Shutdown();
 			void Draw(int width, int height);
+            void SetMousePosition(double x, double y);
 		private:
             GLint modelLoc, viewLoc, projectionLoc;
             GLuint vertexShader, fragmentShader, shaderProgram;
@@ -30,6 +31,7 @@ namespace _NAC
             static const char* fragmentShaderSource;       
             static const char* vertexShaderSource;
             GLFWwindow* m_pWindow;
+            double m_MouseX, m_MouseY, lastMouseX, lastMouseY = 0.0f;
             float aspectRatio;
             float rotationSpeed;
             static float cubeVertices[];

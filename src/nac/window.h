@@ -39,6 +39,10 @@ namespace _NAC {
         GLFWwindow* GetGLFWwindow();
         //gets the instance
         Window* GetInstance();
+        //get the X mouse position
+        double GetMouseX();
+        //get the Y mouse position
+        double GetMouseY();
 
     private:
         //the width of the window
@@ -51,6 +55,10 @@ namespace _NAC {
         char windowTitle[256];
         //the instance
         static Window* m_Instance;
+        //the mouse position
+        double m_MouseX, m_MouseY;
+        //sets the mouse position
+        void SetMousePosition(double x, double y);
     };
 
     #define g_sWindow _NAC::Window::GetInstance();

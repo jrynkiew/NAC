@@ -17,7 +17,7 @@ namespace _NAC {
         m_Height = height;
 
         // Copy the window title characters one by one
-        int i = 0;
+        size_t i = 0;
         while (title[i] != '\0' && i < sizeof(windowTitle) - 1) {
             windowTitle[i] = title[i];
             i++;
@@ -89,6 +89,27 @@ namespace _NAC {
         glfwTerminate();
         exit(EXIT_SUCCESS);
     }
+
+    void Window::SetMousePosition(double x, double y)
+	{
+		mouseX = x;
+		mouseY = y;
+		#ifdef __EMSCRIPTEN__
+        	emscripten_log(EM_LOG_CONSOLE, "mouseX: %f, mouseY: %f", mouseX, mouseY);
+    	#else
+			printf("mouseX: %f, mouseY: %f", mouseX, mouseY);
+		#endif
+	}
+
+    double Window::GetMouseX()
+    {
+        return mouseX;
+    }
+
+    double Window::GetMouseY()
+    {
+        return mouseY;
+    }
 }
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -99,7 +120,7 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos)
 {
-    _NAC::Renderer::GetInstance()->SetMousePosition(xpos, ypos);
+    g_sWindow->SetMousePosition(xpos, ypos);
 }
 
 void error_callback(int error, const char *description)

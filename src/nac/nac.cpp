@@ -45,6 +45,7 @@ namespace _NAC
         //loop until the user closes the window
         while (!glfwWindowShouldClose(m_Window->GetGLFWwindow()))
         {
+            m_Renderer->SetMousePosition(m_Window->GetMouseX(), m_Window->GetMouseY());
             //render the scene
             m_Renderer->Render();
         }

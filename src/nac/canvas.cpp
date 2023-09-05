@@ -144,9 +144,22 @@ namespace _NAC
         mat4x4_perspective(projection, 45.0f, aspectRatio, 0.1f, 100.0f);    
 
         // Rotate the cube
-        // Adjust the speed as needed
-        mat4x4_rotate_Y(model, model, rotationSpeed);
-        mat4x4_rotate_X(model, model, rotationSpeed);
+        // Calculate mouse movement since the last frame
+        double xOffset = mouseX - lastMouseX;
+        double yOffset = mouseY - lastMouseY;
+
+        // Adjust rotation based on mouse input
+        float sensitivity = 0.05f; // Adjust sensitivity as needed
+        xOffset *= sensitivity;
+        yOffset *= sensitivity;
+
+        // Rotate the cube based on mouse movement
+        mat4x4_rotate_Y(model, model, xOffset);
+        mat4x4_rotate_X(model, model, yOffset);
+
+        // Update the last mouse position
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
 
         // Update the uniform matrices
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat*)model);
@@ -155,5 +168,10 @@ namespace _NAC
 
         // Draw the cube
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    }
+
+    void Canvas::SetMousePosition(double x, double y) {
+        m_MouseX = x;
+        m_MouseY = y;
     }
 }
