@@ -137,6 +137,8 @@ namespace _NAC
     }
 
     void Canvas::Draw() {
+        glfwGetFramebufferSize(m_pWindow, &width, &height);
+        glViewport(0, 0, width, height);
         // Rotate the cube
         // Adjust the speed as needed
         mat4x4_rotate_Y(model, model, rotationSpeed);

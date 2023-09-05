@@ -34,5 +34,6 @@ namespace _NAC
             float rotationSpeed;
             static float cubeVertices[];
             static unsigned int cubeIndices[];
+            			int width, height;
     };
 }
