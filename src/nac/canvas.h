@@ -43,6 +43,10 @@ namespace _NAC
             static const char* vertex_shader_text;       
             static const char* fragment_shader_text;
             
+            const unsigned int triangles = 6 * 2;   // Number of triangles rendered
+            const unsigned int verticies_index = 0;
+            const unsigned int colors_index = 1;
+
             void run_program();
             
             void shader_error_callback(int error, const char *description);

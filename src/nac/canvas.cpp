@@ -96,8 +96,8 @@ namespace _NAC
             0, 4, 5,
         };
 
-        glGenVertexArrays(1, &context->vao);
-        glBindVertexArray(context->vao);
+        glGenVertexArrays(1, &context.vao);
+        glBindVertexArray(context.vao);
 
         unsigned int triangles_ibo;
         glGenBuffers(1, &triangles_ibo);
@@ -173,7 +173,7 @@ namespace _NAC
         glUniformMatrix4fv(context.uniform_transform, 1, GL_FALSE, (const GLfloat *)mvp);
         
         glBindVertexArray(context.vao);
-        glDrawElements(GL_TRIANGLES, 6 * 2 * 3, GL_UNSIGNED_SHORT, NULL);
+        glDrawElements(GL_TRIANGLES, triangles * 3, GL_UNSIGNED_SHORT, NULL);
     }
 
     void Canvas::check_shader_error(GLuint shader) {
