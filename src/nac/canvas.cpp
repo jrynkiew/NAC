@@ -122,6 +122,8 @@ namespace _NAC
         projectionLoc = glGetUniformLocation(shaderProgram, "projection");
 
         glEnable(GL_DEPTH_TEST);
+
+        rotationSpeed = 0.1f;
         return true;
     }
 
@@ -136,7 +138,10 @@ namespace _NAC
 
     void Canvas::Draw() {
         // Rotate the cube
-        mat4x4_rotate_Z(model, model, (float)glfwGetTime());
+         // Adjust the speed as needed
+        float angle = rotationSpeed * (float)glfwGetTime();
+        mat4x4_rotate_Y(model, model, angle);
+        mat4x4_rotate_Z(model, model, angle);
 
         // Update the uniform matrices
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat*)model);
