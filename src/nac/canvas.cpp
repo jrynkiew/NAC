@@ -149,7 +149,7 @@ namespace _NAC
         double yOffset = m_MouseY - lastMouseY;
 
         // Adjust rotation based on mouse input
-        float sensitivity = 0.05f; // Adjust sensitivity as needed
+        float sensitivity = 0.004f; // Adjust sensitivity as needed
         xOffset *= sensitivity;
         yOffset *= sensitivity;
 
