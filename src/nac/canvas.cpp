@@ -137,6 +137,8 @@ namespace _NAC
     }
 
     void Canvas::Draw(int width, int height) {
+        m_Width = width;
+        m_Height = height;
         aspectRatio = width / (float)height;
         glViewport(0, 0, width, height);   
 
@@ -171,7 +173,7 @@ namespace _NAC
     }
 
     void Canvas::SetMousePosition(double x, double y) {
-        if (x>2160 || y>1440 || x<0 || y<0)
+        if (x>m_Width || y>m_Height || x<0 || y<0)
             return;
         m_MouseX = x;
         m_MouseY = y;

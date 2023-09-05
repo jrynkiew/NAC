@@ -32,6 +32,7 @@ namespace _NAC
             static const char* vertexShaderSource;
             GLFWwindow* m_pWindow;
             double m_MouseX, m_MouseY, lastMouseX, lastMouseY = 0.0f;
+            int m_Width, m_Height;
             float aspectRatio;
             float rotationSpeed;
             static float cubeVertices[];
