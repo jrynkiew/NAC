@@ -101,10 +101,10 @@ namespace _NAC
         ratio = width / (float)height;
         glViewport(0, 0, width, height);
 
-        mat4x4_identity(m);
-        mat4x4_rotate_Z(m, m, (float)glfwGetTime());
-        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        mat4x4_mul(mvp, p, m);
+        // mat4x4_identity(m);
+        // mat4x4_rotate_Z(m, m, (float)glfwGetTime());
+        // mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+        // mat4x4_mul(mvp, p, m);
         glUseProgram(program);
         glUniformMatrix4fv(gWorldLocation, 1, GL_FALSE, &World[0][0]);
         glDrawElements(GL_TRIANGLES, 54, GL_UNSIGNED_INT, 0);
