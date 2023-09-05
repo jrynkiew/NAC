@@ -19,12 +19,16 @@ struct Vertex {
 
     Vertex(float x, float y)
     {
-        pos.vec3_add(x, y, 0.0f);
+        pos[0] = x;
+        pos[1] = y;
+        pos[2] = 0.0f;
 
         float red   = (float)rand() / (float)RAND_MAX;
         float green = (float)rand() / (float)RAND_MAX;
         float blue  = (float)rand() / (float)RAND_MAX;
-        color.vec3_add(red, green, blue);
+        color[0] = red;
+        color[1] = green;
+        color[2] = blue;
     }
 };
 
