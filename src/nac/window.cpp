@@ -7,7 +7,7 @@ namespace _NAC {
     GLFWwindow* Window::m_Window = nullptr;
 
 	//constructor
-	Window::Window(const char* windowTitle, int width, int height)
+	Window::Window(const char* title, int width, int height)
     {
         //set the instance
         m_Instance = this;
@@ -16,8 +16,13 @@ namespace _NAC {
         m_Width = width;
         m_Height = height;
 
-        //set the window title
-        this->windowTitle = strdup(windowTitle);
+        // Copy the window title characters one by one
+        int i = 0;
+        while (title[i] != '\0' && i < sizeof(windowTitle) - 1) {
+            windowTitle[i] = title[i];
+            i++;
+        }
+        windowTitle[i] = '\0'; // Null-terminate the copied string
     }
 
 	//destructor
@@ -77,7 +82,7 @@ namespace _NAC {
             m_Window = nullptr;
         }
         free(windowTitle);
-        
+
         //terminate glfw
         glfwTerminate();
         exit(EXIT_SUCCESS);

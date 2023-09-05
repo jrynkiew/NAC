@@ -23,7 +23,7 @@ namespace _NAC {
     {
     public:
         //constructor
-        Window(const char* windowTitle, int width, int height);
+        Window(const char* title, int width, int height);
         //destructor
         ~Window();
 
