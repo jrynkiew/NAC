@@ -112,8 +112,10 @@ namespace _NAC
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
         // Set vertex attribute pointers
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0); // Enable the attribute location 0
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
 
         // Compile and link the shaders
         vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -166,7 +168,7 @@ namespace _NAC
         // Rotate the cube
          // Adjust the speed as needed
         mat4x4_rotate_Y(model, model, rotationSpeed);
-        mat4x4_rotate_Z(model, model, rotationSpeed);
+        mat4x4_rotate_X(model, model, rotationSpeed);
 
         // Update the uniform matrices
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat*)model);
