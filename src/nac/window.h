@@ -59,11 +59,12 @@ namespace _NAC {
         double m_MouseX, m_MouseY;
         //sets the mouse position
         void SetMousePosition(double x, double y);
+        //the mouse move callback
+        void mouse_callback(GLFWwindow *window, double xpos, double ypos);
     };
 
     #define g_sWindow _NAC::Window::GetInstance();
 }
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
-void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void error_callback(int error, const char *description);
