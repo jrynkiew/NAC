@@ -171,6 +171,8 @@ namespace _NAC
     }
 
     void Canvas::SetMousePosition(double x, double y) {
+        if (x>2160 || y>1440 || x<0 || y<0)
+            return;
         m_MouseX = x;
         m_MouseY = y;
         #ifdef __EMSCRIPTEN__
