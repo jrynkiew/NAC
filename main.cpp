@@ -115,7 +115,7 @@ int main(void)
     //render loop
     loop = [&] {
 
-        renderer->Render(nac->GetWindow()->GetGLFWwindow());
+        renderer->Render();
     };
 
     //run NAC

@@ -13,7 +13,7 @@ namespace _NAC
 
 			bool Initialize(GLFWwindow* window);
 			void Shutdown();
-			void Render(GLFWwindow* window);
+			void Render();
 			void Clear();
 			void RenderCanvas();
 			void RenderInterface();
@@ -24,6 +24,7 @@ namespace _NAC
 			static Renderer* m_pInstance;
 			static Canvas* m_Canvas;
 			static Interface* m_Interface;
+			static GLFWwindow* m_pWindow;
 	};
 }
 

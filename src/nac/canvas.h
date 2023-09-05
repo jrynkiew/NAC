@@ -11,57 +11,57 @@
 #include <stdio.h>
 #include "linmath.h"
 
-struct Vertex {
-    float x, y;
-    float r, g, b;
-};
-
 namespace _NAC
 {
 	class Canvas
 	{
 		public:
-			Canvas();
+			Canvas(GLFWwindow* window);
 			~Canvas();
 
-            //Getters and Setters
-            Canvas* GetInstance();
-            const Vertex* GetVertices() const;
-            GLsizei GetVerticesSize() const;
-            const char*& GetVertexShaderText() const;
-            const char*& GetFragmentShaderText() const;
-            
-            void SetVertexShaderText(const char* text);
-            void SetFragmentShaderText(const char* text);
-
-			bool Initialize(GLFWwindow* window);
+			bool Initialize();
 			void Shutdown();
 			void Draw();
-           
-            void check_shader_error(GLuint shader);
-            void check_program_error(GLuint program);    
-                    
-
 		private:
-            GLuint vertex_buffer, vertex_shader, fragment_shader, program;
-            GLint mvp_location, vpos_location, vcol_location;
+            GLint model_location, view_location, projection_location;
+            GLuint vertexShader, fragmentShader, shaderProgram;
+            mat4x4 model, view, projection;
+            unsigned int VAO, VBO, EBO;
+            static const char* fragmentShaderSource;       
+            static const char* vertexShaderSource;
             GLFWwindow* m_pWindow;
             int width, height;
-            mat4x4 m, p, mvp;
             float ratio;
-            static Canvas* m_pInstance;
-            static const Vertex vertices[3];
-            static const char* vertex_shader_text;       
-            static const char* fragment_shader_text;
-            
+
             void run_program();
-            void prepare_shader();
-            void prepare_vertex_buffer();
-            void prepare_vertex_shader();
-            void prepare_fragment_shader();
-            void prepare_program();
-            
-            void shader_error_callback(int error, const char *description);
-            void program_error_callback(int error, const char *description);
+
+            // Define cube vertices
+            float cubeVertices[] = {
+                // Positions
+                -0.5f, -0.5f, -0.5f,
+                0.5f, -0.5f, -0.5f,
+                0.5f,  0.5f, -0.5f,
+                -0.5f,  0.5f, -0.5f,
+                -0.5f, -0.5f,  0.5f,
+                0.5f, -0.5f,  0.5f,
+                0.5f,  0.5f,  0.5f,
+                -0.5f,  0.5f,  0.5f
+            };
+
+            // Define cube indices for drawing
+            unsigned int cubeIndices[] = {
+                0, 1, 2,
+                2, 3, 0,
+                4, 5, 6,
+                6, 7, 4,
+                0, 3, 7,
+                7, 4, 0,
+                1, 2, 6,
+                6, 5, 1,
+                2, 3, 6,
+                6, 7, 3,
+                0, 1, 5,
+                5, 4, 0
+            };
     };
 }

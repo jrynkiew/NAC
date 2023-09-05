@@ -5,6 +5,7 @@ namespace _NAC
 	Renderer* Renderer::m_pInstance = nullptr;
     Canvas* Renderer::m_Canvas = nullptr;
 	Interface* Renderer::m_Interface = nullptr;
+	GLFWwindow* Renderer::m_pWindow = nullptr;
 
 	Renderer::Renderer()
 	{
@@ -31,7 +32,7 @@ namespace _NAC
     Canvas* Renderer::GetCanvas()
     {
         if (!m_Canvas)
-            m_Canvas = new Canvas();
+            m_Canvas = new Canvas(m_pWindow);
 
         return m_Canvas;
     }
@@ -46,6 +47,8 @@ namespace _NAC
 
 	bool Renderer::Initialize(GLFWwindow* window)
 	{
+		m_pWindow = window;
+
 		//initialize Interface
 		m_Interface = new Interface();
 		if(!m_Interface->Initialize(window))
@@ -58,8 +61,8 @@ namespace _NAC
     	glEnable(GL_CULL_FACE);
 
 		//initialize Canvas
-		m_Canvas = new Canvas();
-		if(!m_Canvas->Initialize(window))
+		m_Canvas = new Canvas(window);
+		if(!m_Canvas->Initialize())
 		{
 			printf("Error during NAC canvas initialization!\n");
 			m_Canvas->Shutdown();
@@ -84,12 +87,12 @@ namespace _NAC
 		m_Interface->Draw();
 	}
 
-	void Renderer::Render(GLFWwindow* window)
+	void Renderer::Render()
 	{
 		Clear();
 		RenderCanvas();
 		RenderInterface();
 		glfwPollEvents();
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(m_pWindow);
 	}
 }
