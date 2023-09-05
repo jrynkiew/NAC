@@ -44,12 +44,6 @@ namespace _NAC
             static const char* fragment_shader_text;
             
             void run_program();
-            void prepare_shader();
-            void prepare_fragment_shader();
-            void prepare_vertex_shader();
-            void prepare_vertex_buffer();
-            void prepare_index_buffer();
-            void prepare_program();
             
             void shader_error_callback(int error, const char *description);
             void program_error_callback(int error, const char *description);
