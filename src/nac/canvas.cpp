@@ -14,8 +14,8 @@ namespace _NAC
 
         "void main()\n"
         "{\n"
-        "    gl_Position = transform * vec4(Position, 1.0);\n"
-        "    Color = inColor;\n"
+        "    gl_Position = MVP * vec4(vPos, 1.0);\n"
+        "    Color = vCol;\n"
         "}\n";
     #ifdef __EMSCRIPTEN__
     const char* Canvas::fragment_shader_text =
