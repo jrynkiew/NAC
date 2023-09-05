@@ -100,4 +100,16 @@ namespace _NAC
 		glfwPollEvents();
         glfwSwapBuffers(m_pWindow);
 	}
+
+	void Renderer::SetMousePosition(double x, double y)
+	{
+		mouseX = x;
+		mouseY = y;
+		#ifdef __EMSCRIPTEN__
+        	emscripten_log(EM_LOG_CONSOLE, "mouseX: %f, mouseY: %f", mouseX, mouseY);
+    	#else
+			printf("mouseX: %f, mouseY: %f", mouseX, mouseY);
+		#endif
+
+	}
 }

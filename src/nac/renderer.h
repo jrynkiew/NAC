@@ -20,6 +20,7 @@ namespace _NAC
 			static Renderer* GetInstance();
 			static Canvas* GetCanvas();
 			static Interface* GetInterface();
+			void SetMousePosition(double x, double y);
 		private:
 			static Renderer* m_pInstance;
 			static Canvas* m_Canvas;

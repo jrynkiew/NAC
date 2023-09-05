@@ -46,6 +46,9 @@ namespace _NAC {
         //set the error callback
         glfwSetErrorCallback(error_callback);
 
+        //set the mouse move callback
+        glfwSetCursorPosCallback(m_Window, mouse_callback);
+
 		//initialize glfw
 		if (!glfwInit())
 			return false;
@@ -81,7 +84,6 @@ namespace _NAC {
             glfwDestroyWindow(m_Window);
             m_Window = nullptr;
         }
-        free(windowTitle);
 
         //terminate glfw
         glfwTerminate();
@@ -93,6 +95,11 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
+
+void mouse_callback(GLFWwindow *window, double xpos, double ypos)
+{
+    _NAC::Renderer::GetInstance()->SetMousePosition(xpos, ypos);
 }
 
 void error_callback(int error, const char *description)
