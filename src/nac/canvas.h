@@ -11,12 +11,9 @@
 #include <stdio.h>
 #include "linmath.h"
 
-struct Context {
-  GLuint shader_program;
-  unsigned int vao;
-  GLFWwindow* window;
- 
-  unsigned int uniform_transform;
+struct Vertex {
+    float x, y;
+    float r, g, b;
 };
 
 namespace _NAC
@@ -26,34 +23,45 @@ namespace _NAC
 		public:
 			Canvas();
 			~Canvas();
-			bool Initialize(GLFWwindow* window);   
-            void Draw();
-            void Shutdown();
-            
-            const char*& GetVertexShaderText() const;
-            const char*& GetFragmentShaderText() const;  
 
+            //Getters and Setters
+            Canvas* GetInstance();
+            const Vertex* GetVertices() const;
+            GLsizei GetVerticesSize() const;
+            const char*& GetVertexShaderText() const;
+            const char*& GetFragmentShaderText() const;
+            
             void SetVertexShaderText(const char* text);
             void SetFragmentShaderText(const char* text);
 
+			bool Initialize(GLFWwindow* window);
+			void Shutdown();
+			void Draw();
+           
+            void check_shader_error(GLuint shader);
+            void check_program_error(GLuint program);    
+                    
+
 		private:
+            GLuint vertex_buffer, vertex_shader, fragment_shader, program;
+            GLint mvp_location, vpos_location, vcol_location;
+            GLFWwindow* m_pWindow;
             int width, height;
-            float ratio;
-            GLuint vertex_buffer, index_buffer, vertex_shader, fragment_shader;
             mat4x4 m, p, mvp;
-            Context context;
+            float ratio;
+            static Canvas* m_pInstance;
+            static const Vertex vertices[3];
             static const char* vertex_shader_text;       
             static const char* fragment_shader_text;
             
-            const unsigned int triangles = 6 * 2;   // Number of triangles rendered
-            const unsigned int verticies_index = 0;
-            const unsigned int colors_index = 1;
-
             void run_program();
+            void prepare_shader();
+            void prepare_vertex_buffer();
+            void prepare_vertex_shader();
+            void prepare_fragment_shader();
+            void prepare_program();
             
             void shader_error_callback(int error, const char *description);
             void program_error_callback(int error, const char *description);
-            void check_shader_error(GLuint shader);
-            void check_program_error(GLuint program);
     };
 }
