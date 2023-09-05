@@ -160,7 +160,7 @@ namespace _NAC
     }
 
     void Canvas::run_program() {
-        glfwGetFramebufferSize(m_pWindow, &width, &height);
+        glfwGetFramebufferSize(context.window, &width, &height);
         ratio = width / (float)height;
         glViewport(0, 0, width, height);
 
