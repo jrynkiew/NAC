@@ -169,7 +169,7 @@ namespace _NAC
         mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
         mat4x4_mul(mvp, p, m);
 
-        glUseProgram(program);
+        glUseProgram(context.shader_program);
         glUniformMatrix4fv(context.uniform_transform, 1, GL_FALSE, (const GLfloat *)mvp);
         
         glBindVertexArray(context.vao);

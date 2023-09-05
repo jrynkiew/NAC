@@ -37,6 +37,7 @@ namespace _NAC
             void SetFragmentShaderText(const char* text);
 
 		private:
+            int width, height
             GLuint vertex_buffer, index_buffer, vertex_shader, fragment_shader;
             mat4x4 m, p, mvp;
             Context context;
