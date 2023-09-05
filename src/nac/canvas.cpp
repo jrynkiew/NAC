@@ -138,11 +138,14 @@ namespace _NAC
 
     void Canvas::Draw() {
         glfwGetFramebufferSize(m_pWindow, &width, &height);
-        glViewport(0, 0, width, height);
+        aspectRatio = width / (float)height;
+        glViewport(0, 0, width, height);       
+
         // Rotate the cube
         // Adjust the speed as needed
         mat4x4_rotate_Y(model, model, rotationSpeed);
         mat4x4_rotate_X(model, model, rotationSpeed);
+        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
 
         // Update the uniform matrices
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat*)model);

@@ -31,6 +31,7 @@ namespace _NAC
             static const char* vertexShaderSource;
             GLFWwindow* m_pWindow;
             int width, height;
+            float aspectRatio;
             float rotationSpeed;
             static float cubeVertices[];
             static unsigned int cubeIndices[];
