@@ -60,7 +60,6 @@ namespace _NAC
 
 		glEnable(GL_DEPTH_TEST); // Enable depth testing
 		glEnable(GL_CULL_FACE);  // Enable face culling
-		glCullFace(GL_BACK);     // Cull back faces
 
 		//initialize Canvas
 		m_Canvas = new Canvas(window);
