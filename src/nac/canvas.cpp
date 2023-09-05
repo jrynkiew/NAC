@@ -173,5 +173,10 @@ namespace _NAC
     void Canvas::SetMousePosition(double x, double y) {
         m_MouseX = x;
         m_MouseY = y;
+        #ifdef __EMSCRIPTEN__
+        	emscripten_log(EM_LOG_CONSOLE, "mouseX: %f, mouseY: %f", m_MouseX, m_MouseY);
+    	#else
+			printf("mouseX: %f, mouseY: %f", m_MouseX, m_MouseY);
+		#endif
     }
 }
