@@ -26,7 +26,7 @@ void main_loop() {
     #else
         // printf("main_loop\n");
     #endif
-    loop();
+    nac->Run();
  }
 
  void thread_loop() { 
@@ -72,11 +72,6 @@ int main(void)
     //get renderer and window pointers
     renderer = nac->GetRenderer();
     window = nac->GetWindow();
-
-    //render loop
-    loop = [&] {
-        nac->Run();
-    };
 
     //run NAC
 #ifdef __EMSCRIPTEN__

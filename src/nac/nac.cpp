@@ -43,10 +43,14 @@ namespace _NAC
 
     void NAC::Run() {
         //loop until the user closes the window
+        #ifdef __EMSCRIPTEN__
+            m_Renderer->SetMousePosition(m_Window->GetMouseX(), m_Window->GetMouseY());
+            m_Renderer->Render();
+        #else
+        
         while (!glfwWindowShouldClose(m_Window->GetGLFWwindow()))
         {
             m_Renderer->SetMousePosition(m_Window->GetMouseX(), m_Window->GetMouseY());
-            //render the scene
             m_Renderer->Render();
         }
     }
