@@ -110,9 +110,9 @@ namespace _NAC
         mat4x4_perspective(projection, 45.0f * (3.14159265359f / 180.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
         // Get the uniform locations for the shaders
-        GLint model_location = glGetUniformLocation(shaderProgram, "model");
-        GLint view_location = glGetUniformLocation(shaderProgram, "view");
-        GLint projection_location = glGetUniformLocation(shaderProgram, "projection");
+        model_location = glGetUniformLocation(shaderProgram, "model");
+        view_location = glGetUniformLocation(shaderProgram, "view");
+        projection_location = glGetUniformLocation(shaderProgram, "projection");
 
         glEnable(GL_DEPTH_TEST);
         return true;
