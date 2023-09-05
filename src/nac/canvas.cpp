@@ -25,7 +25,7 @@ namespace _NAC
         "void main()\n"
         "{\n"
         "    gl_FragColor = Color;\n"
-        "}\n"
+        "}\n";
     #else
     const char* Canvas::fragment_shader_text =
         "varying vec4 Color;\n"
