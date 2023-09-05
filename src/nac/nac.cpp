@@ -46,7 +46,7 @@ namespace _NAC
         while (!glfwWindowShouldClose(m_Window->GetGLFWwindow()))
         {
             //render the scene
-            m_Renderer->Render(m_Window->GetGLFWwindow());
+            m_Renderer->Render();
         }
     }
 
