@@ -138,7 +138,7 @@ namespace _NAC
         context.shader_program = glCreateProgram();
         glAttachShader(context.shader_program, vertex_shader);
         glAttachShader(context.shader_program, fragment_shader);
-        link_shader_program(context.shader_program);
+        glLinkProgram(context.shader_program);
 
         context.uniform_transform = glGetUniformLocation(context.shader_program, "transform");
         return true;

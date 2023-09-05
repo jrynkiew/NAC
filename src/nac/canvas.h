@@ -37,7 +37,7 @@ namespace _NAC
             void SetFragmentShaderText(const char* text);
 
 		private:
-            GLuint vertex_buffer, index_buffer, vertex_shader, fragment_shader, program;
+            GLuint vertex_buffer, index_buffer, vertex_shader, fragment_shader;
             mat4x4 m, p, mvp;
             Context context;
             static const char* vertex_shader_text;       
@@ -51,5 +51,7 @@ namespace _NAC
             
             void shader_error_callback(int error, const char *description);
             void program_error_callback(int error, const char *description);
+            void check_shader_error(GLuint shader);
+            void check_program_error(GLuint program);
     };
 }
