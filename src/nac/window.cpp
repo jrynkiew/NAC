@@ -112,6 +112,8 @@ namespace _NAC {
     }
 }
 
+
+
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -120,7 +122,8 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos)
 {
-    g_sWindow->SetMousePosition(xpos, ypos);
+    _NAC::Window* windowInstance = g_sWindow;
+    windowInstance->SetMousePosition(xpos, ypos);
 }
 
 void error_callback(int error, const char *description)
