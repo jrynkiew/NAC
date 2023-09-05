@@ -6,7 +6,9 @@
 // ref: https://gist.github.com/SuperV1234/5c5ad838fe5fe1bf54f9
 
 #include <nac.h>
-// #include <thread>
+#ifndef __EMSCRIPTEN__
+#include <thread>
+#endif
 #include <iostream>
 #include <string.h>
 #include <math.h>
