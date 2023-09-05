@@ -35,6 +35,7 @@ namespace _NAC
             void SetFragmentShaderText(const char* text);
 
 			bool Initialize(GLFWwindow* window);
+            void Clear();
 			void Shutdown();
 			void Draw();
            

@@ -74,8 +74,6 @@ namespace _NAC
 		m_Canvas->Draw();
 		m_Interface->Draw();
 
-		glfwPollEvents();
-
 		ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         if (m_Interface->GetImGuiIO()->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

@@ -94,7 +94,6 @@ namespace _NAC
         glfwGetFramebufferSize(m_pWindow, &width, &height);
         ratio = width / (float)height;
         glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
         mat4x4_identity(m);
         mat4x4_rotate_Z(m, m, (float)glfwGetTime());
         mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
@@ -102,6 +101,10 @@ namespace _NAC
         glUseProgram(program);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+    }
+
+    void Canvas::Clear() {
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 
     void Canvas::prepare_vertex_buffer() {
