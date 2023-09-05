@@ -12,7 +12,7 @@
 #include "linmath.h"
 
 struct Context {
-  unsigned int shader_program;
+  GLuint shader_program;
   unsigned int vao;
   GLFWwindow* window;
  
