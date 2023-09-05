@@ -145,8 +145,8 @@ namespace _NAC
 
         // Rotate the cube
         // Calculate mouse movement since the last frame
-        double xOffset = mouseX - lastMouseX;
-        double yOffset = mouseY - lastMouseY;
+        double xOffset = m_MouseX - lastMouseX;
+        double yOffset = m_MouseY - lastMouseY;
 
         // Adjust rotation based on mouse input
         float sensitivity = 0.05f; // Adjust sensitivity as needed
@@ -158,8 +158,8 @@ namespace _NAC
         mat4x4_rotate_X(model, model, yOffset);
 
         // Update the last mouse position
-        lastMouseX = mouseX;
-        lastMouseY = mouseY;
+        lastMouseX = m_MouseX;
+        lastMouseY = m_MouseY;
 
         // Update the uniform matrices
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat*)model);
