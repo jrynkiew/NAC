@@ -139,9 +139,8 @@ namespace _NAC
     void Canvas::Draw() {
         // Rotate the cube
          // Adjust the speed as needed
-        float angle = rotationSpeed * (float)glfwGetTime();
-        mat4x4_rotate_Y(model, model, angle);
-        mat4x4_rotate_Z(model, model, angle);
+        mat4x4_rotate_Y(model, model, rotationSpeed);
+        mat4x4_rotate_Z(model, model, rotationSpeed);
 
         // Update the uniform matrices
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat*)model);
