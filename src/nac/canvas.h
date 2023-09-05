@@ -11,25 +11,12 @@
 #include <stdio.h>
 #include "linmath.h"
 
-struct Vertex {
-    vec3 pos;
-    vec3 color;
-
-    Vertex() {}
-
-    Vertex(float x, float y)
-    {
-        pos[0] = x;
-        pos[1] = y;
-        pos[2] = 0.0f;
-
-        float red   = (float)rand() / (float)RAND_MAX;
-        float green = (float)rand() / (float)RAND_MAX;
-        float blue  = (float)rand() / (float)RAND_MAX;
-        color[0] = red;
-        color[1] = green;
-        color[2] = blue;
-    }
+struct Context {
+  unsigned int shader_program;
+  unsigned int vao;
+  GLFWwindow* window;
+ 
+  unsigned int uniform_transform;
 };
 
 namespace _NAC
@@ -39,36 +26,20 @@ namespace _NAC
 		public:
 			Canvas();
 			~Canvas();
-
-            //Getters and Setters
-            Canvas* GetInstance();
-            const Vertex* GetVertices() const;
-            GLsizei GetVerticesSize() const;
-            const char*& GetVertexShaderText() const;
-            const char*& GetFragmentShaderText() const;
+			bool Initialize(GLFWwindow* window);   
+            void Draw();
+            void Shutdown();
             
+            const char*& GetVertexShaderText() const;
+            const char*& GetFragmentShaderText() const;  
+
             void SetVertexShaderText(const char* text);
             void SetFragmentShaderText(const char* text);
 
-			bool Initialize(GLFWwindow* window);
-			void Shutdown();
-			void Draw();
-           
-            void check_shader_error(GLuint shader);
-            void check_program_error(GLuint program);    
-                    
-
 		private:
             GLuint vertex_buffer, index_buffer, vertex_shader, fragment_shader, program;
-            GLuint gWorldLocation;
-            GLFWwindow* m_pWindow;
-            int width, height;
-            mat4x4 World;
             mat4x4 m, p, mvp;
-            float ratio;
-            float scale;
-            static Canvas* m_pInstance;
-            Vertex Vertices[19];
+            Context context;
             static const char* vertex_shader_text;       
             static const char* fragment_shader_text;
             

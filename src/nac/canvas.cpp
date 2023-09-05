@@ -2,25 +2,23 @@
 
 namespace _NAC
 {
-    Canvas* Canvas::m_pInstance = nullptr;
-
     const char* Canvas::vertex_shader_text =
         "attribute vec3 Position;\n"
         "attribute vec3 inColor;\n"
 
-        "uniform mat4 gWorld;\n"
+        "uniform mat4 transform;\n"
 
-        "varying vec4 Color;\n"
+        "varying vec3 Color;\n"
 
         "void main()\n"
         "{\n"
-        "    gl_Position = gWorld * vec4(Position, 1.0);\n"
-        "    Color = vec4(inColor, 1.0);\n"
+        "    gl_Position = transform * vec4(Position, 1.0);\n"
+        "    Color = inColor;\n"
         "}\n";
     #ifdef __EMSCRIPTEN__
     const char* Canvas::fragment_shader_text =
         "precision mediump float;\n"
-        "varying vec4 Color;\n"
+        "attribute vec4 Color;\n"
 
         "void main()\n"
         "{\n"
@@ -28,7 +26,7 @@ namespace _NAC
         "}\n";
     #else
     const char* Canvas::fragment_shader_text =
-        "varying vec4 Color;\n"
+        "attribute vec4 Color;\n"
         "void main()\n"
         "{\n"
         "    gl_FragColor = Color;\n"
@@ -36,25 +34,113 @@ namespace _NAC
     #endif
 
     Canvas::Canvas() {
-        m_pInstance = this;
     }
 
     Canvas::~Canvas() {
     }
 
     bool Canvas::Initialize(GLFWwindow* window) {
-        m_pWindow = window;
-        scale = 0.0f;
+        context.window = window;
+        
+        glEnable(GL_DEPTH_TEST);
 
-        World[0][0] = cosf(scale); World[0][1] = -sinf(scale); World[0][2] = 0.0f; World[0][3] = 0.0f;
-        World[1][0] = sinf(scale); World[1][1] = cosf(scale) ; World[1][2] = 0.0f; World[1][3] = 0.0f;
-        World[2][0] = 0.0;         World[2][1] = 0.0f;         World[2][2] = 1.0f; World[2][3] = 0.0f;
-        World[3][0] = 0.0f;        World[3][1] = 0.0f;         World[3][2] = 0.0f; World[3][3] = 1.0f;
+        float vertices[] = {
+            // Front face
+            0.5,  0.5,  0.5,
+            -0.5,  0.5,  0.5,
+            -0.5, -0.5,  0.5,
+            0.5, -0.5,  0.5,
 
-        prepare_vertex_buffer();
-        prepare_vertex_shader();
-        prepare_fragment_shader();
-        prepare_program();
+            // Back face
+            0.5,  0.5, -0.5,
+            -0.5,  0.5, -0.5,
+            -0.5, -0.5, -0.5,
+            0.5, -0.5, -0.5,
+        };
+
+        float vertex_colors[] = {
+            1.0, 0.4, 0.6,
+            1.0, 0.9, 0.2,
+            0.7, 0.3, 0.8,
+            0.5, 0.3, 1.0,
+
+            0.2, 0.6, 1.0,
+            0.6, 1.0, 0.4,
+            0.6, 0.8, 0.8,
+            0.4, 0.8, 0.8,
+        };
+
+        unsigned short triangle_indices[] = {
+            // Front
+            0, 1, 2,
+            2, 3, 0,
+
+            // Right
+            0, 3, 7,
+            7, 4, 0,
+
+            // Bottom
+            2, 6, 7,
+            7, 3, 2,
+
+            // Left
+            1, 5, 6,
+            6, 2, 1,
+
+            // Back
+            4, 7, 6,
+            6, 5, 4,
+
+            // Top
+            5, 1, 0,
+            0, 4, 5,
+        };
+
+        glGenVertexArrays(1, &context->vao);
+        glBindVertexArray(context->vao);
+
+        unsigned int triangles_ibo;
+        glGenBuffers(1, &triangles_ibo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangles_ibo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof triangle_indices, triangle_indices, GL_STATIC_DRAW);
+
+        unsigned int verticies_vbo;
+        glGenBuffers(1, &verticies_vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, verticies_vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof vertices, vertices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(verticies_index, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(verticies_index);
+
+        unsigned int colors_vbo;
+        glGenBuffers(1, &colors_vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof vertex_colors, vertex_colors, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(colors_index, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(colors_index);
+
+        // Unbind to prevent accidental modification
+        glBindVertexArray(0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertex_shader, 1, &(GetVertexShaderText()), NULL);
+        glCompileShader(vertex_shader);
+        check_shader_error(vertex_shader);
+
+        GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragment_shader, 1, &(GetVertexShaderText()), NULL);
+        glCompileShader(fragment_shader);
+        check_shader_error(fragment_shader);
+
+        context.shader_program = glCreateProgram();
+        glAttachShader(context.shader_program, vertex_shader);
+        glAttachShader(context.shader_program, fragment_shader);
+        link_shader_program(context.shader_program);
+
+        context.uniform_transform = glGetUniformLocation(context.shader_program, "transform");
         return true;
     }
 
@@ -63,13 +149,6 @@ namespace _NAC
 
     void Canvas::Draw() {
         run_program();
-    }
-
-    Canvas* Canvas::GetInstance() {
-        if (!m_pInstance)
-            m_pInstance = new Canvas();
-
-        return m_pInstance;
     }
 
     void Canvas::SetVertexShaderText(const char* text) {
@@ -88,42 +167,29 @@ namespace _NAC
         return fragment_shader_text;
     }
 
-    const Vertex* Canvas::GetVertices() const {
-        return Vertices;
-    }
+    // const Vertex* Canvas::GetVertices() const {
+    //     return Vertices;
+    // }
 
-    GLsizei Canvas::GetVerticesSize() const {
-        return sizeof(Vertices);
-    }
+    // GLsizei Canvas::GetVerticesSize() const {
+    //     return sizeof(Vertices);
+    // }
 
     void Canvas::run_program() {
         glfwGetFramebufferSize(m_pWindow, &width, &height);
         ratio = width / (float)height;
         glViewport(0, 0, width, height);
 
-        // mat4x4_identity(m);
-        // mat4x4_rotate_Z(m, m, (float)glfwGetTime());
-        // mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        // mat4x4_mul(mvp, p, m);
+        mat4x4_identity(m);
+        mat4x4_rotate_Z(m, m, (float)glfwGetTime());
+        mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+        mat4x4_mul(mvp, p, m);
 
         glUseProgram(program);
-        glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, &World[0][0]);
-
-        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
-
-        // position
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-
-        // color
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-
-        glDrawElements(GL_TRIANGLES, 54, GL_UNSIGNED_INT, 0);
-
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
+        glUniformMatrix4fv(context.uniform_transform, 1, GL_FALSE, (const GLfloat *)mvp);
+        
+        glBindVertexArray(context.vao);
+        glDrawElements(GL_TRIANGLES, 6 * 2 * 3, GL_UNSIGNED_SHORT, NULL);
     }
 
     void Canvas::prepare_vertex_buffer() {
