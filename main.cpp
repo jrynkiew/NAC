@@ -73,7 +73,7 @@ void main_loop() {
     //         }
     //         usleep(10000);
     //     }
-    // #endif
+    #endif
  }
 
 void threadLoopIteration(void*)
