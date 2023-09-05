@@ -47,12 +47,12 @@ namespace _NAC
             m_Renderer->SetMousePosition(m_Window->GetMouseX(), m_Window->GetMouseY());
             m_Renderer->Render();
         #else
-        
         while (!glfwWindowShouldClose(m_Window->GetGLFWwindow()))
         {
             m_Renderer->SetMousePosition(m_Window->GetMouseX(), m_Window->GetMouseY());
             m_Renderer->Render();
         }
+        #endif
     }
 
     void NAC::Shutdown() {
