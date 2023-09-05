@@ -107,7 +107,7 @@ namespace _NAC
         // mat4x4_mul(mvp, p, m);
 
         glUseProgram(program);
-        glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, &World.m[0][0]);
+        glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, &World[0][0]);
 
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
