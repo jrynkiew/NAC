@@ -103,10 +103,6 @@ namespace _NAC
         glDrawArrays(GL_TRIANGLES, 0, 3);
     }
 
-    void Canvas::Clear() {
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-
     void Canvas::prepare_vertex_buffer() {
         glGenBuffers(1, &vertex_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);

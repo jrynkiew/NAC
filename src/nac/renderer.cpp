@@ -69,20 +69,26 @@ namespace _NAC
 		return true;
 	}
 
-	void Renderer::Render(GLFWwindow* window)
+	void Renderer::Clear()
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+
+	void Renderer::RenderCanvas()
 	{
 		m_Canvas->Draw();
-		m_Interface->Draw();
+	}
 
-		ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        if (m_Interface->GetImGuiIO()->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            GLFWwindow* backup_current_context = glfwGetCurrentContext();
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-            glfwMakeContextCurrent(backup_current_context);
-        }
+	void Renderer::RenderInterface()
+	{
+		m_Interface->Draw();
+	}
+
+	void Renderer::Render(GLFWwindow* window)
+	{
+		RenderCanvas();
+		RenderInterface();
+
         glfwSwapBuffers(window);
 	}
 }
