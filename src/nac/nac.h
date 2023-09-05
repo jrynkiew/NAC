@@ -16,6 +16,5 @@ namespace _NAC {
         private:
             static Renderer* m_Renderer;
             static Window* m_Window;
-            int m_Width, m_Height;
     };
 }
