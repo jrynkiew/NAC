@@ -76,7 +76,7 @@ int main(void)
     //render loop
     loop = [&] {
 
-        renderer->Render();
+        nac->Run();
     };
 
     //run NAC
