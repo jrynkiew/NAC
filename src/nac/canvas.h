@@ -35,7 +35,7 @@ namespace _NAC
 
             void run_program();
 
-            float cubeVertices[];
-            unsigned int cubeIndices[];
+            static float cubeVertices[];
+            static unsigned int cubeIndices[];
     };
 }
