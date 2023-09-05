@@ -19,12 +19,12 @@ struct Vertex {
 
     Vertex(float x, float y)
     {
-        pos.Add(x, y, 0.0f);
+        pos.vec3_add(x, y, 0.0f);
 
         float red   = (float)rand() / (float)RAND_MAX;
         float green = (float)rand() / (float)RAND_MAX;
         float blue  = (float)rand() / (float)RAND_MAX;
-        color.Add(red, green, blue);
+        color.vec3_add(red, green, blue);
     }
 };
 
@@ -70,9 +70,10 @@ namespace _NAC
             
             void run_program();
             void prepare_shader();
-            void prepare_vertex_buffer();
-            void prepare_vertex_shader();
             void prepare_fragment_shader();
+            void prepare_vertex_shader();
+            void prepare_vertex_buffer();
+            void prepare_index_buffer();
             void prepare_program();
             
             void shader_error_callback(int error, const char *description);
