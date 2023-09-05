@@ -50,9 +50,6 @@ namespace _NAC
 
             //render the scene
             m_Renderer->Render(m_Window->GetGLFWwindow());
-
-            //poll events
-            glfwPollEvents();
         }
     }
 

@@ -87,10 +87,18 @@ namespace _NAC
 	void Renderer::Render(GLFWwindow* window)
 	{
 		Clear();
-		
 		RenderCanvas();
 		RenderInterface();
-
+		glfwPollEvents();
+		ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        if (m_Interface->GetImGuiIO()->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
         glfwSwapBuffers(window);
 	}
 }
