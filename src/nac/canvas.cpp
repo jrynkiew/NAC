@@ -34,44 +34,31 @@ namespace _NAC
     #endif
 
     float Canvas::cubeVertices[] = {
-         // Front face
-        0.5,  0.5,  0.5,
-        -0.5,  0.5,  0.5,
-        -0.5, -0.5,  0.5,
-        0.5, -0.5,  0.5,
-
-        // Back face
-        0.5,  0.5, -0.5,
-        -0.5,  0.5, -0.5,
-        -0.5, -0.5, -0.5,
-        0.5, -0.5, -0.5,
-    };
+                // Positions
+                -0.5f, -0.5f, -0.5f,
+                0.5f, -0.5f, -0.5f,
+                0.5f,  0.5f, -0.5f,
+                -0.5f,  0.5f, -0.5f,
+                -0.5f, -0.5f,  0.5f,
+                0.5f, -0.5f,  0.5f,
+                0.5f,  0.5f,  0.5f,
+                -0.5f,  0.5f,  0.5f
+            };
     
     unsigned int Canvas::cubeIndices[] = {
-        // Front
-        0, 1, 2,
-        2, 3, 0,
-
-        // Right
-        0, 3, 7,
-        7, 4, 0,
-
-        // Bottom
-        2, 6, 7,
-        7, 3, 2,
-
-        // Left
-        1, 5, 6,
-        6, 2, 1,
-
-        // Back
-        4, 7, 6,
-        6, 5, 4,
-
-        // Top
-        5, 1, 0,
-        0, 4, 5,
-    };
+                0, 1, 2,
+                2, 3, 0,
+                4, 5, 6,
+                6, 7, 4,
+                0, 3, 7,
+                7, 4, 0,
+                1, 2, 6,
+                6, 5, 1,
+                2, 3, 6,
+                6, 7, 3,
+                0, 1, 5,
+                5, 4, 0
+            };
 
     Canvas::Canvas(GLFWwindow* window) {
         m_pWindow = window;
@@ -98,7 +85,7 @@ namespace _NAC
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
         // Set vertex attribute pointers
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
 
         // Compile and link the shaders
@@ -123,7 +110,6 @@ namespace _NAC
 
         glUseProgram(shaderProgram);
 
-        // Set up transformation matrices using mat4x4
         mat4x4_identity(model);
         mat4x4_translate_in_place(model, 0.0f, 0.0f, -3.0f); // Translate the cube back in the -z direction
         mat4x4_identity(view);
@@ -134,6 +120,8 @@ namespace _NAC
         modelLoc = glGetUniformLocation(shaderProgram, "model");
         viewLoc = glGetUniformLocation(shaderProgram, "view");
         projectionLoc = glGetUniformLocation(shaderProgram, "projection");
+
+        glEnable(GL_DEPTH_TEST);
 
         rotationSpeed = 0.01f;
         return true;
@@ -152,7 +140,7 @@ namespace _NAC
         // Rotate the cube
          // Adjust the speed as needed
         mat4x4_rotate_Y(model, model, rotationSpeed);
-        mat4x4_rotate_X(model, model, rotationSpeed);
+        mat4x4_rotate_Z(model, model, rotationSpeed);
 
         // Update the uniform matrices
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, (const GLfloat*)model);
