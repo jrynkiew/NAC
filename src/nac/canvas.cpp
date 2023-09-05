@@ -151,8 +151,6 @@ namespace _NAC
         viewLoc = glGetUniformLocation(shaderProgram, "view");
         projectionLoc = glGetUniformLocation(shaderProgram, "projection");
 
-        glEnable(GL_DEPTH_TEST);
-
         rotationSpeed = 0.01f;
         return true;
     }
