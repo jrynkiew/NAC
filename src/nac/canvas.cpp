@@ -34,31 +34,58 @@ namespace _NAC
     #endif
 
     float Canvas::cubeVertices[] = {
-                // Positions
-                -0.5f, -0.5f, -0.5f,
-                0.5f, -0.5f, -0.5f,
-                0.5f,  0.5f, -0.5f,
-                -0.5f,  0.5f, -0.5f,
-                -0.5f, -0.5f,  0.5f,
-                0.5f, -0.5f,  0.5f,
-                0.5f,  0.5f,  0.5f,
-                -0.5f,  0.5f,  0.5f
-            };
+        // Front face
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f,
+        // Back face
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f,
+        0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,
+        // Right face
+        0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f,
+        // Left face
+        -0.5f, -0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  -1.0f, 0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f, 0.0f,
+        // Top face
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+        // Bottom face
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f
+    };
     
     unsigned int Canvas::cubeIndices[] = {
-                0, 1, 2,
-                2, 3, 0,
-                4, 5, 6,
-                6, 7, 4,
-                0, 3, 7,
-                7, 4, 0,
-                1, 2, 6,
-                6, 5, 1,
-                2, 3, 6,
-                6, 7, 3,
-                0, 1, 5,
-                5, 4, 0
-            };
+        // Front face
+        0, 1, 2,
+        2, 3, 0,
+        // Back face
+        4, 5, 6,
+        6, 7, 4,
+        // Right face
+        8, 9, 10,
+        10, 11, 8,
+        // Left face
+        12, 13, 14,
+        14, 15, 12,
+        // Top face
+        16, 17, 18,
+        18, 19, 16,
+        // Bottom face
+        20, 21, 22,
+        22, 23, 20
+    };
 
     Canvas::Canvas(GLFWwindow* window) {
         m_pWindow = window;
@@ -85,10 +112,13 @@ namespace _NAC
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW);
 
         // Set vertex attribute pointers
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
 
         // Compile and link the shaders
+        GLuint vertexShader, fragmentShader, shaderProgram;
         vertexShader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
         glCompileShader(vertexShader);
@@ -110,6 +140,8 @@ namespace _NAC
 
         glUseProgram(shaderProgram);
 
+        // Set up transformation matrices using mat4x4
+        mat4x4 model, view, projection;
         mat4x4_identity(model);
         mat4x4_translate_in_place(model, 0.0f, 0.0f, -3.0f); // Translate the cube back in the -z direction
         mat4x4_identity(view);
