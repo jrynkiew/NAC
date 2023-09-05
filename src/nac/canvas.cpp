@@ -123,7 +123,7 @@ namespace _NAC
 
         glEnable(GL_DEPTH_TEST);
 
-        rotationSpeed = 0.1f;
+        rotationSpeed = 0.01f;
         return true;
     }
 
