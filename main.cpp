@@ -75,7 +75,6 @@ int main(void)
 
     //render loop
     loop = [&] {
-
         nac->Run();
     };
 
@@ -85,8 +84,7 @@ int main(void)
     emscripten_set_main_loop(main_loop, 0, true);
 #else
     std::thread nativeThread(tw);
-    while (!glfwWindowShouldClose(nac->GetWindow()->GetGLFWwindow()))
-        main_loop();
+    main_loop();
 #endif
 
     #ifndef __EMSCRIPTEN__
