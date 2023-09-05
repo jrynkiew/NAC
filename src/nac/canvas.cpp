@@ -3,32 +3,38 @@
 namespace _NAC
 {
     Canvas* Canvas::m_pInstance = nullptr;
+    
     const char* Canvas::vertex_shader_text =
-        "uniform mat4 MVP;\n"
+        "attribute vec3 vPos;\n"
         "attribute vec3 vCol;\n"
-        "attribute vec2 vPos;\n"
-        "varying vec3 color;\n"
+
+        "uniform mat4 MVP;\n"
+
+        "varying vec3 Color;\n"
+
         "void main()\n"
         "{\n"
-        "    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-        "    color = vCol;\n"
+        "    gl_Position = transform * vec4(Position, 1.0);\n"
+        "    Color = inColor;\n"
         "}\n";
     #ifdef __EMSCRIPTEN__
     const char* Canvas::fragment_shader_text =
         "precision mediump float;\n"
-        "varying vec3 color;\n"
+        "attribute vec4 Color;\n"
+
         "void main()\n"
         "{\n"
-        "    gl_FragColor = vec4(color, 1.0);\n"
+        "    gl_FragColor = Color;\n"
         "}\n";
     #else
     const char* Canvas::fragment_shader_text =
-        "varying vec3 color;\n"
+        "attribute vec4 Color;\n"
         "void main()\n"
         "{\n"
-        "    gl_FragColor = vec4(color, 1.0);\n"
+        "    gl_FragColor = Color;\n"
         "}\n";
     #endif
+
 
     const Vertex Canvas::vertices[3] = {
         {-0.6f, -0.3f, 1.f, 0.f, 0.f},
