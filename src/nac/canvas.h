@@ -12,8 +12,20 @@
 #include "linmath.h"
 
 struct Vertex {
-    float x, y;
-    float r, g, b;
+    vec3 pos;
+    vec3 color;
+
+    Vertex() {}
+
+    Vertex(float x, float y)
+    {
+        pos.Add(x, y, 0.0f);
+
+        float red   = (float)rand() / (float)RAND_MAX;
+        float green = (float)rand() / (float)RAND_MAX;
+        float blue  = (float)rand() / (float)RAND_MAX;
+        color.Add(red, green, blue);
+    }
 };
 
 namespace _NAC
@@ -43,14 +55,16 @@ namespace _NAC
                     
 
 		private:
-            GLuint vertex_buffer, vertex_shader, fragment_shader, program;
-            GLint mvp_location, vpos_location, vcol_location;
+            GLuint vertex_buffer, index_buffer, vertex_shader, fragment_shader, program;
+            GLuint gWorldLocation;
             GLFWwindow* m_pWindow;
             int width, height;
+            mat4x4 World;
             mat4x4 m, p, mvp;
             float ratio;
+            float scale;
             static Canvas* m_pInstance;
-            static const Vertex vertices[3];
+            Vertex Vertices[19];
             static const char* vertex_shader_text;       
             static const char* fragment_shader_text;
             
